@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { AI_API } from '@/lib/config'
+import { AI_API } from '@/lib/config.ts'
 
 // Initialize Supabase admin client
 const supabaseAdmin = createClient(

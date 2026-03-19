@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase.ts'
-import { PACKAGES } from '@/lib/config'
+import { PACKAGES } from '@/lib/config.ts'
 
 export default function Register() {
   const [email, setEmail] = useState('')

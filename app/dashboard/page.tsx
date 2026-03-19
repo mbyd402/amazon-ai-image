@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase.ts'
-import { PACKAGES } from '@/lib/config'
+import { PACKAGES } from '@/lib/config.ts'
 import Image from 'next/image'
 import ProcessPage from '@/components/ProcessPage'
 
