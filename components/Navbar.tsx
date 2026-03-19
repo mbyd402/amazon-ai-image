@@ -14,20 +14,27 @@ export default function Navbar() {
 
   useEffect(() => {
     const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      
-      if (user) {
-        const { data } = await supabase
-          .from('users')
-          .select('remaining_points, total_points')
-          .eq('id', user.id)
-        setUserData(data?.[0] || null)
-        console.log('User data loaded:', data)
-      } else {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+        console.log('Got user:', user?.id)
+        
+        if (user) {
+          const { data } = await supabase
+            .from('users')
+            .select('remaining_points, total_points')
+            .eq('id', user.id)
+          setUserData(data?.[0] || null)
+          console.log('User data loaded:', data)
+        } else {
+          setUserData(null)
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error)
         setUserData(null)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     getCurrentUser()
