@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase.ts'
+import { supabase } from '@/lib/supabase'
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null)

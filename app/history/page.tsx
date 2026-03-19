@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase.ts'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 type ProcessingRecord = {

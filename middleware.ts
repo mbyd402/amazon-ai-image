@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { PACKAGES } from '@/lib/config.ts'
+import { PACKAGES } from '@/lib/config'
 
 export async function middleware(request: NextRequest) {
   // This middleware handles creating a user record in our table after OAuth login

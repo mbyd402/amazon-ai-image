@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
-import { supabase } from '@/lib/supabase.ts'
-import { PACKAGES, type PackageType } from '@/lib/config.ts'
+import { supabase } from '@/lib/supabase'
+import { PACKAGES, type PackageType } from '@/lib/config'
 
 export default function BuyPoints() {
   const [user, setUser] = useState<any>(null)
