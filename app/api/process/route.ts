@@ -35,7 +35,7 @@ async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: s
   return publicUrl
 }
 
-import FormData from 'form-data'
+import { FormData } from 'form-data'
 
 async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
   const form = new FormData()
