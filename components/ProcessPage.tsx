@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { supabase } from '@/lib/supabase'
-import { R2 } from '@/lib/config'
 
 interface ProcessPageProps {
   operation: 'background' | 'watermark' | 'upscale' | 'compliance'

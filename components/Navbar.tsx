@@ -22,16 +22,30 @@ export default function Navbar() {
           .from('users')
           .select('remaining_points, total_points')
           .eq('id', user.id)
-          .single()
-        setUserData(data)
+        setUserData(data?.[0] || null)
+        console.log('User data loaded:', data)
+      } else {
+        setUserData(null)
       }
       setLoading(false)
     }
 
     getCurrentUser()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      getCurrentUser()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id)
+      if (session?.user) {
+        setUser(session.user)
+        const { data } = await supabase
+          .from('users')
+          .select('remaining_points, total_points')
+          .eq('id', session.user.id)
+        setUserData(data?.[0] || null)
+      } else {
+        setUser(null)
+        setUserData(null)
+      }
+      setLoading(false)
     })
 
     return () => subscription.unsubscribe()

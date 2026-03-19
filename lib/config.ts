@@ -14,18 +14,14 @@ export const AI_API = {
   },
   clipdrop: {
     apiKey: process.env.CLIPDROP_API_KEY!,
-    inpaintUrl: 'https://clipdrop-api.co/image-inpainting/api/v1/inpaint',
-    upscaleUrl: 'https://clipdrop-api.co/image-upscaling/api/v1/upscale',
+    inpaintUrl: 'https://clipdrop-api.co/image-inpainting/v1/inpaint',
+    upscaleUrl: 'https://clipdrop-api.co/image-upscaling/v1/upscale',
   },
   cloudmersive: {
-    apiKey: process.env.CLOUDMERSIVE_API_KEY!,
+    apiKey: process.env.CLOUDMERSIVE_API_KEY || '',
   },
 }
 
-export const R2 = {
-  accountId: process.env.CLOUDFLARE_R2_ACCOUNT_ID!,
-  accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
-  secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
-  bucketName: process.env.CLOUDFLARE_R2_BUCKET_NAME!,
-  publicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL!,
-}
+// Using Supabase Storage instead of Cloudflare R2 to avoid extra setup
+// Create a bucket called "images" in Supabase Storage and make it public
+
