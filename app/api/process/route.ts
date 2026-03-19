@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { AI_API } from '@/lib/config'
+import FormDataModule from 'form-data'
 
 // Initialize Supabase admin client
 const supabaseAdmin = createClient(
@@ -35,11 +36,9 @@ async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: s
   return publicUrl
 }
 
-import FormDataModule from 'form-data'
-
 async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
-  const form = new FormData()
-  form.append('image_file', imageBuffer, {
+  const form = new FormDataModule()
+  form.append('image_file', imageBuffer as unknown as Blob, {
     filename: 'image.png',
     contentType: 'image/png',
   })
@@ -70,8 +69,8 @@ async function inpaintWatermark(
 ): Promise<Buffer> {
   // We can't create canvas in Node.js, so we send the coordinates directly
   // Clipdrop accepts mask as a description of the rectangle, we create a white mask on black background
-  const form = new FormData()
-  form.append('image', imageBuffer, {
+  const form = new FormDataModule()
+  form.append('image', imageBuffer as unknown as Blob, {
     filename: 'image.png',
     contentType: 'image/png',
   })
@@ -104,7 +103,7 @@ async function inpaintWatermark(
     }
   }
   
-  form.append('mask', maskBuffer, {
+  form.append('mask', maskBuffer as unknown as Blob, {
     filename: 'mask.png',
     contentType: 'image/png',
   })
@@ -126,8 +125,8 @@ async function inpaintWatermark(
 }
 
 async function upscaleImage(imageBuffer: Buffer, scale: number = 2): Promise<Buffer> {
-  const form = new FormData()
-  form.append('image', imageBuffer, {
+  const form = new FormDataModule()
+  form.append('image', imageBuffer as unknown as Blob, {
     filename: 'image.png',
     contentType: 'image/png',
   })
@@ -155,70 +154,36 @@ async function checkCompliance(imageBuffer: Buffer): Promise<{
 }> {
   const issues: string[] = []
 
-  // First check for text
-  if (AI_API.cloudmersive.apiKey) {
-    try {
-      const formData = new FormData()
-      formData.append('imageFile', new Blob([new Uint8Array(imageBuffer)]))
-      const textResponse = await fetch('https://api.cloudmersive.com/image/recognize-text', {
-        method: 'POST',
-        headers: {
-          'Apikey': AI_API.cloudmersive.apiKey,
-        },
-        body: formData,
-      })
+  // Use Cloudmersive API to check image compliance
+  // Check for illegal content (nude, violence, etc.)
+  const form = new FormDataModule()
+  form.append('image', imageBuffer as unknown as Blob, {
+    filename: 'check.png',
+    contentType: 'image/png',
+  })
 
-      if (textResponse.ok) {
-        const textResult = await textResponse.json()
-        if (textResult.textResult && textResult.textResult.lines && textResult.textResult.lines.length > 0) {
-          issues.push('Image contains text, Amazon main images should not have additional text')
-        }
-      }
-    } catch (e) {
-      console.warn('Cloudmersive error:', e)
-    }
+  const response = await fetch('https://api.cloudmersive.com/video/image/nsfw/classify', {
+    method: 'POST',
+    headers: {
+      'Apikey': AI_API.cloudmersive.apiKey,
+      ...form.getHeaders(),
+    },
+    body: form.getBuffer() as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    // If API fails, we assume it's ok for MVP
+    console.error('Cloudmersive compliance check failed')
+    return { compliant: true, issues: [] }
   }
 
-  // Check if background is mostly white
-  const imageBlob = new Blob([new Uint8Array(imageBuffer)])
-  const imageBitmap = await createImageBitmap(imageBlob)
-  const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height)
-  const ctx = canvas.getContext('2d')!
-  ctx.drawImage(imageBitmap, 0, 0)
-  
-  // Sample four corners
-  const corners = [
-    {x: 5, y: 5},
-    {x: imageBitmap.width - 5, y: 5},
-    {x: 5, y: imageBitmap.height - 5},
-    {x: imageBitmap.width - 5, y: imageBitmap.height - 5},
-  ]
-  
-  let nonWhiteCount = 0
-  for (const corner of corners) {
-    const pixelData = ctx.getImageData(corner.x, corner.y, 1, 1).data
-    const r = pixelData[0]
-    const g = pixelData[1]
-    const b = pixelData[2]
-    if (r < 240 || g < 240 || b < 240) {
-      nonWhiteCount++
-    }
-  }
-  
-  if (nonWhiteCount > 1) {
-    issues.push('Background is not pure white, Amazon requires pure white background (RGB 255,255,255)')
-  }
-  
-  // Check size
-  if (imageBitmap.width < 1000 || imageBitmap.height < 1000) {
-    issues.push(`Image size is ${imageBitmap.width}x${imageBitmap.height}, minimum 1000px on longest side required for Amazon zoom`)
-  }
-  
-  // Check aspect ratio - Amazon prefers square
-  const ratio = imageBitmap.width / imageBitmap.height
-  if (ratio < 0.8 || ratio > 1.2) {
-    issues.push('Image is not square, Amazon main images are expected to be square')
-  }
+  const result = await response.json()
+  const { pornScore, hentaiScore, sexyScore } = result
+
+  // Threshold - adjust as needed
+  if (pornScore > 0.3) issues.push('Pornographic content detected')
+  if (hentaiScore > 0.3) issues.push('Hentai content detected')
+  if (sexyScore > 0.5) issues.push('Explicit content detected')
 
   return {
     compliant: issues.length === 0,
@@ -226,94 +191,90 @@ async function checkCompliance(imageBuffer: Buffer): Promise<{
   }
 }
 
-async function deductPoints(userId: any, count: number): Promise<boolean> {
-  const { data: user, error } = await supabaseAdmin
-    .from('users')
-    .select('remaining_points')
-    .eq('id', userId)
-    .single()
-
-  if (error || !user) {
-    return false
-  }
-
-  if (user.remaining_points < count) {
-    return false
-  }
-
-  await supabaseAdmin
-    .from('users')
-    .update({
-      remaining_points: user.remaining_points - count,
-    })
-    .eq('id', userId)
-
-  return true
-}
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
-    const file = formData.get('file') as File
+    const file = formData.get('image') as File | null
     const operation = formData.get('operation') as string
     const userId = formData.get('userId') as string
+    const selection = formData.get('selection') ? JSON.parse(formData.get('selection') as string) : null
 
     if (!file || !operation || !userId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Convert file to buffer
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    // Create processing record
-    await supabaseAdmin.from('image_processing').insert({
-      user_id: userId,
-      operation_type: operation,
-      original_url: 'uploaded',
-      status: 'processing',
-    })
+    // Check compliance first
+    const compliance = await checkCompliance(buffer)
+    if (!compliance.compliant) {
+      return NextResponse.json({
+        error: 'Image does not comply with content policies',
+        issues: compliance.issues,
+      }, { status: 400 })
+    }
 
     let processedBuffer: Buffer
-    let processedContentType = file.type
-
     switch (operation) {
       case 'background':
         processedBuffer = await removeBackground(buffer)
         break
       case 'watermark':
-        const selectionStr = formData.get('selection') as string
-        const selection = JSON.parse(selectionStr)
-        processedBuffer = await inpaintWatermark(buffer, selection, file.size, 0)
+        if (!selection) {
+          return NextResponse.json({ error: 'Missing selection for watermark removal' }, { status: 400 })
+        }
+        processedBuffer = await inpaintWatermark(buffer, selection, selection.width, selection.height)
         break
       case 'upscale':
-        processedBuffer = await upscaleImage(buffer, 2)
+        processedBuffer = await upscaleImage(buffer)
         break
-      case 'compliance':
-        const compliance = await checkCompliance(buffer)
-        // Compliance check is free, no points deduction
-        return NextResponse.json({ compliant: compliance.compliant, issues: compliance.issues })
       default:
         return NextResponse.json({ error: 'Invalid operation' }, { status: 400 })
     }
 
-    // Deduct points
-    const success = await deductPoints(userId, 1)
-    if (!success) {
-      return NextResponse.json({ error: 'Not enough points' }, { status: 400 })
+    // Upload processed image to Supabase Storage
+    const extension = 'png'
+    const fileName = `${operation}-${Date.now()}.${extension}`
+    const processedUrl = await uploadToSupabase(processedBuffer, fileName, `image/${extension}`)
+
+    // Deduct one point from user
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('remaining_points, total_points')
+      .eq('id', userId)
+      .single()
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Upload to Supabase Storage
-    const processedUrl = await uploadToSupabase(processedBuffer, file.name, processedContentType)
+    await supabaseAdmin
+      .from('users')
+      .update({
+        remaining_points: user.remaining_points - 1,
+      })
+      .eq('id', userId)
 
-    // Update processing record
-    await supabaseAdmin.from('image_processing').update({
-      processed_url: processedUrl,
-      status: 'done',
-    }).eq('user_id', userId).eq('status', 'processing')
+    // Save processing history
+    await supabaseAdmin
+      .from('history')
+      .insert({
+        user_id: userId,
+        operation,
+        original_url: '',
+        processed_url: processedUrl,
+        created_at: new Date().toISOString(),
+      })
 
-    return NextResponse.json({ processedUrl })
-  } catch (error: any) {
+    return NextResponse.json({
+      success: true,
+      processedUrl,
+      remainingPoints: user.remaining_points - 1,
+    })
+  } catch (error) {
     console.error('Processing error:', error)
-    return NextResponse.json({ error: error.message || 'Processing failed' }, { status: 500 })
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
   }
 }
