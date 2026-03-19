@@ -11,7 +11,7 @@ const supabaseAdmin = createClient(
 
 async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: string): Promise<string> {
   const path = `processed/${Date.now()}-${fileName.replace(/\s+/g, '-')}`
-  const { data } = await supabaseAdmin.storage
+  const { data, error } = await supabaseAdmin.storage
     .from('images')
     .upload(path, buffer, {
       contentType,
@@ -19,8 +19,13 @@ async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: s
       upsert: false,
     })
 
+  if (error) {
+    console.error('Supabase storage upload error:', error)
+    throw new Error(`Failed to upload to Supabase Storage: ${error.message}`)
+  }
+
   if (!data) {
-    throw new Error('Failed to upload to Supabase Storage')
+    throw new Error('Failed to upload to Supabase Storage: no data returned')
   }
 
   const { data: { publicUrl } } = supabaseAdmin.storage
