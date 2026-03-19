@@ -51,7 +51,7 @@ async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
       'X-Api-Key': AI_API.removeBg.apiKey,
       ...formData.getHeaders(),
     },
-    body: formData.getBuffer(),
+    body: formData.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
@@ -115,7 +115,7 @@ async function inpaintWatermark(
       'x-api-key': AI_API.clipdrop.apiKey,
       ...formData.getHeaders(),
     },
-    body: formData.getBuffer(),
+    body: formData.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
@@ -139,7 +139,7 @@ async function upscaleImage(imageBuffer: Buffer, scale: number = 2): Promise<Buf
       'x-api-key': AI_API.clipdrop.apiKey,
       ...formData.getHeaders(),
     },
-    body: formData.getBuffer(),
+    body: formData.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
