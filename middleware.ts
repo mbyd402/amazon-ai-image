@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
 
       // Refresh the session to keep cookie fresh
       if (refreshToken) {
-        const { data: { session } } = await supabaseAdmin.auth.refreshSession(refreshToken)
+        const { data: { session } } = await supabaseAdmin.auth.refreshSession({ refresh_token: refreshToken })
         if (session) {
           // Set the refreshed cookies
           const isSecure = process.env.NODE_ENV === 'production'
