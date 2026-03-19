@@ -31,14 +31,17 @@ export async function middleware(request: NextRequest) {
         .select('id')
         .eq('id', user.id)
 
+      console.log('Checking user exists:', user.id, user.email);
       if (!existingUser || existingUser.length === 0) {
+        console.log('Creating new user with free points:', PACKAGES.free.points);
         // Create user with free points
-        await supabaseAdmin.from('users').insert({
+        const { error } = await supabaseAdmin.from('users').insert({
           id: user.id,
           email: user.email!,
           remaining_points: PACKAGES.free.points,
           total_points: PACKAGES.free.points,
-        })
+        });
+        console.log('Create user result:', error);
       }
 
       // Refresh the session to keep cookie fresh
