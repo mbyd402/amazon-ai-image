@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase.ts'
 import { PACKAGES } from '@/lib/config.ts'
 import Image from 'next/image'
-import ProcessPage from '@/components/ProcessPage'
+import ProcessPage from '@/components/ProcessPage.tsx'
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
