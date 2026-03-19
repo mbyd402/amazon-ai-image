@@ -11,26 +11,43 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedTab, setSelectedTab] = useState<'background' | 'watermark' | 'upscale' | 'compliance'>('background')
   const router = useRouter()
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/login')
-        return
+      try {
+        // Add 10 second timeout to prevent infinite loading
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout')), 10000)
+        })
+
+        const userPromise = supabase.auth.getUser()
+        const { data: { user } } = await Promise.race([userPromise, timeoutPromise]) as any
+        
+        if (!user) {
+          router.push('/login')
+          return
+        }
+        setUser(user)
+        
+        const { data } = await Promise.race([
+          supabase
+            .from('users')
+            .select('remaining_points, total_points')
+            .eq('id', user.id)
+            .single(),
+          timeoutPromise
+        ]) as any
+        
+        setUserData(data)
+        setLoading(false)
+      } catch (err) {
+        console.error('Dashboard loading error:', err)
+        setError(err instanceof Error ? err.message : 'Unknown error')
+        setLoading(false)
       }
-      setUser(user)
-      
-      const { data } = await supabase
-        .from('users')
-        .select('remaining_points, total_points')
-        .eq('id', user.id)
-        .single()
-      
-      setUserData(data)
-      setLoading(false)
     }
 
     checkAuth()
@@ -41,7 +58,28 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg inline-block">
+              <p className="text-red-600 dark:text-red-400 mb-4">Loading failed: {error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Retry
+              </button>
+            </div>
           </div>
         </div>
       </div>
