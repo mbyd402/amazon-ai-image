@@ -44,26 +44,9 @@ export async function middleware(request: NextRequest) {
         console.log('Create user result:', error);
       }
 
-      // Refresh the session to keep cookie fresh
-      if (refreshToken) {
-        const { data: { session } } = await supabaseAdmin.auth.refreshSession({ refresh_token: refreshToken })
-        if (session) {
-          // Set the refreshed cookies
-          const isSecure = process.env.NODE_ENV === 'production'
-          response.cookies.set(accessTokenName, session.access_token!, {
-            path: '/',
-            httpOnly: true,
-            secure: isSecure,
-            sameSite: 'lax',
-          })
-          response.cookies.set(refreshTokenName, session.refresh_token!, {
-            path: '/',
-            httpOnly: true,
-            secure: isSecure,
-            sameSite: 'lax',
-          })
-        }
-      }
+      // Don't refresh session in middleware to avoid lock conflicts
+      // Cookie refresh handled by client side
+      // We just need to create user record if not exists
     }
   }
 
