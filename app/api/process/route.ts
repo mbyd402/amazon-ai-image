@@ -38,20 +38,20 @@ async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: s
 import FormData from 'form-data'
 
 async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
-  const formData = new FormData()
-  formData.append('image_file', imageBuffer, {
+  const form = new FormData()
+  form.append('image_file', imageBuffer, {
     filename: 'image.png',
     contentType: 'image/png',
   })
-  formData.append('size', 'auto')
+  form.append('size', 'auto')
 
   const response = await fetch(AI_API.removeBg.apiUrl, {
     method: 'POST',
     headers: {
       'X-Api-Key': AI_API.removeBg.apiKey,
-      ...formData.getHeaders(),
+      ...form.getHeaders(),
     },
-    body: formData.getBuffer() as unknown as BodyInit,
+    body: form.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
@@ -70,8 +70,8 @@ async function inpaintWatermark(
 ): Promise<Buffer> {
   // We can't create canvas in Node.js, so we send the coordinates directly
   // Clipdrop accepts mask as a description of the rectangle, we create a white mask on black background
-  const formData = new FormData()
-  formData.append('image', imageBuffer, {
+  const form = new FormData()
+  form.append('image', imageBuffer, {
     filename: 'image.png',
     contentType: 'image/png',
   })
@@ -104,7 +104,7 @@ async function inpaintWatermark(
     }
   }
   
-  formData.append('mask', maskBuffer, {
+  form.append('mask', maskBuffer, {
     filename: 'mask.png',
     contentType: 'image/png',
   })
@@ -113,9 +113,9 @@ async function inpaintWatermark(
     method: 'POST',
     headers: {
       'x-api-key': AI_API.clipdrop.apiKey,
-      ...formData.getHeaders(),
+      ...form.getHeaders(),
     },
-    body: formData.getBuffer() as unknown as BodyInit,
+    body: form.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
@@ -126,20 +126,20 @@ async function inpaintWatermark(
 }
 
 async function upscaleImage(imageBuffer: Buffer, scale: number = 2): Promise<Buffer> {
-  const formData = new FormData()
-  formData.append('image', imageBuffer, {
+  const form = new FormData()
+  form.append('image', imageBuffer, {
     filename: 'image.png',
     contentType: 'image/png',
   })
-  formData.append('scale', scale.toString())
+  form.append('scale', scale.toString())
 
   const response = await fetch('https://clipdrop-api.co/image-upscaling/v1/upscale', {
     method: 'POST',
     headers: {
       'x-api-key': AI_API.clipdrop.apiKey,
-      ...formData.getHeaders(),
+      ...form.getHeaders(),
     },
-    body: formData.getBuffer() as unknown as BodyInit,
+    body: form.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
