@@ -1,49 +1,191 @@
-import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import DashboardContentClient from './DashboardContentClient'
+'use client'
 
-// This is a server component - fetches data on the server, avoids client network issues
-export default async function DashboardPage() {
-  // Create server-side Supabase client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import ProcessPage from '@/components/ProcessPage'
+
+export default function Dashboard() {
+  const [user, setUser] = useState<any>(null)
+  const [userData, setUserData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
+  const [selectedTab, setSelectedTab] = useState<'background' | 'watermark' | 'upscale' | 'compliance'>('background')
+  const router = useRouter()
+
+  const checkAuth = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      // Add 15 second timeout, retry up to 3 times
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout. Retrying...')), 15000)
+      })
+
+      console.log('Attempting to load dashboard... (attempt ' + (retryCount + 1) + ')')
+      
+      const userPromise = supabase.auth.getUser()
+      const { data: { user } } = await Promise.race([userPromise, timeoutPromise]) as any
+      
+      if (!user) {
+        router.push('/login')
+        return
+      }
+      setUser(user)
+      
+      const { data } = await Promise.race([
+        supabase
+          .from('users')
+          .select('remaining_points, total_points')
+          .eq('id', user.id)
+          .single(),
+        timeoutPromise
+      ]) as any
+      
+      setUserData(data)
+      setLoading(false)
+      console.log('Dashboard loaded successfully!')
+    } catch (err) {
+      console.error('Dashboard loading error:', err)
+      
+      // Retry up to 3 times automatically
+      if (retryCount < 2) {
+        console.log('Retrying... (' + (retryCount + 1) + '/3)')
+        setRetryCount(prev => prev + 1)
+        setTimeout(() => checkAuth(), 1000) // Wait 1 second before retry
+      } else {
+        setError(err instanceof Error ? err.message : 'Unknown error')
+        setLoading(false)
+      }
     }
-  })
-
-  // Get auth token from cookies
-  const cookieStore = cookies()
-  const accessTokenName = `sb-${supabaseAnonKey.replace(/\./g, '-')}-auth-access-token`
-  const accessToken = cookieStore.get(accessTokenName)?.value
-
-  if (!accessToken) {
-    redirect('/login')
   }
 
-  // Get user
-  let user
-  try {
-    const { data } = await supabase.auth.getUser(accessToken)
-    user = data.user
-  } catch (err) {
-    console.error('Server-side get user error:', err)
-    redirect('/login')
+  useEffect(() => {
+    checkAuth()
+  }, [router])
+
+  const handleRetry = () => {
+    setRetryCount(0)
+    checkAuth()
   }
 
-  if (!user) {
-    redirect('/login')
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-500 dark:text-gray-400">
+              Loading... {retryCount > 0 ? `(Attempt ${retryCount + 1}/3)` : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  // Get user data
-  const { data: userData } = await supabase
-    .from('users')
-    .select('remaining_points, total_points')
-    .eq('id', user.id)
-    .single()
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg inline-block">
+              <p className="text-red-600 dark:text-red-400 mb-4">
+                Loading failed: {error}
+              </p>
+              <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+                This is usually because Supabase blocks Vercel's IP on free plan.
+              </p>
+              <button 
+                onClick={handleRetry} 
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-  return <DashboardContentClient user={user} userData={userData} />
+  if (!user || !userData) {
+    return null
+  }
+
+  const tabs = [
+    { id: 'background', label: 'AI White Background', icon: '🖼️' },
+    { id: 'watermark', label: 'Remove Watermark', icon: '🧹' },
+    { id: 'upscale', label: 'Upscale & Enhance', icon: '🚀' },
+    { id: 'compliance', label: 'Compliance Check', icon: '✅' },
+  ] as const
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Image Tools Dashboard
+              </h1>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                Welcome back, {user.email}
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-lg shadow">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Remaining Points
+              </p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {userData.remaining_points}
+              </p>
+              {userData.remaining_points <= 0 && (
+                <a 
+                  href="/dashboard/buy" 
+                  className="mt-2 inline-block text-sm text-blue-600 hover:text-blue-700"
+                >
+                  Buy more points →
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="mb-6">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedTab(tab.id)}
+                  className={`
+                    whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                    ${selectedTab === tab.id
+                      ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                    }
+                  `}
+                >
+                  <span className="mr-2">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Process Area */}
+        <ProcessPage 
+          operation={selectedTab} 
+          userId={user.id} 
+          remainingPoints={userData.remaining_points}
+        />
+      </div>
+    </div>
+  )
 }
