@@ -231,21 +231,26 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
             Processed Results
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
             {processedUrls.map((url, index) => (
               <div key={index} className="relative">
                 <img
                   src={url}
                   alt={`Processed ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                  className="w-full h-auto max-h-96 object-contain rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800"
                 />
-                <a
-                  href={url}
-                  download={`processed-${selectedFiles[index].name}`}
-                  className="absolute bottom-1 right-1 bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
-                >
-                  Download
-                </a>
+                <div className="mt-2 flex justify-end">
+                  <a
+                    href={url}
+                    download={`processed-${selectedFiles[index].name}`}
+                    className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download Image
+                  </a>
+                </div>
               </div>
             ))}
           </div>
