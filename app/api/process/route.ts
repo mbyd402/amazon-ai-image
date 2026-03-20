@@ -7,7 +7,12 @@ import FormDataModule from 'form-data'
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
+  { 
+    auth: { autoRefreshToken: false, persistSession: false },
+    storage: {
+      retryAttempts: 3,
+    }
+  }
 )
 
 async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: string): Promise<string> {
