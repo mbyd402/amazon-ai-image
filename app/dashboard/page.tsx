@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import ProcessPage from '@/components/ProcessPage'
@@ -14,7 +14,7 @@ export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<'background' | 'watermark' | 'upscale' | 'compliance'>('background')
   const router = useRouter()
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -24,7 +24,7 @@ export default function Dashboard() {
         setTimeout(() => reject(new Error('Request timeout. Retrying...')), 15000)
       })
 
-      console.log('Attempting to load dashboard... (attempt ' + (retryCount + 1) + ')')
+      console.log('Attempting to load dashboard...')
       
       const userPromise = supabase.auth.getUser()
       const { data: { user } } = await Promise.race([userPromise, timeoutPromise]) as any
@@ -50,21 +50,22 @@ export default function Dashboard() {
     } catch (err) {
       console.error('Dashboard loading error:', err)
       
-      // Retry up to 3 times automatically
+      // Retry up to 2 times automatically (total 3 attempts)
       if (retryCount < 2) {
-        console.log('Retrying... (' + (retryCount + 1) + '/3)')
-        setRetryCount(prev => prev + 1)
-        setTimeout(() => checkAuth(), 1000) // Wait 1 second before retry
+        console.log('Retrying... (attempt ' + (retryCount + 2) + '/3)')
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1)
+        }, 1000)
       } else {
         setError(err instanceof Error ? err.message : 'Unknown error')
         setLoading(false)
       }
     }
-  }
+  }, [router, retryCount])
 
   useEffect(() => {
     checkAuth()
-  }, [router])
+  }, [checkAuth])
 
   const handleRetry = () => {
     setRetryCount(0)
