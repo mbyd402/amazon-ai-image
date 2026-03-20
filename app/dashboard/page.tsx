@@ -14,6 +14,8 @@ export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<'background' | 'watermark' | 'upscale' | 'compliance'>('background')
   const router = useRouter()
 
+  const { PACKAGES } = require('@/lib/config');
+
   const checkAuth = useCallback(async () => {
     try {
       setLoading(true)
@@ -35,7 +37,8 @@ export default function Dashboard() {
       }
       setUser(user)
       
-      const { data } = await Promise.race([
+      // Check if user exists in our users table
+      const { data, error } = await Promise.race([
         supabase
           .from('users')
           .select('remaining_points, total_points')
@@ -44,7 +47,32 @@ export default function Dashboard() {
         timeoutPromise
       ]) as any
       
-      setUserData(data)
+      // If user doesn't exist, create it with free points (for OAuth login)
+      if (error && error.code === 'PGRST116') {
+        console.log('Creating new user for OAuth login...')
+        const { error: insertError } = await supabase.from('users').insert({
+          id: user.id,
+          email: user.email!,
+          remaining_points: PACKAGES.free.points,
+          total_points: PACKAGES.free.points,
+        })
+
+        if (insertError) {
+          console.error('Error creating user:', insertError)
+        }
+
+        // Refetch after creating
+        const { data: newUserData } = await supabase
+          .from('users')
+          .select('remaining_points, total_points')
+          .eq('id', user.id)
+          .single()
+        
+        setUserData(newUserData)
+      } else {
+        setUserData(data)
+      }
+      
       setLoading(false)
       console.log('Dashboard loaded successfully!')
     } catch (err) {
