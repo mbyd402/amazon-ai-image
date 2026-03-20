@@ -71,8 +71,35 @@ export default function Dashboard() {
       setLoading(true)
       setError(null)
       
+      // 先尝试从Supabase storage获取缓存的session（更可靠）
+      const getPersistedSession = () => {
+        try {
+          const storageKey = 'supabase.auth.token'
+          const stored = localStorage.getItem(storageKey)
+          if (stored) {
+            const session = JSON.parse(stored)
+            if (session?.access_token && session?.expires_at) {
+              const expiresAt = session.expires_at * 1000
+              if (expiresAt > Date.now() + 60000) { // 至少还有1分钟有效期
+                return { user: session.user }
+              }
+            }
+          }
+        } catch (e) {
+          console.log('Failed to parse persisted session:', e)
+        }
+        return null
+      }
+      
+      // 如果有持久化的session，先设置用户状态
+      const persistedSession = getPersistedSession()
+      if (persistedSession?.user && !forceRefresh) {
+        setUser(persistedSession.user)
+        console.log('Using persisted session from localStorage')
+      }
+      
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout. Please check your connection.')), 20000)
+        setTimeout(() => reject(new Error('Supabase request timeout (30s). This could be due to: 1) Ad blocker blocking supabase.co, 2) Network issues, 3) Supabase service temporarily unavailable. Try disabling ad blockers or use incognito mode.')), 30000)
       })
 
       const userPromise = supabase.auth.getUser()
