@@ -60,7 +60,7 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
 
   const processImage = async (file: File, index: number): Promise<string> => {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('image', file)
     formData.append('operation', operation)
     formData.append('userId', userId)
 
