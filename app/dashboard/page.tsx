@@ -164,16 +164,19 @@ export default function Dashboard() {
         // 没有缓存可用，显示更详细的错误信息
         let errorMessage = 'Failed to load dashboard. '
         
-        if (err.message.includes('timeout')) {
+        // 处理 TypeScript 的 unknown 类型
+        const errorMessageText = err instanceof Error ? err.message : String(err)
+        
+        if (errorMessageText.includes('timeout')) {
           errorMessage += 'Supabase connection timed out. This could be due to: '
           errorMessage += '1) Ad blocker blocking supabase.co, '
           errorMessage += '2) Network issues, '
           errorMessage += '3) Supabase service temporarily unavailable. '
           errorMessage += 'Please try disabling ad blockers or use incognito mode.'
-        } else if (err.message.includes('Failed to fetch')) {
+        } else if (errorMessageText.includes('Failed to fetch')) {
           errorMessage += 'Network error. Please check your internet connection.'
         } else {
-          errorMessage += err.message
+          errorMessage += errorMessageText
         }
         
         setError(errorMessage)
@@ -262,7 +265,8 @@ export default function Dashboard() {
   ] as const
 
   // 调试信息（只在开发环境显示）
-  const showDebugInfo = process.env.NODE_ENV === 'development' || window.location.hostname.includes('localhost')
+  const showDebugInfo = process.env.NODE_ENV === 'development' || 
+    (typeof window !== 'undefined' && window.location.hostname.includes('localhost'))
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
