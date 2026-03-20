@@ -79,16 +79,10 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
     }
 
     const data = await response.json()
-    // We now get base64 from API instead of URL - convert to blob URL for display
+    // We now get base64 from API instead of URL - use data URL directly
     if (data.processedBase64) {
-      const byteCharacters = atob(data.processedBase64)
-      const byteNumbers = new Array(byteCharacters.length)
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
-      }
-      const byteArray = new Uint8Array(byteNumbers)
-      const blob = new Blob([byteArray], { type: data.mimeType || 'image/png' })
-      return URL.createObjectURL(blob)
+      const mimeType = data.mimeType || 'image/png'
+      return `data:${mimeType};base64,${data.processedBase64}`
     }
     return data.processedUrl
   }
