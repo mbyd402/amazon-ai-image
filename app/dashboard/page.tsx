@@ -5,6 +5,12 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import ProcessPage from '@/components/ProcessPage'
 
+// Cache keys
+const CACHE_USER = 'amazon_ai_user'
+const CACHE_USER_DATA = 'amazon_ai_user_data'
+const CACHE_TIMESTAMP = 'amazon_ai_cache_time'
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
@@ -16,19 +22,70 @@ export default function Dashboard() {
 
   const { PACKAGES } = require('@/lib/config');
 
-  const loadData = useCallback(async () => {
+  // Load from cache
+  const loadFromCache = useCallback(() => {
+    try {
+      const cachedUser = localStorage.getItem(CACHE_USER)
+      const cachedUserData = localStorage.getItem(CACHE_USER_DATA)
+      const cachedTime = localStorage.getItem(CACHE_TIMESTAMP)
+      
+      if (cachedUser && cachedUserData && cachedTime) {
+        const age = Date.now() - parseInt(cachedTime)
+        if (age < CACHE_DURATION) {
+          setUser(JSON.parse(cachedUser))
+          setUserData(JSON.parse(cachedUserData))
+          setLoading(false)
+          console.log('Loaded from cache')
+          return true
+        }
+      }
+    } catch (e) {
+      console.error('Cache error:', e)
+    }
+    return false
+  }, [])
+
+  // Save to cache
+  const saveToCache = useCallback((user: any, userData: any) => {
+    try {
+      localStorage.setItem(CACHE_USER, JSON.stringify(user))
+      localStorage.setItem(CACHE_USER_DATA, JSON.stringify(userData))
+      localStorage.setItem(CACHE_TIMESTAMP, Date.now().toString())
+    } catch (e) {
+      console.error('Save cache error:', e)
+    }
+  }, [])
+
+  // Clear cache
+  const clearCache = useCallback(() => {
+    try {
+      localStorage.removeItem(CACHE_USER)
+      localStorage.removeItem(CACHE_USER_DATA)
+      localStorage.removeItem(CACHE_TIMESTAMP)
+    } catch (e) {
+      console.error('Clear cache error:', e)
+    }
+  }, [])
+
+  const loadData = useCallback(async (forceRefresh = false) => {
+    // Try cache first if not forcing refresh
+    if (!forceRefresh && loadFromCache()) {
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)
       
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout. Please check your ad blocker or try again.')), 20000)
+        setTimeout(() => reject(new Error('Request timeout. Please check your connection.')), 15000)
       })
 
       const userPromise = supabase.auth.getUser()
       const { data: { user } } = await Promise.race([userPromise, timeoutPromise]) as any
       
       if (!user) {
+        clearCache()
         router.push('/login')
         return
       }
@@ -66,8 +123,10 @@ export default function Dashboard() {
           .single()
         
         setUserData(newUserData)
+        saveToCache(user, newUserData)
       } else {
         setUserData(data)
+        saveToCache(user, data)
       }
       
       setLoading(false)
@@ -76,8 +135,13 @@ export default function Dashboard() {
       console.error('Dashboard loading error:', err)
       setError(err instanceof Error ? err.message : 'Unknown error')
       setLoading(false)
+      
+      // Try to use cached data as fallback
+      if (!loadFromCache()) {
+        setError('Failed to load. Please check your connection and try again.')
+      }
     }
-  }, [router])
+  }, [router, loadFromCache, saveToCache, clearCache])
 
   // Initial load
   useEffect(() => {
@@ -86,10 +150,16 @@ export default function Dashboard() {
 
   const handleRetry = () => {
     setIsRetrying(true)
-    loadData().finally(() => setIsRetrying(false))
+    loadData(true).finally(() => setIsRetrying(false))
   }
 
-  if (loading) {
+  const handleLogout = async () => {
+    clearCache()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  if (loading && !user) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -114,7 +184,7 @@ export default function Dashboard() {
     )
   }
 
-  if (error) {
+  if (error && !user) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -166,21 +236,29 @@ export default function Dashboard() {
                 Welcome back, {user.email}
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-lg shadow">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Remaining Points
-              </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {userData.remaining_points}
-              </p>
-              {userData.remaining_points <= 0 && (
-                <a 
-                  href="/dashboard/buy" 
-                  className="mt-2 inline-block text-sm text-blue-600 hover:text-blue-700"
-                >
-                  Buy more points →
-                </a>
-              )}
+            <div className="flex items-center gap-4">
+              <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-lg shadow">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Remaining Points
+                </p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {userData.remaining_points}
+                </p>
+                {userData.remaining_points <= 0 && (
+                  <a 
+                    href="/dashboard/buy" 
+                    className="mt-2 inline-block text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    Buy more points →
+                  </a>
+                )}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
