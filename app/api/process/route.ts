@@ -3,38 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 import { AI_API } from '@/lib/config'
 import FormDataModule from 'form-data'
 
-// Initialize Supabase admin client
+// Initialize Supabase admin client - ONLY for updating user points and history
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
-
-async function uploadToSupabase(buffer: Buffer, fileName: string, contentType: string): Promise<string> {
-  const path = `processed/${Date.now()}-${fileName.replace(/\s+/g, '-')}`
-  const { data, error } = await supabaseAdmin.storage
-    .from('images')
-    .upload(path, buffer, {
-      contentType,
-      cacheControl: '3600',
-      upsert: false,
-    })
-
-  if (error) {
-    console.error('Supabase storage upload error:', error)
-    throw new Error(`Failed to upload to Supabase Storage: ${error.message}`)
-  }
-
-  if (!data) {
-    throw new Error('Failed to upload to Supabase Storage: no data returned')
-  }
-
-  const { data: { publicUrl } } = supabaseAdmin.storage
-    .from('images')
-    .getPublicUrl(path)
-
-  return publicUrl
-}
 
 async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
   const form = new FormDataModule()
@@ -67,8 +41,6 @@ async function inpaintWatermark(
   originalWidth: number,
   originalHeight: number
 ): Promise<Buffer> {
-  // We can't create canvas in Node.js, so we send the coordinates directly
-  // Clipdrop accepts mask as a description of the rectangle, we create a white mask on black background
   const form = new FormDataModule()
   form.append('image', imageBuffer as unknown as Blob, {
     filename: 'image.png',
@@ -76,8 +48,6 @@ async function inpaintWatermark(
   })
   
   // Create a simple mask buffer: all black except the selection is white
-  // For now, we skip canvas creation and let Clipdrop handle it - we just pass the selection
-  // This is a simplified approach for Node.js environment
   const maskBuffer = Buffer.alloc(originalWidth * originalHeight * 4)
   for (let y = 0; y < originalHeight; y++) {
     for (let x = 0; x < originalWidth; x++) {
@@ -88,17 +58,16 @@ async function inpaintWatermark(
         y >= selection.y && 
         y <= selection.y + selection.height
       
-      // RGBA: white for selection, black otherwise
       if (inSelection) {
-        maskBuffer[offset + 0] = 255 // R
-        maskBuffer[offset + 1] = 255 // G
-        maskBuffer[offset + 2] = 255 // B
-        maskBuffer[offset + 3] = 255 // A
+        maskBuffer[offset + 0] = 255
+        maskBuffer[offset + 1] = 255
+        maskBuffer[offset + 2] = 255
+        maskBuffer[offset + 3] = 255
       } else {
-        maskBuffer[offset + 0] = 0 // R
-        maskBuffer[offset + 1] = 0 // G
-        maskBuffer[offset + 2] = 0 // B
-        maskBuffer[offset + 3] = 255 // A
+        maskBuffer[offset + 0] = 0
+        maskBuffer[offset + 1] = 0
+        maskBuffer[offset + 2] = 0
+        maskBuffer[offset + 3] = 255
       }
     }
   }
@@ -154,8 +123,6 @@ async function checkCompliance(imageBuffer: Buffer): Promise<{
 }> {
   const issues: string[] = []
 
-  // Use Cloudmersive API to check image compliance
-  // Check for illegal content (nude, violence, etc.)
   const form = new FormDataModule()
   form.append('image', imageBuffer as unknown as Blob, {
     filename: 'check.png',
@@ -172,7 +139,6 @@ async function checkCompliance(imageBuffer: Buffer): Promise<{
   })
 
   if (!response.ok) {
-    // If API fails, we assume it's ok for MVP
     console.error('Cloudmersive compliance check failed')
     return { compliant: true, issues: [] }
   }
@@ -180,7 +146,6 @@ async function checkCompliance(imageBuffer: Buffer): Promise<{
   const result = await response.json()
   const { pornScore, hentaiScore, sexyScore } = result
 
-  // Threshold - adjust as needed
   if (pornScore > 0.3) issues.push('Pornographic content detected')
   if (hentaiScore > 0.3) issues.push('Hentai content detected')
   if (sexyScore > 0.5) issues.push('Explicit content detected')
@@ -234,44 +199,44 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid operation' }, { status: 400 })
     }
 
-    // Upload processed image to Supabase Storage
-    const extension = 'png'
-    const fileName = `${operation}-${Date.now()}.${extension}`
-    const processedUrl = await uploadToSupabase(processedBuffer, fileName, `image/${extension}`)
-
     // Deduct one point from user
-    const { data: user } = await supabaseAdmin
+    const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('remaining_points, total_points')
       .eq('id', userId)
       .single()
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (userError || !user) {
+      console.error('User not found:', userError)
+      // Continue even if user not found - still return the processed image
+    } else {
+      await supabaseAdmin
+        .from('users')
+        .update({
+          remaining_points: user.remaining_points - 1,
+        })
+        .eq('id', userId)
+
+      // Save processing history
+      await supabaseAdmin
+        .from('history')
+        .insert({
+          user_id: userId,
+          operation,
+          original_url: '',
+          processed_url: '',
+          created_at: new Date().toISOString(),
+        })
     }
 
-    await supabaseAdmin
-      .from('users')
-      .update({
-        remaining_points: user.remaining_points - 1,
-      })
-      .eq('id', userId)
-
-    // Save processing history
-    await supabaseAdmin
-      .from('history')
-      .insert({
-        user_id: userId,
-        operation,
-        original_url: '',
-        processed_url: processedUrl,
-        created_at: new Date().toISOString(),
-      })
+    // Convert processed image to base64 and return directly
+    const processedBase64 = processedBuffer.toString('base64')
 
     return NextResponse.json({
       success: true,
-      processedUrl,
-      remainingPoints: user.remaining_points - 1,
+      processedBase64,
+      mimeType: 'image/png',
+      remainingPoints: user ? user.remaining_points - 1 : null,
     })
   } catch (error) {
     console.error('Processing error:', error)
