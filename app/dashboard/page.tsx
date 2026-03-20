@@ -21,12 +21,12 @@ export default function Dashboard() {
       setLoading(true)
       setError(null)
       
-      // Add 15 second timeout, retry up to 3 times
+      // Add 20 second timeout, retry up to 5 times
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout. Retrying...')), 15000)
+        setTimeout(() => reject(new Error('Request timeout. Retrying...')), 20000)
       })
 
-      console.log('Attempting to load dashboard...')
+      console.log('Attempting to load dashboard... (attempt ' + (retryCount + 1) + '/5)')
       
       const userPromise = supabase.auth.getUser()
       const { data: { user } } = await Promise.race([userPromise, timeoutPromise]) as any
@@ -78,12 +78,12 @@ export default function Dashboard() {
     } catch (err) {
       console.error('Dashboard loading error:', err)
       
-      // Retry up to 2 times automatically (total 3 attempts)
-      if (retryCount < 2) {
-        console.log('Retrying... (attempt ' + (retryCount + 2) + '/3)')
+      // Retry up to 4 times automatically (total 5 attempts)
+      if (retryCount < 4) {
+        console.log('Retrying... (attempt ' + (retryCount + 2) + '/5)')
         setTimeout(() => {
           setRetryCount(prev => prev + 1)
-        }, 1000)
+        }, 1500)
       } else {
         setError(err instanceof Error ? err.message : 'Unknown error')
         setLoading(false)
