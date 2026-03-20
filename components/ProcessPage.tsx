@@ -105,10 +105,8 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
       }
       setProcessedUrls(urls)
       
-      // Deduct points handled in API, but we can refresh the page to update
-      window.setTimeout(() => {
-        window.location.reload()
-      }, 2000)
+      // Don't need to reload - points will refresh on next page load
+      // User can see processed results immediately
     } catch (err: any) {
       setError(err.message)
     } finally {
