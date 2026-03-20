@@ -28,6 +28,7 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
   const [watermarkSelection, setWatermarkSelection] = useState<{x: number, y: number, width: number, height: number} | null>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = Array.from(e.target.files || [])
@@ -147,24 +148,38 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
         </div>
       )}
 
-      {/* File Upload */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Select Images (max 5 per batch)
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-blue-300"
-        />
-      </div>
+      {/* Hidden File Input - triggered by + button or initial upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      {/* Initial Upload Button - only show when no images selected */}
+      {previews.length === 0 && (
+        <div className="mb-6">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:text-blue-500 hover:border-blue-500 transition-colors"
+          >
+            <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-lg font-medium">Click to upload images</span>
+            <span className="text-sm text-gray-400 mt-1">Max 5 images per batch</span>
+          </button>
+        </div>
+      )}
 
       {/* Preview Grid */}
       {previews.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Selected Images</h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            Selected Images ({previews.length}/5)
+          </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {previews.map((preview, index) => (
               <div key={index} className="relative group">
@@ -181,6 +196,18 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
                 </button>
               </div>
             ))}
+            {/* Add more button - only show if less than 5 images */}
+            {previews.length < 5 && (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-32 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center text-gray-400 hover:text-blue-500 hover:border-blue-500 transition-colors"
+              >
+                <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="text-sm">Add</span>
+              </button>
+            )}
           </div>
         </div>
       )}
