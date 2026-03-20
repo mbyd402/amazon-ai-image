@@ -10,24 +10,21 @@ export default function Dashboard() {
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [retryCount, setRetryCount] = useState(0)
+  const [isRetrying, setIsRetrying] = useState(false)
   const [selectedTab, setSelectedTab] = useState<'background' | 'watermark' | 'upscale' | 'compliance'>('background')
   const router = useRouter()
 
   const { PACKAGES } = require('@/lib/config');
 
-  const checkAuth = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
       
-      // Add 20 second timeout, retry up to 5 times
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout. Retrying...')), 20000)
+        setTimeout(() => reject(new Error('Request timeout. Please check your ad blocker or try again.')), 20000)
       })
 
-      console.log('Attempting to load dashboard... (attempt ' + (retryCount + 1) + '/5)')
-      
       const userPromise = supabase.auth.getUser()
       const { data: { user } } = await Promise.race([userPromise, timeoutPromise]) as any
       
@@ -38,7 +35,7 @@ export default function Dashboard() {
       setUser(user)
       
       // Check if user exists in our users table
-      const { data, error } = await Promise.race([
+      const { data, error: dbError } = await Promise.race([
         supabase
           .from('users')
           .select('remaining_points, total_points')
@@ -48,7 +45,7 @@ export default function Dashboard() {
       ]) as any
       
       // If user doesn't exist, create it with free points (for OAuth login)
-      if (error && error.code === 'PGRST116') {
+      if (dbError && dbError.code === 'PGRST116') {
         console.log('Creating new user for OAuth login...')
         const { error: insertError } = await supabase.from('users').insert({
           id: user.id,
@@ -77,27 +74,19 @@ export default function Dashboard() {
       console.log('Dashboard loaded successfully!')
     } catch (err) {
       console.error('Dashboard loading error:', err)
-      
-      // Retry up to 4 times automatically (total 5 attempts)
-      if (retryCount < 4) {
-        console.log('Retrying... (attempt ' + (retryCount + 2) + '/5)')
-        setTimeout(() => {
-          setRetryCount(prev => prev + 1)
-        }, 1500)
-      } else {
-        setError(err instanceof Error ? err.message : 'Unknown error')
-        setLoading(false)
-      }
+      setError(err instanceof Error ? err.message : 'Unknown error')
+      setLoading(false)
     }
-  }, [router, retryCount])
+  }, [router])
 
+  // Initial load
   useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
+    loadData()
+  }, [loadData])
 
   const handleRetry = () => {
-    setRetryCount(0)
-    checkAuth()
+    setIsRetrying(true)
+    loadData().finally(() => setIsRetrying(false))
   }
 
   if (loading) {
@@ -106,9 +95,19 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-500 dark:text-gray-400">
-              Loading... {retryCount > 0 ? `(Attempt ${retryCount + 1}/3)` : ''}
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              Loading...
             </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">
+              If this takes too long, check if your ad blocker is blocking supabase.co
+            </p>
+            <button
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isRetrying ? 'Retrying...' : 'Try Now'}
+            </button>
           </div>
         </div>
       </div>
@@ -120,18 +119,20 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg inline-block">
+            <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg inline-block max-w-md">
               <p className="text-red-600 dark:text-red-400 mb-4">
                 Loading failed: {error}
               </p>
-              <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-                This is usually because Supabase blocks Vercel's IP on free plan.
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                This is usually caused by an ad blocker blocking supabase.co.
+                <br />
+                Try disabling your ad blocker or use incognito mode.
               </p>
               <button 
-                onClick={handleRetry} 
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                onClick={handleRetry}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
-                Retry
+                {isRetrying ? 'Retrying...' : 'Retry'}
               </button>
             </div>
           </div>

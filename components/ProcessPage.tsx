@@ -33,8 +33,8 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
     const newFiles = Array.from(e.target.files || [])
     const combinedFiles = [...selectedFiles, ...newFiles]
     
-    if (combinedFiles.length > 10) {
-      setError('Maximum 10 files total')
+    if (combinedFiles.length > 5) {
+      setError('Maximum 5 images per batch. Please process in batches.')
       return
     }
 
@@ -150,7 +150,7 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
       {/* File Upload */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Select Images (max 10)
+          Select Images (max 5 per batch)
         </label>
         <input
           type="file"
