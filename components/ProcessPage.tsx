@@ -30,25 +30,30 @@ export default function ProcessPage({ operation, userId, remainingPoints }: Proc
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length > 10) {
-      setError('Maximum 10 files at once')
+    const newFiles = Array.from(e.target.files || [])
+    const combinedFiles = [...selectedFiles, ...newFiles]
+    
+    if (combinedFiles.length > 10) {
+      setError('Maximum 10 files total')
       return
     }
 
     // Check points
-    if (files.length > remainingPoints) {
+    if (combinedFiles.length > remainingPoints) {
       setError(`You only have ${remainingPoints} points left. Please buy more points.`)
       return
     }
 
-    setSelectedFiles(files)
+    setSelectedFiles(combinedFiles)
     setError('')
     setProcessedUrls([])
     
-    // Generate previews
-    const newPreviews = files.map(file => URL.createObjectURL(file))
+    // Generate previews for new files only
+    const newPreviews = [...previews, ...newFiles.map(file => URL.createObjectURL(file))]
     setPreviews(newPreviews)
+    
+    // Reset input so the same file can be added again
+    e.target.value = ''
   }
 
   const removeFile = (index: number) => {
