@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   const { PACKAGES } = require('@/lib/config');
 
-  // Load from cache
+  // Load from cache (只用于错误回退，不设置loading状态)
   const loadFromCache = useCallback(() => {
     try {
       const cachedUser = localStorage.getItem(CACHE_USER)
@@ -34,7 +34,6 @@ export default function Dashboard() {
         if (age < CACHE_DURATION) {
           setUser(JSON.parse(cachedUser))
           setUserData(JSON.parse(cachedUserData))
-          setLoading(false)
           console.log('Loaded from cache')
           return true
         }
@@ -68,17 +67,12 @@ export default function Dashboard() {
   }, [])
 
   const loadData = useCallback(async (forceRefresh = false) => {
-    // Try cache first if not forcing refresh
-    if (!forceRefresh && loadFromCache()) {
-      return
-    }
-
     try {
       setLoading(true)
       setError(null)
       
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout. Please check your connection.')), 15000)
+        setTimeout(() => reject(new Error('Request timeout. Please check your connection.')), 20000)
       })
 
       const userPromise = supabase.auth.getUser()
@@ -133,12 +127,16 @@ export default function Dashboard() {
       console.log('Dashboard loaded successfully!')
     } catch (err) {
       console.error('Dashboard loading error:', err)
-      setError(err instanceof Error ? err.message : 'Unknown error')
-      setLoading(false)
       
-      // Try to use cached data as fallback
-      if (!loadFromCache()) {
-        setError('Failed to load. Please check your connection and try again.')
+      // 如果Supabase请求失败，尝试使用缓存数据作为回退
+      const cacheLoaded = loadFromCache()
+      if (cacheLoaded) {
+        console.log('Using cached data as fallback')
+        setLoading(false)
+      } else {
+        // 没有缓存可用，显示错误
+        setError(err instanceof Error ? err.message : 'Unknown error')
+        setLoading(false)
       }
     }
   }, [router, loadFromCache, saveToCache, clearCache])
