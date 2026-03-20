@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { supabase, checkSupabaseConnection } from '@/lib/supabase'
 import ProcessPage from '@/components/ProcessPage'
 
 // Cache keys
@@ -161,8 +161,22 @@ export default function Dashboard() {
         console.log('Using cached data as fallback')
         setLoading(false)
       } else {
-        // 没有缓存可用，显示错误
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        // 没有缓存可用，显示更详细的错误信息
+        let errorMessage = 'Failed to load dashboard. '
+        
+        if (err.message.includes('timeout')) {
+          errorMessage += 'Supabase connection timed out. This could be due to: '
+          errorMessage += '1) Ad blocker blocking supabase.co, '
+          errorMessage += '2) Network issues, '
+          errorMessage += '3) Supabase service temporarily unavailable. '
+          errorMessage += 'Please try disabling ad blockers or use incognito mode.'
+        } else if (err.message.includes('Failed to fetch')) {
+          errorMessage += 'Network error. Please check your internet connection.'
+        } else {
+          errorMessage += err.message
+        }
+        
+        setError(errorMessage)
         setLoading(false)
       }
     }
@@ -247,9 +261,48 @@ export default function Dashboard() {
     { id: 'compliance', label: 'Compliance Check', icon: '✅' },
   ] as const
 
+  // 调试信息（只在开发环境显示）
+  const showDebugInfo = process.env.NODE_ENV === 'development' || window.location.hostname.includes('localhost')
+  
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {showDebugInfo && (
+          <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-sm">
+            <details>
+              <summary className="cursor-pointer font-medium">Debug Info</summary>
+              <div className="mt-2 space-y-1">
+                <div>Supabase URL: {process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Set' : '✗ Missing'}</div>
+                <div>Cache: {localStorage.getItem(CACHE_USER) ? '✓ Has cache' : '✗ No cache'}</div>
+                <div>Supabase Session: {localStorage.getItem('supabase.auth.token') ? '✓ Has session' : '✗ No session'}</div>
+                <button 
+                  onClick={() => {
+                    console.log('Cache debug:', {
+                      userCache: localStorage.getItem(CACHE_USER),
+                      dataCache: localStorage.getItem(CACHE_USER_DATA),
+                      timestamp: localStorage.getItem(CACHE_TIMESTAMP),
+                      supabaseSession: localStorage.getItem('supabase.auth.token')
+                    })
+                  }}
+                  className="text-blue-600 hover:underline"
+                >
+                  Log Cache Info
+                </button>
+                <button 
+                  onClick={async () => {
+                    const connection = await checkSupabaseConnection()
+                    console.log('Supabase connection test:', connection)
+                    alert(`Connection: ${connection.connected ? 'OK' : 'FAILED'}\nDuration: ${connection.duration}ms\nError: ${connection.error || 'None'}`)
+                  }}
+                  className="ml-4 text-blue-600 hover:underline"
+                >
+                  Test Supabase Connection
+                </button>
+              </div>
+            </details>
+          </div>
+        )}
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
