@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// 创建带有错误处理和重试机制的Supabase客户端
+// 创建Supabase客户端
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
@@ -16,16 +16,19 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     headers: {
       'x-application-name': 'amazon-ai-image-tool',
     },
-    fetch: (url, options) => {
-      // 自定义fetch，增加超时和重试
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 30000)
-      
-      return fetch(url, {
-        ...options,
-        signal: controller.signal,
-      }).finally(() => clearTimeout(timeoutId))
-    }
+    // 只在浏览器环境中添加自定义fetch（避免服务器端问题）
+    ...(typeof window !== 'undefined' && {
+      fetch: (url, options) => {
+        // 自定义fetch，增加超时
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 30000)
+        
+        return fetch(url, {
+          ...options,
+          signal: controller.signal,
+        }).finally(() => clearTimeout(timeoutId))
+      }
+    })
   }
 })
 
@@ -46,7 +49,7 @@ export async function checkSupabaseConnection() {
     return {
       connected: false,
       duration: 0,
-      error: err.message,
+      error: err instanceof Error ? err.message : String(err),
       hasSession: false
     }
   }
