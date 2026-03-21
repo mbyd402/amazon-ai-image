@@ -27,7 +27,7 @@ const buildTimeGETResponse = NextResponse.json(
 )
 
 // ========== 构建时导出（轻量级） ==========
-export async function POST() {
+export async function POST(request?: Request) {
   // 🎯 构建时：返回模拟响应
   if (isBuildTime) {
     console.log('🎯 构建时调用 /api/process POST，返回模拟响应')
@@ -35,7 +35,10 @@ export async function POST() {
   }
   
   // 🎯 运行时：执行真实逻辑
-  return await runtimePOST(arguments[0])
+  if (!request) {
+    return NextResponse.json({ error: 'Request is required' }, { status: 400 })
+  }
+  return await runtimePOST(request)
 }
 
 export async function GET() {
