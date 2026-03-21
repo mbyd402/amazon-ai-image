@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "set -o pipefail && next build 2>&1 | tee build.log || (echo 'Build failed, check build.log' && exit 1)",
+    "build:simple": "next build",
     "build:clean": "rm -rf .next && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "echo 'Build completed successfully!'"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^8.1.3",
