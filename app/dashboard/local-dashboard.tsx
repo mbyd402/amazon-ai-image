@@ -4,34 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ProcessPage from '@/components/ProcessPage'
 
-// 简单的本地存储管理
-const getLocalUser = () => {
-  if (typeof window === 'undefined') return null
-  
-  const userId = localStorage.getItem('local_user_id')
-  const userEmail = localStorage.getItem('local_user_email')
-  const userPoints = localStorage.getItem('local_user_points')
-  
-  if (userId && userEmail) {
-    return {
-      user: { id: userId, email: userEmail },
-      userData: { 
-        remaining_points: parseInt(userPoints || '3'),
-        total_points: parseInt(userPoints || '3')
-      }
-    }
-  }
-  return null
-}
+// 本地存储键
+const LOCAL_USER_ID = 'amazon_ai_local_user_id'
+const LOCAL_USER_EMAIL = 'amazon_ai_local_user_email'
+const LOCAL_USER_POINTS = 'amazon_ai_local_user_points'
 
-const saveLocalUser = (userId: string, email: string, points: number = 3) => {
-  if (typeof window === 'undefined') return
-  localStorage.setItem('local_user_id', userId)
-  localStorage.setItem('local_user_email', email)
-  localStorage.setItem('local_user_points', points.toString())
-}
-
-export default function SimpleDashboard() {
+export default function LocalDashboard() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -39,48 +17,77 @@ export default function SimpleDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    // 检查URL参数（可能是OAuth回调）
+    // 直接从URL或localStorage获取用户信息
     const urlParams = new URLSearchParams(window.location.search)
-    const email = urlParams.get('email')
-    const userId = urlParams.get('userId') || urlParams.get('user_id')
     
-    if (email && userId) {
+    // 尝试从URL获取（OAuth回调）
+    const emailFromUrl = urlParams.get('email') || urlParams.get('user_email')
+    const userIdFromUrl = urlParams.get('userId') || urlParams.get('user_id')
+    
+    // 尝试从localStorage获取
+    const storedUserId = localStorage.getItem(LOCAL_USER_ID)
+    const storedUserEmail = localStorage.getItem(LOCAL_USER_EMAIL)
+    const storedUserPoints = localStorage.getItem(LOCAL_USER_POINTS)
+    
+    if (emailFromUrl && userIdFromUrl) {
       // 来自OAuth回调
-      saveLocalUser(userId, email, 3)
-      setUser({ id: userId, email })
-      setUserData({ remaining_points: 3, total_points: 3 })
+      const newUser = {
+        id: userIdFromUrl,
+        email: emailFromUrl
+      }
+      const newUserData = {
+        remaining_points: 3, // 免费试用点数
+        total_points: 3
+      }
+      
+      setUser(newUser)
+      setUserData(newUserData)
+      
+      // 保存到localStorage
+      localStorage.setItem(LOCAL_USER_ID, userIdFromUrl)
+      localStorage.setItem(LOCAL_USER_EMAIL, emailFromUrl)
+      localStorage.setItem(LOCAL_USER_POINTS, '3')
       
       // 清理URL
       const cleanUrl = window.location.pathname
       window.history.replaceState({}, '', cleanUrl)
+      
+      setLoading(false)
+      
+    } else if (storedUserId && storedUserEmail) {
+      // 从localStorage恢复
+      setUser({
+        id: storedUserId,
+        email: storedUserEmail
+      })
+      setUserData({
+        remaining_points: parseInt(storedUserPoints || '3'),
+        total_points: parseInt(storedUserPoints || '3')
+      })
       setLoading(false)
       
     } else {
-      // 尝试从localStorage加载
-      const localUser = getLocalUser()
-      if (localUser) {
-        setUser(localUser.user)
-        setUserData(localUser.userData)
-        setLoading(false)
-      } else {
-        // 没有用户，重定向到本地登录
-        router.push('/local-login')
-      }
+      // 没有用户信息，重定向到模拟登录页
+      router.push('/local-login')
     }
   }, [router])
 
   const handleLogout = () => {
-    localStorage.removeItem('local_user_id')
-    localStorage.removeItem('local_user_email')
-    localStorage.removeItem('local_user_points')
+    localStorage.removeItem(LOCAL_USER_ID)
+    localStorage.removeItem(LOCAL_USER_EMAIL)
+    localStorage.removeItem(LOCAL_USER_POINTS)
     router.push('/local-login')
   }
 
   const handleBuyPoints = () => {
-    const currentPoints = parseInt(localStorage.getItem('local_user_points') || '3')
-    const newPoints = currentPoints + 10
-    localStorage.setItem('local_user_points', newPoints.toString())
-    setUserData({ remaining_points: newPoints, total_points: newPoints })
+    alert('In local mode, point purchases are simulated. You can test all features with demo points.')
+    // 模拟购买点数
+    const newPoints = parseInt(localStorage.getItem(LOCAL_USER_POINTS) || '3') + 10
+    localStorage.setItem(LOCAL_USER_POINTS, newPoints.toString())
+    setUserData({
+      remaining_points: newPoints,
+      total_points: newPoints
+    })
   }
 
   if (loading) {
@@ -90,7 +97,7 @@ export default function SimpleDashboard() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-500 dark:text-gray-400">
-              Loading...
+              Loading local dashboard...
             </p>
           </div>
         </div>
@@ -112,12 +119,27 @@ export default function SimpleDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 本地模式通知 */}
+        <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <span className="text-green-600 dark:text-green-400">✓</span>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-green-700 dark:text-green-300">
+                <strong>Running in local mode</strong> - All features work without external dependencies. 
+                Your data is saved in your browser.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Image Tools Dashboard
+                Image Tools Dashboard (Local Mode)
               </h1>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
                 Welcome, {user.email}
@@ -135,7 +157,7 @@ export default function SimpleDashboard() {
                   onClick={handleBuyPoints}
                   className="mt-2 text-sm text-blue-600 hover:text-blue-700"
                 >
-                  Get more points →
+                  Get demo points →
                 </button>
               </div>
               <button
