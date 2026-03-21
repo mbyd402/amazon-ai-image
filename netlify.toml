@@ -1,0 +1,24 @@
+[build]
+  # 只部署静态文件，不构建Next.js
+  command = "./deploy-static.sh"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "18"
+  # 禁用所有外部服务依赖
+  NEXT_PUBLIC_SUPABASE_URL = "disabled"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "disabled"
+  CLIPDROP_API_KEY = "disabled"
+  CLOUDMERSIVE_API_KEY = "disabled"
+  REMOVE_BG_API_KEY = "disabled"
+
+# 重要：禁用所有插件，只部署静态文件
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
+
+# 缓存控制
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Static-Deploy = "true"
