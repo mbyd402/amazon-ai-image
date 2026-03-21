@@ -49,23 +49,21 @@ if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
   // 添加环境变量告诉API路由这是构建时
   process.env.IS_BUILD_TIME = 'true'
   process.env.SKIP_API_CHECKS = 'true'
-}
-
-// 🎯 专门的构建配置：如果某些API路由仍然有问题，创建备用版本
-const fs = require('fs')
-const path = require('path')
-
-// 检查是否需要创建API路由的构建时备用版本
-const problematicApiRoutes = [
-  '/api/paypal/webhook',
-  '/api/process',
-]
-
-if (process.env.NETLIFY && process.env.NODE_ENV === 'production') {
-  console.log('🔧 为有问题的API路由创建构建时备用配置')
-  
-  // 标记环境为构建时
   process.env.NETLIFY_BUILD = 'true'
+  
+  // 🎯 专门配置：禁用某些API路由的构建检查
+  nextConfig.webpack = (config, { isServer }) => {
+    if (isServer && process.env.NETLIFY) {
+      console.log('🔧 Webpack配置：跳过API路由的构建检查')
+      
+      // 在构建时忽略某些模块
+      config.externals = config.externals || []
+      config.externals.push({
+        'form-data': 'commonjs form-data',
+      })
+    }
+    return config
+  }
 }
 
 module.exports = nextConfig

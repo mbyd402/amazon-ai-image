@@ -3,15 +3,57 @@ import { createClient } from '@supabase/supabase-js'
 import { AI_API } from '@/lib/config'
 import FormDataModule from 'form-data'
 
-// 🎯 检查API密钥是否存在
+// 🎯 构建时检测 - 这是关键！
+const isBuildTime = process.env.NODE_ENV === 'production' && (process.env.NETLIFY || process.env.VERCEL || process.env.IS_BUILD_TIME === 'true')
+
+// 🎯 如果构建时，立即返回模拟响应，避免任何外部依赖
+if (isBuildTime) {
+  console.log('🎯 构建时检测到 /api/process，创建纯模拟版本')
+  
+  // 构建时模拟响应
+  const buildTimeResponse = NextResponse.json(
+    {
+      success: true,
+      simulated: true,
+      message: 'API is simulated during build. Will work with real API keys in runtime.',
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    },
+    { status: 200 }
+  )
+  
+  // 导出模拟的POST和GET函数
+  export async function POST() {
+    return buildTimeResponse
+  }
+  
+  export async function GET() {
+    return NextResponse.json(
+      {
+        status: 'process_api_build_time',
+        simulated: true,
+        environment: process.env.NODE_ENV,
+        timestamp: new Date().toISOString()
+      },
+      { status: 200 }
+    )
+  }
+  
+  // 🎯 导出模拟的AI_API配置，避免TypeScript错误
+  export const simulatedAI_API = AI_API
+  
+  // 结束执行，不继续加载真实代码
+  throw new Error('Build time simulation completed - this should not be reached')
+}
+
+// ========== 以下是运行时代码（构建时不执行） ==========
+
+// 检查API密钥是否存在
 const hasApiKeys = {
   removeBg: !!process.env.REMOVE_BG_API_KEY,
   clipdrop: !!process.env.CLIPDROP_API_KEY,
   cloudmersive: !!process.env.CLOUDMERSIVE_API_KEY,
 }
-
-// 构建时标记
-const isBuildTime = process.env.NODE_ENV === 'production' && process.env.NETLIFY
 
 // Initialize Supabase admin client - ONLY for updating user points and history
 const supabaseAdmin = createClient(
@@ -21,10 +63,8 @@ const supabaseAdmin = createClient(
 )
 
 async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
-  // 🎯 构建时或API密钥缺失：返回模拟响应
-  if (isBuildTime || !hasApiKeys.removeBg) {
-    console.log('⚠️ Remove.bg API密钥缺失或构建时，返回模拟响应')
-    return Buffer.from('simulated-remove-bg-response')
+  if (!hasApiKeys.removeBg) {
+    throw new Error('Remove.bg API key is not configured')
   }
 
   const form = new FormDataModule()
@@ -51,10 +91,8 @@ async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
 }
 
 async function upscaleImage(imageBuffer: Buffer): Promise<Buffer> {
-  // 🎯 构建时或API密钥缺失：返回模拟响应
-  if (isBuildTime || !hasApiKeys.clipdrop) {
-    console.log('⚠️ Clipdrop API密钥缺失或构建时，返回模拟响应')
-    return Buffer.from('simulated-upscale-response')
+  if (!hasApiKeys.clipdrop) {
+    throw new Error('Clipdrop API key is not configured')
   }
 
   const form = new FormDataModule()
@@ -80,10 +118,8 @@ async function upscaleImage(imageBuffer: Buffer): Promise<Buffer> {
 }
 
 async function removeWatermark(imageBuffer: Buffer): Promise<Buffer> {
-  // 🎯 构建时或API密钥缺失：返回模拟响应
-  if (isBuildTime || !hasApiKeys.cloudmersive) {
-    console.log('⚠️ Cloudmersive API密钥缺失或构建时，返回模拟响应')
-    return Buffer.from('simulated-watermark-removal-response')
+  if (!hasApiKeys.cloudmersive) {
+    throw new Error('Cloudmersive API key is not configured')
   }
 
   const form = new FormDataModule()
@@ -109,42 +145,15 @@ async function removeWatermark(imageBuffer: Buffer): Promise<Buffer> {
 }
 
 async function checkCompliance(imageBuffer: Buffer): Promise<{ compliant: boolean; issues: string[] }> {
-  // 🎯 构建时：返回模拟合规检查
-  if (isBuildTime) {
-    console.log('⚠️ 构建时，返回模拟合规检查')
-    return {
-      compliant: true,
-      issues: []
-    }
-  }
-
   // 这里可以添加真实的合规检查逻辑
   // 暂时返回模拟结果
   return {
     compliant: true,
-    issues: ['Simulated check during build']
+    issues: []
   }
 }
 
 export async function POST(request: Request) {
-  // 🎯 构建时：返回模拟成功响应，避免构建失败
-  if (isBuildTime) {
-    console.log('🎯 构建时调用 /api/process，返回模拟响应')
-    return NextResponse.json(
-      {
-        success: true,
-        simulated: true,
-        message: 'API is simulated during build. Will work with real API keys in runtime.',
-        results: [
-          'simulated-result-1.png',
-          'simulated-result-2.png'
-        ],
-        points_deducted: 0
-      },
-      { status: 200 }
-    )
-  }
-
   try {
     const formData = await request.formData()
     const file = formData.get('image') as File
@@ -163,7 +172,6 @@ export async function POST(request: Request) {
 
     switch (operation) {
       case 'background':
-        // 🎯 检查API密钥
         if (!hasApiKeys.removeBg) {
           return NextResponse.json(
             {
@@ -204,7 +212,7 @@ export async function POST(request: Request) {
 
       case 'compliance':
         const complianceResult = await checkCompliance(imageBuffer)
-        processedBuffer = imageBuffer // 合规检查不修改图片
+        processedBuffer = imageBuffer
         
         // 对于compliance操作，不扣分并直接返回
         return NextResponse.json({
@@ -229,7 +237,7 @@ export async function POST(request: Request) {
     const processedUrl = `/processed/${processedFilename}`
 
     // Deduct points from user
-    const pointsToDeduct = 10  // 非compliance操作都扣10分
+    const pointsToDeduct = 10
     
     const { error: updateError } = await supabaseAdmin
       .from('users')
@@ -268,19 +276,6 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Processing error:', error)
     
-    // 🎯 构建时错误：返回模拟成功
-    if (isBuildTime) {
-      return NextResponse.json(
-        {
-          success: true,
-          simulated: true,
-          error: 'Simulated error during build',
-          timestamp: new Date().toISOString()
-        },
-        { status: 200 }
-      )
-    }
-    
     return NextResponse.json(
       { error: error.message || 'Processing failed' },
       { status: 500 }
@@ -288,13 +283,11 @@ export async function POST(request: Request) {
   }
 }
 
-// 🎯 GET请求用于构建时检查
 export async function GET() {
   return NextResponse.json(
     {
       status: 'process_api_ready',
       api_keys: hasApiKeys,
-      is_build_time: isBuildTime,
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString()
     },
