@@ -205,6 +205,8 @@ export async function POST(request: Request) {
       case 'compliance':
         const complianceResult = await checkCompliance(imageBuffer)
         processedBuffer = imageBuffer // 合规检查不修改图片
+        
+        // 对于compliance操作，不扣分并直接返回
         return NextResponse.json({
           success: complianceResult.compliant,
           compliant: complianceResult.compliant,
@@ -227,7 +229,7 @@ export async function POST(request: Request) {
     const processedUrl = `/processed/${processedFilename}`
 
     // Deduct points from user
-    const pointsToDeduct = operation === 'compliance' ? 0 : 10
+    const pointsToDeduct = 10  // 非compliance操作都扣10分
     
     const { error: updateError } = await supabaseAdmin
       .from('users')
