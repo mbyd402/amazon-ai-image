@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import { PACKAGES, type PackageType } from '@/lib/config'
 
 export default function BuyPoints() {
@@ -11,6 +11,7 @@ export default function BuyPoints() {
   const [loading, setLoading] = useState(true)
   const [processingOrder, setProcessingOrder] = useState(false)
   const router = useRouter()
+  const supabase = getSupabaseClient()
 
   useEffect(() => {
     const checkAuth = async () => {

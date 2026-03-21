@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null)
@@ -11,6 +11,7 @@ export default function Navbar() {
   const [loading, setLoading] = useState(true)
   const pathname = usePathname()
   const router = useRouter()
+  const supabase = getSupabaseClient()
 
   useEffect(() => {
     const getCurrentUser = async () => {

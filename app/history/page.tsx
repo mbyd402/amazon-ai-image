@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import Link from 'next/link'
 
 type ProcessingRecord = {
   id: string
   operation_type: string
+
+const supabase = getSupabaseClient()
   original_url: string
   processed_url: string
   points_deducted: number
