@@ -8,14 +8,14 @@ import Link from 'next/link'
 type ProcessingRecord = {
   id: string
   operation_type: string
-
-const supabase = getSupabaseClient()
   original_url: string
   processed_url: string
   points_deducted: number
   status: string
   created_at: string
 }
+
+const supabase = getSupabaseClient()
 
 const getOperationLabel = (type: string) => {
   switch (type) {
