@@ -1,10 +1,8 @@
 [build]
-  command = "rm -rf .next && pnpm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# 最简单的插件配置
 [[plugins]]
   package = "@netlify/plugin-nextjs"
