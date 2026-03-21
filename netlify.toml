@@ -4,7 +4,7 @@
 
 [build.environment]
   # Node.js版本
-  NODE_VERSION = "18.x"
+  NODE_VERSION = "18.20.4"
   
   # Supabase环境变量（设为可选，避免构建失败）
   NEXT_PUBLIC_SUPABASE_URL = ""
