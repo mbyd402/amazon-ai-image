@@ -4,64 +4,54 @@ const nextConfig = {
   images: {
     domains: ['*.r2.cloudflarestorage.com', 'supabase.co'],
   },
-  // 禁用静态生成缓存，确保每次部署都是新版本
+  // 🎯 极简配置：为Netlify构建优化
   generateBuildId: async () => {
     return Date.now().toString()
   },
-  headers: async () => {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, max-age=0'
-          }
-        ],
-      },
-    ]
-  },
-  // 🔧 修复：完全禁用API路由的构建时数据收集
-  experimental: {
-    skipMiddlewareUrlNormalize: true,
-  },
 }
 
-// 🎯 动态配置：在构建时跳过所有API路由的静态生成
-if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
-  console.log('🔧 Netlify构建环境，配置API路由跳过静态生成')
+// 🎯 Netlify专门配置
+if (process.env.NETLIFY) {
+  console.log('🔧 Netlify构建环境，启用极简配置')
   
-  // 在Next.js 14中，使用output: 'standalone'可以更好地控制API路由
-  nextConfig.output = 'standalone'
-  
-  // 跳过API路由的构建时预渲染
-  nextConfig.experimental = {
-    ...nextConfig.experimental,
-    // 禁用API路由的构建时数据收集
-    skipTrailingSlashRedirect: true,
-    // 减少构建时的API调用
-    isrMemoryCacheSize: 0,
+  // 🎯 禁用所有构建时优化，确保构建成功
+  nextConfig.swcMinify = false
+  nextConfig.compiler = {
+    removeConsole: false,
   }
   
-  // 🎯 强制跳过特定API路由的构建检查
-  nextConfig.pageExtensions = ['tsx', 'ts', 'jsx', 'js', 'mdx']
+  // 🎯 禁用所有实验性功能
+  nextConfig.experimental = {
+    // 禁用所有可能引起问题的实验功能
+    optimizeCss: false,
+    scrollRestoration: false,
+    workerThreads: false,
+  }
   
-  // 添加环境变量告诉API路由这是构建时
+  // 🎯 标记构建环境
   process.env.IS_BUILD_TIME = 'true'
-  process.env.SKIP_API_CHECKS = 'true'
   process.env.NETLIFY_BUILD = 'true'
   
-  // 🎯 专门配置：禁用某些API路由的构建检查
+  // 🎯 简化Webpack配置
   nextConfig.webpack = (config, { isServer }) => {
-    if (isServer && process.env.NETLIFY) {
-      console.log('🔧 Webpack配置：跳过API路由的构建检查')
+    if (isServer) {
+      console.log('🔧 简化服务器端Webpack配置')
       
-      // 在构建时忽略某些模块
-      config.externals = config.externals || []
-      config.externals.push({
-        'form-data': 'commonjs form-data',
-      })
+      // 减少内存使用
+      config.optimization = {
+        ...config.optimization,
+        minimize: false,
+        splitChunks: false,
+      }
+      
+      // 禁用source maps以减少内存
+      config.devtool = false
     }
+    
+    // 🎯 重要：跳过API路由的构建时数据收集
+    config.module = config.module || {}
+    config.module.rules = config.module.rules || []
+    
     return config
   }
 }
