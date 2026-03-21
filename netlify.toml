@@ -1,24 +1,46 @@
 [build]
-  # 只部署静态文件，不构建Next.js
-  command = "./deploy-static.sh"
-  publish = "public"
+  command = "npm run build"
+  publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "18"
-  # 禁用所有外部服务依赖
-  NEXT_PUBLIC_SUPABASE_URL = "disabled"
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = "disabled"
-  CLIPDROP_API_KEY = "disabled"
-  CLOUDMERSIVE_API_KEY = "disabled"
-  REMOVE_BG_API_KEY = "disabled"
+  # Node.js版本
+  NODE_VERSION = "18.x"
+  
+  # Supabase环境变量（设为可选，避免构建失败）
+  NEXT_PUBLIC_SUPABASE_URL = ""
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
+  
+  # API密钥（设为可选）
+  REMOVE_BG_API_KEY = ""
+  CLOUDMERSIVE_API_KEY = ""
+  CLIPDROP_API_KEY = ""
+  
+  # PayPal（设为可选）
+  NEXT_PUBLIC_PAYPAL_CLIENT_ID = ""
+  PAYPAL_CLIENT_SECRET = ""
+  
+  # Supabase服务角色（设为可选）
+  SUPABASE_SERVICE_ROLE_KEY = ""
 
-# 重要：禁用所有插件，只部署静态文件
-# [[plugins]]
-#   package = "@netlify/plugin-nextjs"
+# 缓存配置
+[build.processing]
+  skip_processing = true
 
-# 缓存控制
+# 插件配置
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# 重定向配置
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
+# 头部配置
 [[headers]]
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
-    X-Static-Deploy = "true"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
