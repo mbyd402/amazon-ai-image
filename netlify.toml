@@ -1,46 +1,50 @@
 [build]
+  # 基本构建命令
   command = "npm run build"
+  # 发布目录
   publish = ".next"
+  
+  # 🎯 禁用所有处理，直接使用Next.js输出
+  processing.skip_processing = true
+  
+  # 环境变量（可选，不会导致构建失败）
+  environment = { 
+    CLIPDROP_API_KEY = "optional", 
+    CLOUDMERSIVE_API_KEY = "optional", 
+    NEXT_PUBLIC_PAYPAL_CLIENT_ID = "optional", 
+    NEXT_PUBLIC_SUPABASE_ANON_KEY = "optional", 
+    NEXT_PUBLIC_SUPABASE_URL = "optional", 
+    PAYPAL_CLIENT_SECRET = "optional", 
+    REMOVE_BG_API_KEY = "optional", 
+    SUPABASE_SERVICE_ROLE_KEY = "optional", 
+    NODE_VERSION = "18.20.4" 
+  }
+
+# 🎯 重要：禁用所有插件，直接使用原生Next.js构建
+# 不启用 @netlify/plugin-nextjs
 
 [build.environment]
   # Node.js版本
   NODE_VERSION = "18.20.4"
-  
-  # Supabase环境变量（设为可选，避免构建失败）
-  NEXT_PUBLIC_SUPABASE_URL = ""
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
-  
-  # API密钥（设为可选）
-  REMOVE_BG_API_KEY = ""
-  CLOUDMERSIVE_API_KEY = ""
-  CLIPDROP_API_KEY = ""
-  
-  # PayPal（设为可选）
-  NEXT_PUBLIC_PAYPAL_CLIENT_ID = ""
-  PAYPAL_CLIENT_SECRET = ""
-  
-  # Supabase服务角色（设为可选）
-  SUPABASE_SERVICE_ROLE_KEY = ""
+  # 标记构建环境
+  IS_BUILD_TIME = "true"
+  NETLIFY_BUILD = "true"
+  # 减少内存使用
+  NODE_OPTIONS = "--max-old-space-size=4096"
 
-# 缓存配置
-[build.processing]
-  skip_processing = true
-
-# 插件配置
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# 重定向配置
+# 重定向配置（简单版本）
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = false
 
-# 头部配置
+# 缓存头配置
 [[headers]]
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
-    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+
+# 🎯 关键：禁用所有Next.js相关的插件
+# 注释掉或删除所有插件配置
