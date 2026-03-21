@@ -1,31 +1,10 @@
 [build]
-  command = "pnpm run build:clean"
+  command = "rm -rf .next && pnpm run build"
   publish = ".next"
-  functions = ".netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--legacy-peer-deps"
 
+# 最简单的插件配置
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-  
-  [plugins.inputs]
-    functions_src = ".netlify/functions"
-
-# 禁用所有缓存
-[build.caching]
-  enabled = false
-
-# 强制清除所有缓存
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Cache-Control = "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    Surrogate-Control = "no-store"
-
-# 预渲染设置
-[context.production.environment]
-  NEXT_PRERENDER_ALL = "false"
