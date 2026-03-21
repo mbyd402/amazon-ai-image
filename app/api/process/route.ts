@@ -63,7 +63,7 @@ async function upscaleImage(imageBuffer: Buffer): Promise<Buffer> {
     contentType: 'image/png',
   })
 
-  const response = await fetch(AI_API.clipdrop.apiUrl, {
+  const response = await fetch(AI_API.clipdrop.upscaleUrl, {
     method: 'POST',
     headers: {
       'x-api-key': AI_API.clipdrop.apiKey,

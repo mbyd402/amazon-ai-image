@@ -19,6 +19,7 @@ export const AI_API = {
   },
   cloudmersive: {
     apiKey: process.env.CLOUDMERSIVE_API_KEY || '',
+    apiUrl: 'https://api.cloudmersive.com/image/watermark/remove',
   },
 }
 
