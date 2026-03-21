@@ -1,295 +1,447 @@
 'use client'
 
-// 🚨 ULTIMATE EMERGENCY FIX - 完全绕过所有缓存和外部依赖
-// 版本: ULTIMATE_EMERGENCY_FIX_20260321_1025
-// 这个版本不导入任何外部模块，完全在浏览器中运行
-
 import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase'
 
-export default function UltimateEmergencyFixDashboard() {
+// 🎯 智能缓存系统 - 10分钟缓存
+const CACHE_KEY = 'amazon_ai_dashboard_cache'
+const CACHE_DURATION = 10 * 60 * 1000 // 10分钟
+
+// 🔧 连接状态类型
+type ConnectionStatus = 'online' | 'offline' | 'slow' | 'checking'
+
+export default function OptimizedDashboard() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('checking')
+  const [lastUpdate, setLastUpdate] = useState<string>('')
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   const [selectedTab, setSelectedTab] = useState<'background' | 'watermark' | 'upscale' | 'compliance'>('background')
   const [files, setFiles] = useState<File[]>([])
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
 
-  // 🎯 关键：页面加载时立即写入版本信息到控制台
-  useEffect(() => {
-    console.log('🚀 ULTIMATE EMERGENCY DASHBOARD LOADED')
-    console.log('📅 Version:', 'ULTIMATE_EMERGENCY_FIX_' + Date.now())
-    console.log('🔍 No Supabase, no external dependencies')
-    
-    // 立即设置用户，不需要任何网络请求
-    const mockUser = {
-      id: 'emergency_user_' + Date.now(),
-      email: 'user@example.com'
+  // 🎯 创建Supabase客户端
+  const supabase = createClient()
+
+  // 🎯 智能缓存系统
+  const loadFromCache = () => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY)
+      if (!cached) return null
+      
+      const { data, timestamp } = JSON.parse(cached)
+      const age = Date.now() - timestamp
+      
+      if (age < CACHE_DURATION) {
+        console.log(`📦 使用缓存数据 (${Math.round(age/1000)}秒前)`)
+        return data
+      }
+      console.log('📦 缓存过期，重新获取')
+      return null
+    } catch (err) {
+      console.error('📦 缓存读取失败:', err)
+      return null
     }
-    const mockUserData = {
-      remaining_points: 10,
-      total_points: 10
+  }
+
+  const saveToCache = (data: any) => {
+    try {
+      const cacheData = {
+        data,
+        timestamp: Date.now()
+      }
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
+      console.log('📦 数据已缓存')
+    } catch (err) {
+      console.error('📦 缓存保存失败:', err)
     }
+  }
+
+  // 🎯 连接状态检测
+  const checkConnection = async () => {
+    setConnectionStatus('checking')
     
-    setUser(mockUser)
-    setUserData(mockUserData)
-    setLoading(false)
+    try {
+      const startTime = Date.now()
+      const { data, error } = await supabase.auth.getSession()
+      const responseTime = Date.now() - startTime
+      
+      if (responseTime > 5000) {
+        setConnectionStatus('slow')
+        console.warn(`⚠️ 连接缓慢: ${responseTime}ms`)
+      } else if (error) {
+        setConnectionStatus('offline')
+        console.error('❌ 连接失败:', error.message)
+      } else {
+        setConnectionStatus('online')
+        console.log(`✅ 连接正常: ${responseTime}ms`)
+      }
+    } catch (err) {
+      setConnectionStatus('offline')
+      console.error('❌ 连接检测失败:', err)
+    }
+  }
+
+  // 🎯 加载用户数据（智能重试）
+  const loadUserData = async (useCache = true) => {
+    setLoading(true)
+    setError(null)
     
-    // 保存到localStorage以便后续使用
-    localStorage.setItem('emergency_user_id', mockUser.id)
-    localStorage.setItem('emergency_user_email', mockUser.email)
-    localStorage.setItem('emergency_user_points', '10')
-    
-    // 🚨 强制验证：确保没有Supabase
-    if (typeof window !== 'undefined') {
-      // 尝试阻止任何可能的Supabase调用
-      window.addEventListener('error', (e) => {
-        if (e.message.includes('Supabase') || e.message.includes('supabase')) {
-          console.error('🚫 BLOCKED Supabase error:', e.message)
-          e.preventDefault()
+    try {
+      // 1. 尝试从缓存加载
+      if (useCache) {
+        const cachedData = loadFromCache()
+        if (cachedData) {
+          setUserData(cachedData)
+          setLastUpdate('从缓存加载')
+          setLoading(false)
+          
+          // 后台更新
+          setTimeout(() => loadUserData(false), 1000)
+          return
         }
-      })
+      }
+
+      // 2. 检查用户会话
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError) {
+        throw new Error(`认证失败: ${sessionError.message}`)
+      }
+      
+      if (!sessionData.session) {
+        setUser(null)
+        setUserData(null)
+        setLoading(false)
+        return
+      }
+      
+      setUser(sessionData.session.user)
+      
+      // 3. 获取用户数据（带超时）
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('请求超时，请检查网络连接')), 15000)
+      )
+      
+      const userDataPromise = supabase
+        .from('users')
+        .select('*')
+        .eq('user_id', sessionData.session.user.id)
+        .single()
+      
+      const userData = await Promise.race([userDataPromise, timeoutPromise]) as any
+      
+      if (userData.error) {
+        throw new Error(`数据获取失败: ${userData.error.message}`)
+      }
+      
+      // 4. 成功处理
+      setUserData(userData.data)
+      saveToCache(userData.data)
+      setLastUpdate(new Date().toLocaleTimeString())
+      setRetryCount(0)
+      setConnectionStatus('online')
+      
+    } catch (err: any) {
+      console.error('❌ Dashboard加载错误:', err)
+      setError(err.message || '加载失败，请稍后重试')
+      setConnectionStatus('offline')
+      
+      // 智能重试逻辑
+      if (retryCount < 3) {
+        const delay = Math.min(3000, 1000 * (retryCount + 1))
+        console.log(`🔄 ${delay}ms后重试 (${retryCount + 1}/3)`)
+        
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1)
+          loadUserData(false)
+        }, delay)
+      }
+    } finally {
+      setLoading(false)
     }
+  }
+
+  // 🎯 初始化加载
+  useEffect(() => {
+    console.log('🚀 优化Dashboard加载中...')
+    checkConnection()
+    loadUserData(true)
+    
+    // 定期检查连接
+    const interval = setInterval(checkConnection, 30000)
+    return () => clearInterval(interval)
   }, [])
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files
-    if (selectedFiles) {
-      const fileArray = Array.from(selectedFiles)
-      setFiles(prev => [...prev, ...fileArray].slice(0, 5))
+  // 🎯 手动重试
+  const handleRetry = () => {
+    setRetryCount(0)
+    loadUserData(false)
+  }
+
+  // 🎯 清空缓存重新加载
+  const handleClearCache = () => {
+    localStorage.removeItem(CACHE_KEY)
+    loadUserData(false)
+  }
+
+  // 🎯 渲染连接状态指示器
+  const renderConnectionStatus = () => {
+    const statusConfig = {
+      online: { emoji: '✅', text: '在线', color: 'text-green-600' },
+      offline: { emoji: '❌', text: '离线', color: 'text-red-600' },
+      slow: { emoji: '⚠️', text: '缓慢', color: 'text-yellow-600' },
+      checking: { emoji: '🔍', text: '检查中...', color: 'text-gray-600' }
     }
-  }
-
-  const handleRemoveFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const handleProcess = () => {
-    if (files.length === 0 || processing) return
     
-    setProcessing(true)
+    const config = statusConfig[connectionStatus]
     
-    // 模拟处理
-    setTimeout(() => {
-      const mockResults = files.map(file => URL.createObjectURL(file))
-      setResults(mockResults)
-      setProcessing(false)
-      
-      // 更新点数
-      const currentPoints = parseInt(localStorage.getItem('emergency_user_points') || '10')
-      const newPoints = Math.max(0, currentPoints - files.length)
-      localStorage.setItem('emergency_user_points', newPoints.toString())
-      setUserData({ remaining_points: newPoints, total_points: newPoints })
-    }, 1000)
-  }
-
-  const handleAddPoints = () => {
-    const current = parseInt(localStorage.getItem('emergency_user_points') || '10')
-    const newPoints = current + 10
-    localStorage.setItem('emergency_user_points', newPoints.toString())
-    setUserData({ remaining_points: newPoints, total_points: newPoints })
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('emergency_user_id')
-    localStorage.removeItem('emergency_user_email')
-    localStorage.removeItem('emergency_user_points')
-    window.location.href = '/?emergency=true'
-  }
-
-  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 dark:from-gray-900 dark:to-black py-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-block animate-pulse text-6xl mb-6">🚀</div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            ULTIMATE EMERGENCY DASHBOARD
-          </h2>
-          <p className="text-lg text-gray-700 dark:text-gray-300">
-            Loading zero-dependency version...
-          </p>
-          <div className="mt-6 inline-block bg-red-100 dark:bg-red-900/30 px-4 py-2 rounded-lg">
-            <p className="text-sm font-mono text-red-700 dark:text-red-300">
-              Version: ULTIMATE_EMERGENCY_FIX_{Date.now().toString().slice(-6)}
-            </p>
+      <div className={`flex items-center gap-2 ${config.color}`}>
+        <span>{config.emoji}</span>
+        <span className="text-sm">{config.text}</span>
+        {lastUpdate && connectionStatus === 'online' && (
+          <span className="text-xs text-gray-500">({lastUpdate} 更新)</span>
+        )}
+      </div>
+    )
+  }
+
+  // 🎯 渲染错误状态
+  if (error && !loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="text-center">
+              <div className="text-6xl mb-4">😕</div>
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">加载遇到问题</h1>
+              <p className="text-gray-600 mb-6">{error}</p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={handleRetry}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  🔄 重试加载
+                </button>
+                
+                <button
+                  onClick={handleClearCache}
+                  className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                >
+                  🗑️ 清除缓存并重试
+                </button>
+                
+                <a
+                  href="/debug"
+                  className="px-6 py-3 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition"
+                >
+                  🔧 运行诊断
+                </a>
+              </div>
+              
+              <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  <strong>提示：</strong> 
+                  如果问题持续，请检查网络连接或联系支持。
+                  错误详情已记录到控制台。
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  const tabs = [
-    { id: 'background', label: 'White Background', icon: '🖼️' },
-    { id: 'watermark', label: 'Remove Watermark', icon: '🧹' },
-    { id: 'upscale', label: 'Upscale Image', icon: '🚀' },
-    { id: 'compliance', label: 'Compliance Check', icon: '✅' },
-  ] as const
+  // 🎯 渲染加载状态
+  if (loading && !userData) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-800">Amazon AI 图片处理</h1>
+            {renderConnectionStatus()}
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">正在加载...</h2>
+              <p className="text-gray-600">
+                {retryCount > 0 ? `正在重试 (${retryCount}/3)` : '获取最新数据中'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
+  // 🎯 渲染正常Dashboard
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 dark:from-gray-900 dark:to-black py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 紧急修复横幅 */}
-        <div className="mb-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl shadow-xl p-6 text-white">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 text-3xl">🚨</div>
-            <div className="ml-4">
-              <h2 className="text-2xl font-bold">ULTIMATE EMERGENCY FIX ACTIVE</h2>
-              <p className="opacity-90 mt-1">
-                Zero external dependencies • No network calls • Fully local
-              </p>
-              <p className="mt-2 text-sm opacity-80 font-mono">
-                Version: ULTIMATE_EMERGENCY_FIX_{Date.now().toString().slice(-6)}
-              </p>
-            </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* 顶部状态栏 */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Amazon AI 图片处理</h1>
+            <p className="text-gray-600">专业亚马逊商品图片处理工具</p>
           </div>
-        </div>
-
-        {/* Header */}
-        <div className="mb-10 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-                Amazon AI Emergency Studio
-              </h1>
-              <p className="mt-2 text-gray-600 dark:text-gray-300">
-                User: <span className="font-semibold text-blue-600 dark:text-blue-400">{user.email}</span>
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-600 px-6 py-4 rounded-xl shadow">
-                <p className="text-sm font-medium text-white/80">Points</p>
-                <p className="text-4xl font-bold text-white mt-1">{userData.remaining_points}</p>
-                <button
-                  onClick={handleAddPoints}
-                  className="mt-3 text-sm font-medium bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg"
-                >
-                  + Add 10
-                </button>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-medium"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 功能区域 */}
-        <div className="space-y-8">
-          {/* 上传区域 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Upload Images
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Select up to 5 images ({files.length}/5 selected)
-              </p>
-            </div>
+          
+          <div className="flex items-center gap-4">
+            {renderConnectionStatus()}
             
-            <div className="border-3 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-8 text-center">
-              <input
-                type="file"
-                id="emergency-file-upload"
-                multiple
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              <label
-                htmlFor="emergency-file-upload"
-                className="inline-flex items-center px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:bg-blue-700 cursor-pointer"
-              >
-                📤 Choose Images
-              </label>
-            </div>
-
-            {/* 文件预览 */}
-            {files.length > 0 && (
-              <div className="mt-8">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                  {files.map((file, index) => (
-                    <div key={index} className="relative">
-                      <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={file.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <button
-                        onClick={() => handleRemoveFile(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
+            {user && (
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-800">{user.email}</p>
+                  <button
+                    onClick={() => supabase.auth.signOut()}
+                    className="text-xs text-gray-500 hover:text-gray-700"
+                  >
+                    退出登录
+                  </button>
                 </div>
               </div>
             )}
           </div>
-
-          {/* 处理按钮 */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Process Images
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  Cost: {files.length} point{files.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-              <button
-                onClick={handleProcess}
-                disabled={files.length === 0 || processing}
-                className="px-10 py-4 bg-green-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                {processing ? 'Processing...' : `Process ${files.length} Image${files.length !== 1 ? 's' : ''}`}
-              </button>
-            </div>
-          </div>
-
-          {/* 结果 */}
-          {results.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                ✅ Processing Complete
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-                {results.map((result, index) => (
-                  <div key={index}>
-                    <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden">
-                      <img
-                        src={result}
-                        alt={`Result ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <a
-                      href={result}
-                      download={`result-${index + 1}.png`}
-                      className="mt-4 block text-center px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
-                    >
-                      Download
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* 页脚说明 */}
-        <div className="mt-12 p-6 bg-gray-900 dark:bg-black rounded-2xl text-center">
-          <p className="text-white text-sm">
-            <span className="font-bold">🚨 EMERGENCY MODE:</span> This dashboard has <span className="text-green-400">ZERO</span> external dependencies.
-          </p>
-          <p className="text-gray-400 text-sm mt-1">
-            No Supabase • No API calls • No network requests • Fully local
+        {/* 用户数据展示 */}
+        {userData && (
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-xl shadow p-6">
+              <h3 className="font-semibold text-gray-700 mb-2">账户状态</h3>
+              <p className="text-2xl font-bold text-green-600">活跃</p>
+            </div>
+            
+            <div className="bg-white rounded-xl shadow p-6">
+              <h3 className="font-semibold text-gray-700 mb-2">处理次数</h3>
+              <p className="text-2xl font-bold text-blue-600">
+                {userData.processed_count || 0}
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl shadow p-6">
+              <h3 className="font-semibold text-gray-700 mb-2">会员状态</h3>
+              <p className="text-2xl font-bold text-purple-600">
+                {userData.subscription || '免费版'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 主要功能区域 */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* 标签页 */}
+          <div className="border-b">
+            <nav className="flex">
+              {['background', 'watermark', 'upscale', 'compliance'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSelectedTab(tab as any)}
+                  className={`px-6 py-4 font-medium text-sm transition ${
+                    selectedTab === tab
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {tab === 'background' && '背景移除'}
+                  {tab === 'watermark' && '水印去除'}
+                  {tab === 'upscale' && '画质提升'}
+                  {tab === 'compliance' && '合规检查'}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* 内容区域 */}
+          <div className="p-8">
+            {/* 文件上传区域 */}
+            <div className="mb-8">
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
+                <div className="text-5xl mb-4">📸</div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  上传亚马逊商品图片
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  支持 JPG、PNG 格式，最大 10MB。AI将自动优化图片以适应亚马逊要求。
+                </p>
+                
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFiles(Array.from(e.target.files))
+                    }
+                  }}
+                  className="hidden"
+                  id="file-upload"
+                />
+                
+                <label
+                  htmlFor="file-upload"
+                  className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                >
+                  选择图片文件
+                </label>
+                
+                {files.length > 0 && (
+                  <div className="mt-6">
+                    <p className="text-sm text-gray-600 mb-2">
+                      已选择 {files.length} 个文件
+                    </p>
+                    <button
+                      onClick={() => setProcessing(true)}
+                      disabled={processing}
+                      className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                    >
+                      {processing ? '处理中...' : '开始AI处理'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 调试信息（开发环境显示） */}
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+              <details className="text-sm">
+                <summary className="cursor-pointer text-gray-600 hover:text-gray-800">
+                  调试信息
+                </summary>
+                <div className="mt-2 space-y-1">
+                  <p><strong>连接状态:</strong> {connectionStatus}</p>
+                  <p><strong>重试次数:</strong> {retryCount}</p>
+                  <p><strong>最后更新:</strong> {lastUpdate || '无'}</p>
+                  <p><strong>缓存状态:</strong> {loadFromCache() ? '有效' : '无效/过期'}</p>
+                  <button
+                    onClick={handleClearCache}
+                    className="text-xs text-gray-500 hover:text-gray-700"
+                  >
+                    清除缓存
+                  </button>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        {/* 页脚 */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>
+            遇到问题？访问 <a href="/debug" className="text-blue-600 hover:underline">调试页面</a> 或联系支持
           </p>
         </div>
       </div>
