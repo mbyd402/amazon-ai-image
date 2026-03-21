@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, checkSupabaseConnection } from '@/lib/supabase'
 import ProcessPage from '@/components/ProcessPage'
+import FallbackDashboard from './fallback-dashboard'
 
 // Cache keys
 const CACHE_USER = 'amazon_ai_user'
@@ -12,6 +13,15 @@ const CACHE_TIMESTAMP = 'amazon_ai_cache_time'
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
 export default function Dashboard() {
+  // 检查是否应该使用降级模式
+  const useFallbackMode = typeof window !== 'undefined' && 
+    (localStorage.getItem('use_fallback_mode') === 'true' || 
+     window.location.search.includes('fallback=true'))
+  
+  if (useFallbackMode) {
+    return <FallbackDashboard />
+  }
+  
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -161,7 +171,7 @@ export default function Dashboard() {
         console.log('Using cached data as fallback')
         setLoading(false)
       } else {
-        // 没有缓存可用，显示更详细的错误信息
+        // 没有缓存可用，显示错误并提供降级选项
         let errorMessage = 'Failed to load dashboard. '
         
         // 处理 TypeScript 的 unknown 类型
@@ -171,8 +181,7 @@ export default function Dashboard() {
           errorMessage += 'Supabase connection timed out. This could be due to: '
           errorMessage += '1) Ad blocker blocking supabase.co, '
           errorMessage += '2) Network issues, '
-          errorMessage += '3) Supabase service temporarily unavailable. '
-          errorMessage += 'Please try disabling ad blockers or use incognito mode.'
+          errorMessage += '3) Supabase service temporarily unavailable.'
         } else if (errorMessageText.includes('Failed to fetch')) {
           errorMessage += 'Network error. Please check your internet connection.'
         } else {
@@ -240,12 +249,24 @@ export default function Dashboard() {
                 <br />
                 Try disabling your ad blocker or use incognito mode.
               </p>
-              <button 
-                onClick={handleRetry}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-              >
-                {isRetrying ? 'Retrying...' : 'Retry'}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button 
+                  onClick={handleRetry}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isRetrying ? 'Retrying...' : 'Retry'}
+                </button>
+                <button 
+                  onClick={() => {
+                    // 切换到降级模式
+                    localStorage.setItem('use_fallback_mode', 'true')
+                    window.location.reload()
+                  }}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                >
+                  Use Offline Mode
+                </button>
+              </div>
             </div>
           </div>
         </div>
