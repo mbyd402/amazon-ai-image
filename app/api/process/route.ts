@@ -1,160 +1,75 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { AI_API } from '@/lib/config'
-import FormDataModule from 'form-data'
 
-// 🎯 构建时检测 - 这是关键！
+// 🎯 构建时检测
 const isBuildTime = process.env.NODE_ENV === 'production' && (process.env.NETLIFY || process.env.VERCEL || process.env.IS_BUILD_TIME === 'true')
 
-// 🎯 如果构建时，立即返回模拟响应，避免任何外部依赖
-if (isBuildTime) {
-  console.log('🎯 构建时检测到 /api/process，创建纯模拟版本')
-  
-  // 构建时模拟响应
-  const buildTimeResponse = NextResponse.json(
-    {
-      success: true,
-      simulated: true,
-      message: 'API is simulated during build. Will work with real API keys in runtime.',
-      environment: process.env.NODE_ENV,
-      timestamp: new Date().toISOString()
-    },
-    { status: 200 }
-  )
-  
-  // 导出模拟的POST和GET函数
-  export async function POST() {
+// 🎯 构建时模拟响应
+const buildTimeResponse = NextResponse.json(
+  {
+    success: true,
+    simulated: true,
+    message: 'API is simulated during build. Will work with real API keys in runtime.',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  },
+  { status: 200 }
+)
+
+// 🎯 构建时GET响应
+const buildTimeGETResponse = NextResponse.json(
+  {
+    status: 'process_api_build_time',
+    simulated: true,
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  },
+  { status: 200 }
+)
+
+// ========== 构建时导出（轻量级） ==========
+export async function POST() {
+  // 🎯 构建时：返回模拟响应
+  if (isBuildTime) {
+    console.log('🎯 构建时调用 /api/process POST，返回模拟响应')
     return buildTimeResponse
   }
   
-  export async function GET() {
-    return NextResponse.json(
-      {
-        status: 'process_api_build_time',
-        simulated: true,
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-      },
-      { status: 200 }
-    )
+  // 🎯 运行时：执行真实逻辑
+  return await runtimePOST(arguments[0])
+}
+
+export async function GET() {
+  // 🎯 构建时：返回模拟响应
+  if (isBuildTime) {
+    return buildTimeGETResponse
   }
   
-  // 🎯 导出模拟的AI_API配置，避免TypeScript错误
-  export const simulatedAI_API = AI_API
-  
-  // 结束执行，不继续加载真实代码
-  throw new Error('Build time simulation completed - this should not be reached')
+  // 🎯 运行时：执行真实逻辑
+  return await runtimeGET()
 }
 
-// ========== 以下是运行时代码（构建时不执行） ==========
-
-// 检查API密钥是否存在
-const hasApiKeys = {
-  removeBg: !!process.env.REMOVE_BG_API_KEY,
-  clipdrop: !!process.env.CLIPDROP_API_KEY,
-  cloudmersive: !!process.env.CLOUDMERSIVE_API_KEY,
-}
-
-// Initialize Supabase admin client - ONLY for updating user points and history
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
-
-async function removeBackground(imageBuffer: Buffer): Promise<Buffer> {
-  if (!hasApiKeys.removeBg) {
-    throw new Error('Remove.bg API key is not configured')
-  }
-
-  const form = new FormDataModule()
-  form.append('image_file', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-  form.append('size', 'auto')
-
-  const response = await fetch(AI_API.removeBg.apiUrl, {
-    method: 'POST',
-    headers: {
-      'X-Api-Key': AI_API.removeBg.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Remove.bg API error: ${response.statusText}`)
-  }
-
-  return Buffer.from(await response.arrayBuffer())
-}
-
-async function upscaleImage(imageBuffer: Buffer): Promise<Buffer> {
-  if (!hasApiKeys.clipdrop) {
-    throw new Error('Clipdrop API key is not configured')
-  }
-
-  const form = new FormDataModule()
-  form.append('image_file', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-
-  const response = await fetch(AI_API.clipdrop.upscaleUrl, {
-    method: 'POST',
-    headers: {
-      'x-api-key': AI_API.clipdrop.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Clipdrop API error: ${response.statusText}`)
-  }
-
-  return Buffer.from(await response.arrayBuffer())
-}
-
-async function removeWatermark(imageBuffer: Buffer): Promise<Buffer> {
-  if (!hasApiKeys.cloudmersive) {
-    throw new Error('Cloudmersive API key is not configured')
-  }
-
-  const form = new FormDataModule()
-  form.append('imageFile', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-
-  const response = await fetch(AI_API.cloudmersive.apiUrl, {
-    method: 'POST',
-    headers: {
-      'Apikey': AI_API.cloudmersive.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Cloudmersive API error: ${response.statusText}`)
-  }
-
-  return Buffer.from(await response.arrayBuffer())
-}
-
-async function checkCompliance(imageBuffer: Buffer): Promise<{ compliant: boolean; issues: string[] }> {
-  // 这里可以添加真实的合规检查逻辑
-  // 暂时返回模拟结果
-  return {
-    compliant: true,
-    issues: []
-  }
-}
-
-export async function POST(request: Request) {
+// ========== 运行时代码（构建时不加载） ==========
+async function runtimePOST(request: Request) {
   try {
+    // 动态导入运行时依赖
+    const { createClient } = await import('@supabase/supabase-js')
+    const { AI_API } = await import('@/lib/config')
+    const FormDataModule = await import('form-data')
+    
+    // 检查API密钥是否存在
+    const hasApiKeys = {
+      removeBg: !!process.env.REMOVE_BG_API_KEY,
+      clipdrop: !!process.env.CLIPDROP_API_KEY,
+      cloudmersive: !!process.env.CLOUDMERSIVE_API_KEY,
+    }
+    
+    // Initialize Supabase admin client
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+    
     const formData = await request.formData()
     const file = formData.get('image') as File
     const operation = formData.get('operation') as string
@@ -181,7 +96,7 @@ export async function POST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await removeBackground(imageBuffer)
+        processedBuffer = await removeBackground(imageBuffer, AI_API, FormDataModule.default)
         break
 
       case 'upscale':
@@ -194,7 +109,7 @@ export async function POST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await upscaleImage(imageBuffer)
+        processedBuffer = await upscaleImage(imageBuffer, AI_API, FormDataModule.default)
         break
 
       case 'watermark':
@@ -207,12 +122,11 @@ export async function POST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await removeWatermark(imageBuffer)
+        processedBuffer = await removeWatermark(imageBuffer, AI_API, FormDataModule.default)
         break
 
       case 'compliance':
         const complianceResult = await checkCompliance(imageBuffer)
-        processedBuffer = imageBuffer
         
         // 对于compliance操作，不扣分并直接返回
         return NextResponse.json({
@@ -283,7 +197,13 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+async function runtimeGET() {
+  const hasApiKeys = {
+    removeBg: !!process.env.REMOVE_BG_API_KEY,
+    clipdrop: !!process.env.CLIPDROP_API_KEY,
+    cloudmersive: !!process.env.CLOUDMERSIVE_API_KEY,
+  }
+  
   return NextResponse.json(
     {
       status: 'process_api_ready',
@@ -293,4 +213,84 @@ export async function GET() {
     },
     { status: 200 }
   )
+}
+
+// ========== 辅助函数 ==========
+async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+  const form = new FormDataModule()
+  form.append('image_file', imageBuffer as unknown as Blob, {
+    filename: 'image.png',
+    contentType: 'image/png',
+  })
+  form.append('size', 'auto')
+
+  const response = await fetch(AI_API.removeBg.apiUrl, {
+    method: 'POST',
+    headers: {
+      'X-Api-Key': AI_API.removeBg.apiKey,
+      ...form.getHeaders(),
+    },
+    body: form.getBuffer() as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Remove.bg API error: ${response.statusText}`)
+  }
+
+  return Buffer.from(await response.arrayBuffer())
+}
+
+async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+  const form = new FormDataModule()
+  form.append('image_file', imageBuffer as unknown as Blob, {
+    filename: 'image.png',
+    contentType: 'image/png',
+  })
+
+  const response = await fetch(AI_API.clipdrop.upscaleUrl, {
+    method: 'POST',
+    headers: {
+      'x-api-key': AI_API.clipdrop.apiKey,
+      ...form.getHeaders(),
+    },
+    body: form.getBuffer() as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Clipdrop API error: ${response.statusText}`)
+  }
+
+  return Buffer.from(await response.arrayBuffer())
+}
+
+async function removeWatermark(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+  const form = new FormDataModule()
+  form.append('imageFile', imageBuffer as unknown as Blob, {
+    filename: 'image.png',
+    contentType: 'image/png',
+  })
+
+  const response = await fetch(AI_API.cloudmersive.apiUrl, {
+    method: 'POST',
+    headers: {
+      'Apikey': AI_API.cloudmersive.apiKey,
+      ...form.getHeaders(),
+    },
+    body: form.getBuffer() as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Cloudmersive API error: ${response.statusText}`)
+  }
+
+  return Buffer.from(await response.arrayBuffer())
+}
+
+async function checkCompliance(imageBuffer: Buffer): Promise<{ compliant: boolean; issues: string[] }> {
+  // 这里可以添加真实的合规检查逻辑
+  // 暂时返回模拟结果
+  return {
+    compliant: true,
+    issues: []
+  }
 }
