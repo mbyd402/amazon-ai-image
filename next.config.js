@@ -21,21 +21,25 @@ const nextConfig = {
       },
     ]
   },
-  // 🔧 修复：跳过PayPal webhook的构建检查
+  // 🔧 修复：完全禁用API路由的构建时数据收集
   experimental: {
-    // 跳过特定API路由的构建时数据收集
     skipMiddlewareUrlNormalize: true,
   },
-  // 在构建时跳过特定页面
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 }
 
-// 动态配置：在构建时跳过PayPal webhook
-if (process.env.SKIP_PAYPAL_BUILD === 'true' || !process.env.PAYPAL_CLIENT_SECRET) {
-  console.log('⚠️ PayPal环境变量缺失，跳过PayPal webhook构建检查')
+// 🎯 动态配置：在构建时跳过所有API路由的静态生成
+if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
+  console.log('🔧 Netlify构建环境，配置API路由跳过静态生成')
+  
+  // 在Next.js 14中，使用output: 'standalone'可以更好地控制API路由
+  nextConfig.output = 'standalone'
+  
+  // 跳过API路由的构建时预渲染
   nextConfig.experimental = {
     ...nextConfig.experimental,
-    // 跳过PayPal webhook的静态生成
+    // 禁用API路由的构建时数据收集
+    skipTrailingSlashRedirect: true,
+    // 减少构建时的API调用
     isrMemoryCacheSize: 0,
   }
 }
