@@ -40,7 +40,7 @@ export default function Navbar() {
 
     getCurrentUser()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
       console.log('Auth state changed:', event, session?.user?.id)
       if (session?.user) {
         setUser(session.user)

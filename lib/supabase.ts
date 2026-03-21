@@ -12,7 +12,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabaseConfig = {
   auth: {
     // 🔐 PKCE认证流程（更安全）
-    flowType: 'pkce',
+    flowType: 'pkce' as const,
     // 🕒 更短的session有效期
     detectSessionInUrl: true,
     persistSession: true,
