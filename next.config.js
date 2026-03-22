@@ -18,6 +18,14 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  // 静态页面生成时避免环境变量问题
+  output: 'standalone',
+  // 优化构建过程
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn']
+    } : false,
+  },
 }
 
 module.exports = nextConfig

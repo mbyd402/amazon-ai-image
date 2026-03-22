@@ -1,41 +1,53 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
-// 🎯 环境变量检查 - 使用安全访问方式
-const getEnv = (key: string): string | undefined => {
-  // 在浏览器环境，尝试从 window 或直接访问
-  if (typeof window !== 'undefined') {
-    // Next.js 会在构建时将 NEXT_PUBLIC_ 变量内联到客户端
-    return process.env[key]
+// 🎯 安全的环境变量访问 - 避免构建时错误
+const getEnvSafe = (): { supabaseUrl: string; supabaseAnonKey: string } => {
+  // 在构建时（服务器端渲染）避免访问环境变量
+  if (typeof window === 'undefined') {
+    // 构建时返回空值，避免构建错误
+    return {
+      supabaseUrl: '',
+      supabaseAnonKey: ''
+    }
   }
-  // 服务器环境
-  return process.env[key]
-}
-
-const supabaseUrl = getEnv('NEXT_PUBLIC_SUPABASE_URL')
-const supabaseAnonKey = getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ Supabase环境变量缺失 - 详细诊断:', {
-    supabaseUrl: supabaseUrl || '未找到',
+  
+  // 运行时（客户端）访问环境变量
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  
+  // 只在客户端记录详细的诊断信息
+  console.log('🔍 运行时环境变量检查:', {
+    supabaseUrl: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : '未找到',
+    supabaseUrlLength: supabaseUrl.length,
     supabaseAnonKey: supabaseAnonKey ? '***已设置***' : '未找到',
-    urlLength: supabaseUrl?.length || 0,
-    keyLength: supabaseAnonKey?.length || 0,
+    supabaseAnonKeyLength: supabaseAnonKey.length,
     nodeEnv: process.env.NODE_ENV,
-    isClient: typeof window !== 'undefined',
-    timestamp: new Date().toISOString(),
-    // 检查所有相关环境变量
-    allNextPublicVars: Object.keys(process.env)
-      .filter(key => key.startsWith('NEXT_PUBLIC_'))
-      .reduce((obj, key) => {
-        const value = process.env[key]
-        obj[key] = value ? `${value.substring(0, 5)}...${value.substring(value.length - 5)} (${value.length} chars)` : 'empty'
-        return obj
-      }, {} as Record<string, string>)
+    isClient: true,
+    timestamp: new Date().toISOString()
   })
   
-  // 在开发环境抛出错误，在生产环境提供更好的降级
-  if (process.env.NODE_ENV === 'development') {
-    throw new Error('Supabase环境变量未设置。请配置 NEXT_PUBLIC_SUPABASE_URL 和 NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  return { supabaseUrl, supabaseAnonKey }
+}
+
+// 延迟初始化，避免构建时错误
+let supabaseUrl = ''
+let supabaseAnonKey = ''
+
+// 只在客户端初始化
+if (typeof window !== 'undefined') {
+  const env = getEnvSafe()
+  supabaseUrl = env.supabaseUrl
+  supabaseAnonKey = env.supabaseAnonKey
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('❌ Supabase环境变量缺失 - 客户端诊断:', {
+      supabaseUrl: supabaseUrl || '未找到',
+      supabaseAnonKey: supabaseAnonKey ? '***已设置***' : '未找到',
+      urlLength: supabaseUrl.length,
+      keyLength: supabaseAnonKey.length,
+      nodeEnv: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    })
   }
 }
 
