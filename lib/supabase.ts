@@ -32,7 +32,16 @@ const createFallbackClient = () => {
         data: { user: null }, 
         error: { message: 'Supabase配置缺失' }
       }),
-      signOut: async () => ({ error: null })
+      signOut: async () => ({ error: null }),
+      onAuthStateChange: (callback: any) => {
+        console.log('降级客户端：模拟 onAuthStateChange')
+        // 返回一个取消订阅函数
+        return { data: { subscription: { unsubscribe: () => {} } } }
+      },
+      signInWithPassword: async () => ({ 
+        data: { session: null, user: null }, 
+        error: { message: 'Supabase配置缺失' }
+      })
     },
     from: () => ({
       select: () => ({
