@@ -1,10 +1,11 @@
 // 最简单的环境变量诊断页面，避免任何复杂依赖
+'use client'
 
 export default function EnvSimpleDiagnosisPage() {
   // 这个页面只渲染静态HTML，JavaScript在客户端执行
   
   return (
-    <html>
+    <div>
       <head>
         <title>环境变量简单诊断</title>
         <style>{`
@@ -174,7 +175,7 @@ console.log('Key 长度:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 
           // 页面加载时自动运行诊断
           window.addEventListener('DOMContentLoaded', runDiagnosis)
         </script>
-      </body>
-    </html>
+      </div>
+    </div>
   )
 }
