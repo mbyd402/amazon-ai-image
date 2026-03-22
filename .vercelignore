@@ -1,0 +1,22 @@
+# Vercel ignore file
+node_modules
+.next
+*.log
+.DS_Store
+*.bak
+*.tmp
+*.tar.gz
+*.zip
+*.patch
+netlify.toml
+netlify-backup*
+netlify-simple.toml
+netlify-fallback.toml
+README-backup.md
+scripts/check-build.js
+__pycache__
+*.pyc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
