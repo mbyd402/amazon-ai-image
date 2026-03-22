@@ -91,13 +91,13 @@ export default function DebugPage() {
   const exportDiagnostics = () => {
     const diagnostics = {
       timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server-side',
+      url: typeof window !== 'undefined' ? window.location.href : 'server-side',
       testResults,
-      localStorage: {
+      localStorage: typeof window !== 'undefined' ? {
         auth: localStorage.getItem('amazon-ai-supabase-auth'),
         cache: localStorage.getItem('amazon_ai_dashboard_cache')
-      }
+      } : null
     }
     
     const blob = new Blob([JSON.stringify(diagnostics, null, 2)], { type: 'application/json' })
@@ -258,8 +258,8 @@ export default function DebugPage() {
             
             <button
               onClick={() => {
-                localStorage.removeItem('amazon_ai_dashboard_cache')
-                alert('缓存已清除')
+                typeof window !== 'undefined' && localStorage.removeItem('amazon_ai_dashboard_cache')
+                typeof window !== 'undefined' && alert('缓存已清除')
               }}
               className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
             >

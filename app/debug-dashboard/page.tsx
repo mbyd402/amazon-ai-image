@@ -28,7 +28,7 @@ export default function DebugDashboard() {
     // 检查Supabase
     try {
       // @ts-ignore
-      if (window.supabase) {
+      if (typeof window !== 'undefined' && window.supabase) {
         addLog('❌ ERROR: Supabase found! This should not happen.')
         setHasSupabase(true)
       } else {
@@ -45,8 +45,8 @@ export default function DebugDashboard() {
       pageJs: 'page-dbccabad9cb4ab96.js',
       layoutJs: 'layout-21d8ed196f8ee048.js',
       timestamp: Date.now(),
-      userAgent: navigator.userAgent,
-      localStorageKeys: Object.keys(localStorage)
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server-side',
+      localStorageKeys: typeof window !== 'undefined' ? Object.keys(localStorage) : []
     }
     setCacheStatus(cacheInfo)
     addLog(`📊 Cache info: ${JSON.stringify(cacheInfo, null, 2)}`)
@@ -132,7 +132,7 @@ export default function DebugDashboard() {
                 加载时间: {new Date().toISOString()}
               </div>
               <div className="p-3 bg-purple-900/50 rounded">
-                UserAgent: {navigator.userAgent.slice(0, 50)}...
+                UserAgent: {typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 50) : 'server-side'}...
               </div>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function DebugDashboard() {
               <p className="text-blue-300 mt-2">Version: {version}</p>
             </div>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => typeof window !== 'undefined' && window.location.reload()}
               className="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-bold"
             >
               🔄 Force Reload
@@ -284,9 +284,9 @@ export default function DebugDashboard() {
             </div>
             <button
               onClick={() => {
-                localStorage.clear()
+                typeof window !== 'undefined' && localStorage.clear()
                 addLog('🧹 LocalStorage cleared')
-                window.location.reload()
+                typeof window !== 'undefined' && window.location.reload()
               }}
               className="px-4 py-2 bg-red-800 hover:bg-red-700 rounded"
             >
