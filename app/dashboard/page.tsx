@@ -237,7 +237,7 @@ export default function OptimizedDashboard() {
               <h1 className="text-2xl font-bold text-gray-800 mb-2">加载遇到问题</h1>
               <p className="text-gray-600 mb-6">{error}</p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
                 <button
                   onClick={handleRetry}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -258,14 +258,55 @@ export default function OptimizedDashboard() {
                 >
                   🔧 运行诊断
                 </a>
+                
+                <a
+                  href="/debug-dashboard"
+                  className="px-6 py-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition"
+                >
+                  📊 Dashboard调试
+                </a>
               </div>
               
-              <div className="mt-8 p-4 bg-gray-100 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  <strong>提示：</strong> 
-                  如果问题持续，请检查网络连接或联系支持。
-                  错误详情已记录到控制台。
-                </p>
+              {/* 诊断信息面板 */}
+              <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">诊断信息</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p><strong>连接状态:</strong> {connectionStatus}</p>
+                    <p><strong>重试次数:</strong> {retryCount}/3</p>
+                  </div>
+                  <div>
+                    <p><strong>Supabase URL:</strong> {process.env.NEXT_PUBLIC_SUPABASE_URL ? '已配置' : '未配置'}</p>
+                    <p><strong>最后错误:</strong> {new Date().toLocaleTimeString()}</p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <details>
+                    <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
+                      查看详细错误信息
+                    </summary>
+                    <div className="mt-2 p-3 bg-gray-800 text-gray-100 rounded font-mono text-xs overflow-auto">
+                      {JSON.stringify({
+                        error: error,
+                        connectionStatus,
+                        retryCount,
+                        timestamp: new Date().toISOString(),
+                        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server',
+                        url: typeof window !== 'undefined' ? window.location.href : 'unknown'
+                      }, null, 2)}
+                    </div>
+                  </details>
+                </div>
+              </div>
+              
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <h4 className="font-semibold text-blue-800 mb-2">💡 调试建议</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>1. 点击"Dashboard调试"进行详细诊断</li>
+                  <li>2. 检查浏览器控制台 (F12) 查看网络请求</li>
+                  <li>3. 确保 Supabase 环境变量已正确配置</li>
+                  <li>4. 检查网络连接和防火墙设置</li>
+                </ul>
               </div>
             </div>
           </div>
