@@ -1,6 +1,34 @@
 [build]
   command = "npm ci && npm run build"
   publish = ".next"
+  
+  # 构建优化
+  [build.processing]
+    skip_processing = true
+  
+  # 环境变量
+  [build.environment]
+    # Node.js版本
+    NODE_VERSION = "18.20.4"
+    
+    # 构建优化
+    NODE_OPTIONS = "--max-old-space-size=4096"
+    
+    # Supabase环境变量（设为空字符串避免构建失败）
+    NEXT_PUBLIC_SUPABASE_URL = ""
+    NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
+    
+    # API密钥（设为空字符串）
+    REMOVE_BG_API_KEY = ""
+    CLOUDMERSIVE_API_KEY = ""
+    CLIPDROP_API_KEY = ""
+    
+    # PayPal（设为空字符串）
+    NEXT_PUBLIC_PAYPAL_CLIENT_ID = ""
+    PAYPAL_CLIENT_SECRET = ""
+    
+    # Supabase服务角色（设为空字符串）
+    SUPABASE_SERVICE_ROLE_KEY = ""
 
 [build.environment]
   # Node.js版本
@@ -44,3 +72,12 @@
     Cache-Control = "public, max-age=0, must-revalidate"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+# 构建超时设置（单位：秒）
+[build]
+  processing = "sequential"
+
+# 函数配置
+[functions]
+  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
