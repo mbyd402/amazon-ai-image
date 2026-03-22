@@ -21,6 +21,9 @@ export default function RootLayout({
           {`
             // 阻止常见的钱包注入
             const blockWallets = () => {
+              // 只在客户端执行
+              if (typeof window === 'undefined') return;
+              
               // MetaMask
               if (typeof window.ethereum !== 'undefined') {
                 console.warn('Wallet extension detected. This may interfere with normal operation.');
@@ -38,10 +41,12 @@ export default function RootLayout({
             };
             
             // 页面加载时执行
-            if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', blockWallets);
-            } else {
-              blockWallets();
+            if (typeof document !== 'undefined') {
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', blockWallets);
+              } else {
+                blockWallets();
+              }
             }
           `}
         </Script>

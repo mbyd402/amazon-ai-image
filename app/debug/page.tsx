@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { checkSupabaseConnection, getSupabaseClient } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function DebugPage() {
   const [testResults, setTestResults] = useState<any>(null)
   const [runningTest, setRunningTest] = useState<string | null>(null)

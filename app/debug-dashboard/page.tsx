@@ -2,6 +2,10 @@
 
 // 🚨 调试dashboard - 添加详细日志和版本控制
 // 版本: DEBUG_VERSION_20260321_1041
+// 注意：此页面完全在客户端渲染，避免服务器端预渲染问题
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 import { useState, useEffect } from 'react'
 
