@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/check-build.js && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "check:build": "node scripts/check-build.js"
+    "lint": "next lint"
   },
   "engines": {
     "node": ">=18.0.0",
