@@ -1,15 +1,36 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
-// 🎯 环境变量检查
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+// 🎯 环境变量检查 - 使用安全访问方式
+const getEnv = (key: string): string | undefined => {
+  // 在浏览器环境，尝试从 window 或直接访问
+  if (typeof window !== 'undefined') {
+    // Next.js 会在构建时将 NEXT_PUBLIC_ 变量内联到客户端
+    return process.env[key]
+  }
+  // 服务器环境
+  return process.env[key]
+}
+
+const supabaseUrl = getEnv('NEXT_PUBLIC_SUPABASE_URL')
+const supabaseAnonKey = getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ Supabase环境变量缺失:', {
-    supabaseUrl: !!supabaseUrl,
-    supabaseAnonKey: !!supabaseAnonKey,
+  console.error('❌ Supabase环境变量缺失 - 详细诊断:', {
+    supabaseUrl: supabaseUrl || '未找到',
+    supabaseAnonKey: supabaseAnonKey ? '***已设置***' : '未找到',
+    urlLength: supabaseUrl?.length || 0,
+    keyLength: supabaseAnonKey?.length || 0,
     nodeEnv: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
+    isClient: typeof window !== 'undefined',
+    timestamp: new Date().toISOString(),
+    // 检查所有相关环境变量
+    allNextPublicVars: Object.keys(process.env)
+      .filter(key => key.startsWith('NEXT_PUBLIC_'))
+      .reduce((obj, key) => {
+        const value = process.env[key]
+        obj[key] = value ? `${value.substring(0, 5)}...${value.substring(value.length - 5)} (${value.length} chars)` : 'empty'
+        return obj
+      }, {} as Record<string, string>)
   })
   
   // 在开发环境抛出错误，在生产环境提供更好的降级
