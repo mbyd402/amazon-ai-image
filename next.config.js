@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
   images: {
     domains: ['*.r2.cloudflarestorage.com', 'supabase.co'],
   },
@@ -8,26 +9,17 @@ const nextConfig = {
   generateBuildId: async () => {
     return Date.now().toString()
   },
-}
-
-// Netlify环境优化
-if (process.env.NETLIFY) {
-  console.log('🔧 Netlify构建环境，启用优化配置')
-  
-  // 标记构建环境
-  process.env.IS_BUILD_TIME = 'true'
-  process.env.NETLIFY_BUILD = 'true'
-  
-  // 基础优化
-  nextConfig.swcMinify = true  // 启用SWC压缩（比Terser更快）
-  
-  // 移除控制台输出
-  nextConfig.compiler = {
+  // 确保环境变量在客户端可访问
+  env: {
+    // 这里可以硬编码环境变量作为后备方案
+    // 但更好的做法是在 Vercel 中配置
+  },
+  // 编译器优化
+  compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
-  }
-  
-  // 简化Webpack配置（保持路径别名）
-  nextConfig.webpack = (config, { isServer }) => {
+  },
+  // Webpack配置 - 确保环境变量处理
+  webpack: (config, { isServer, webpack }) => {
     // 确保路径别名被正确解析
     if (config.resolve) {
       config.resolve.alias = {
@@ -36,17 +28,13 @@ if (process.env.NETLIFY) {
       }
     }
     
-    // 保持原有配置，只添加必要的优化
-    if (isServer) {
-      // 服务器端优化
-      config.optimization = {
-        ...config.optimization,
-        minimize: true,
-        splitChunks: {
-          chunks: 'all',
-        },
-      }
-    }
+    // 确保环境变量在客户端可用
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        'process.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify(process.env.NEXT_PUBLIC_SUPABASE_URL || ''),
+        'process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY': JSON.stringify(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''),
+      })
+    )
     
     return config
   }
