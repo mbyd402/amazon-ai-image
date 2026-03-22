@@ -5,7 +5,17 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase环境变量未设置，使用空客户端')
+  console.error('❌ Supabase环境变量缺失:', {
+    supabaseUrl: !!supabaseUrl,
+    supabaseAnonKey: !!supabaseAnonKey,
+    nodeEnv: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  })
+  
+  // 在开发环境抛出错误，在生产环境提供更好的降级
+  if (process.env.NODE_ENV === 'development') {
+    throw new Error('Supabase环境变量未设置。请配置 NEXT_PUBLIC_SUPABASE_URL 和 NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  }
 }
 
 // 🎯 优化配置
@@ -49,21 +59,60 @@ const supabaseConfig = {
 // 🎯 创建Supabase客户端
 export const createClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('❌ Supabase环境变量缺失')
-    // 返回一个安全的空客户端
-    return {
+    console.error('❌ Supabase环境变量缺失 - 创建降级客户端')
+    
+    // 返回一个完整的降级客户端，包含所有必要的方法
+    const fallbackClient = {
       auth: {
-        getSession: async () => ({ data: { session: null }, error: new Error('配置缺失') }),
-        signOut: async () => ({ error: new Error('配置缺失') })
+        getSession: async () => ({ 
+          data: { session: null }, 
+          error: { message: 'Supabase配置缺失，请检查环境变量' }
+        }),
+        getUser: async () => ({ 
+          data: { user: null }, 
+          error: { message: 'Supabase配置缺失，请检查环境变量' }
+        }),
+        onAuthStateChange: () => ({ 
+          data: { subscription: { unsubscribe: () => {} } },
+          error: { message: 'Supabase配置缺失' }
+        }),
+        signOut: async () => ({ error: { message: 'Supabase配置缺失' } }),
+        signInWithPassword: async () => ({ error: { message: 'Supabase配置缺失' } })
       },
       from: () => ({
         select: () => ({
           eq: () => ({
-            single: async () => ({ data: null, error: new Error('配置缺失') })
+            single: async () => ({ 
+              data: null, 
+              error: { message: 'Supabase配置缺失，无法查询数据库' }
+            }),
+            maybeSingle: async () => ({ 
+              data: null, 
+              error: { message: 'Supabase配置缺失' }
+            })
+          })
+        }),
+        insert: () => ({
+          select: () => ({
+            single: async () => ({ error: { message: 'Supabase配置缺失' } })
+          })
+        }),
+        update: () => ({
+          eq: () => ({
+            select: () => ({
+              single: async () => ({ error: { message: 'Supabase配置缺失' } })
+            })
           })
         })
+      }),
+      checkConnection: async () => ({
+        success: false,
+        error: 'Supabase环境变量未配置',
+        responseTime: 0
       })
-    } as any
+    }
+    
+    return fallbackClient as any
   }
 
   try {
