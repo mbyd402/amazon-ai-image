@@ -180,4 +180,19 @@ export const checkSupabaseConnection = async () => {
   return await diagnoseSupabase()
 }
 
-export default { createClient, diagnoseSupabase, getEnvStatus, getSupabaseClient, checkSupabaseConnection }
+// 导出所有函数
+export {
+  createClient,
+  diagnoseSupabase,
+  getEnvStatus,
+  getSupabaseClient,
+  checkSupabaseConnection
+}
+
+export default {
+  createClient,
+  diagnoseSupabase,
+  getEnvStatus,
+  getSupabaseClient,
+  checkSupabaseConnection
+}
