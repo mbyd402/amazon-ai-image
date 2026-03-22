@@ -169,4 +169,15 @@ export const getEnvStatus = () => {
   return diagnoseEnvVars().diagnosis
 }
 
-export default { createClient, diagnoseSupabase, getEnvStatus }
+// 🎯 兼容性导出（为现有代码）
+export const getSupabaseClient = () => {
+  console.log('🔧 使用兼容性函数 getSupabaseClient()，建议改用 createClient()')
+  return createClient()
+}
+
+export const checkSupabaseConnection = async () => {
+  console.log('🔧 使用兼容性函数 checkSupabaseConnection()，建议改用 diagnoseSupabase()')
+  return await diagnoseSupabase()
+}
+
+export default { createClient, diagnoseSupabase, getEnvStatus, getSupabaseClient, checkSupabaseConnection }
