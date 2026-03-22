@@ -98,7 +98,7 @@ const createFallbackClient = () => {
 // 🎯 创建Supabase客户端
 let clientInstance: any = null
 
-export const createClient = () => {
+const createClient = () => {
   // 单例模式
   if (clientInstance) {
     return clientInstance
