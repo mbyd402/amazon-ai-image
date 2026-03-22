@@ -122,13 +122,20 @@ export default function OptimizedDashboard() {
       setUser(sessionData.session.user)
       
       // 3. 获取用户数据（带超时，延长到30秒）
+      console.log(`🔍 开始获取用户数据: ${sessionData.session.user.id}`)
+      const startTime = Date.now()
+      
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout. Please check your ad blocker or try again.')), 30000)
+        setTimeout(() => {
+          const elapsed = Date.now() - startTime
+          console.error(`⏱️ 用户数据请求超时: ${elapsed}ms`)
+          reject(new Error(`Request timeout (${elapsed}ms). Please check your ad blocker or try again.`))
+        }, 30000)
       )
       
       const userDataPromise = supabase
         .from('users')
-        .select('*')
+        .select('id, email, points, created_at, updated_at') // 只选择必要字段
         .eq('user_id', sessionData.session.user.id)
         .single()
       
@@ -146,8 +153,17 @@ export default function OptimizedDashboard() {
       setConnectionStatus('online')
       
     } catch (err: any) {
-      console.error('❌ Dashboard加载错误:', err)
-      setError(err.message || '加载失败，请稍后重试')
+      const errorDetails = {
+        message: err.message,
+        type: err.constructor.name,
+        timestamp: new Date().toISOString(),
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? '已设置' : '未设置',
+        retryCount,
+        connectionStatus
+      }
+      console.error('❌ Dashboard加载错误详情:', errorDetails)
+      console.error('❌ 原始错误:', err)
+      setError(`${err.message} (重试 ${retryCount}/3)`)
       setConnectionStatus('offline')
       
       // 智能重试逻辑

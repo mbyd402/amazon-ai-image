@@ -29,13 +29,13 @@ const supabaseConfig = {
       'x-application-name': 'amazon-ai-image',
       'x-client-type': 'web'
     },
-    // ⏱️ 更短的超时时间
+    // ⏱️ 合理的超时时间
     fetch: (...args: Parameters<typeof fetch>) => {
       const [url, options] = args
       
       // 创建带超时的fetch
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15秒超时
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30秒超时，与页面一致
       
       return fetch(url, {
         ...options,
