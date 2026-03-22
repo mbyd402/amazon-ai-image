@@ -110,7 +110,7 @@ export default function EnvTestPage() {
                           {typeof value === 'string' && value.includes('...') ? (
                             <span title={value}>{value}</span>
                           ) : (
-                            value
+                            String(value)
                           )}
                         </td>
                         <td className="px-4 py-2">
