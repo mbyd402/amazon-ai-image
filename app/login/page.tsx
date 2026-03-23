@@ -1,101 +1,163 @@
 'use client'
 
-// 🚨 简单登录页面 - 完全绕过Supabase
-// 直接重定向到紧急dashboard
-
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
-export default function SimpleLogin() {
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const supabase = createClient()
+  const router = useRouter()
 
-  const handleEmergencyLogin = () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
+    setError('')
+
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (authError) {
+        setError(authError.message)
+        return
+      }
+
+      console.log('✅ Login successful')
+      router.push('/dashboard')
+      router.refresh()
+    } catch (err: any) {
+      setError(err.message)
+      console.error('Login error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setLoading(true)
+    setError('')
     
-    // 立即重定向到紧急dashboard
-    const userId = 'simple_' + Date.now()
-    const userEmail = `seller${Math.floor(Math.random() * 1000)}@amazon.com`
-    
-    localStorage.setItem('emergency_user_id', userId)
-    localStorage.setItem('emergency_user_email', userEmail)
-    localStorage.setItem('emergency_user_points', '15')
-    
-    window.location.href = '/dashboard'
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) {
+        setError(error.message)
+      }
+    } catch (err: any) {
+      setError(err.message)
+      console.error('Google login error:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 dark:from-gray-900 dark:to-black flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        {/* 紧急通知 */}
-        <div className="mb-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl p-6 text-white text-center">
-          <div className="text-4xl mb-4">🚨</div>
-          <h2 className="text-2xl font-bold">EMERGENCY ACCESS</h2>
-          <p className="mt-2 opacity-90">
-            Supabase connection issues detected
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome Back
+          </h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Sign in to your Amazon AI Image Tools account
           </p>
         </div>
 
-        {/* 登录卡片 */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Amazon AI Tools
-            </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Emergency zero-dependency version
-            </p>
-          </div>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="you@example.com"
+              />
+            </div>
 
-          {/* 紧急登录按钮 */}
-          <div className="mb-6">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm text-red-600 dark:text-red-300">
+                {error}
+              </div>
+            )}
+
             <button
-              onClick={handleEmergencyLogin}
+              type="submit"
               disabled={loading}
-              className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-70 transition"
+              className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              {loading ? 'Entering...' : '🚀 Enter Emergency Dashboard'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
-            <p className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              No login required • 15 free points
-            </p>
+          </form>
+
+          <div className="my-6 flex items-center">
+            <div className="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
+            <span className="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
+            <div className="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
           </div>
 
-          {/* 功能列表 */}
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-5 mb-6">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-              ✅ Emergency Version Features:
-            </h3>
-            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>Zero external dependencies</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>No Supabase connection timeouts</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>All data saved locally in your browser</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>15 free demo points included</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>Full image processing functionality</span>
-              </li>
-            </ul>
-          </div>
+          <button
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full py-3 px-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white font-semibold rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-3"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25-.2v-1.7h-8.1v4.6h4.86c-.21 1.13-.85 2.1-1.81 2.75v2.26h2.98c1.72 0 3.25-.61 4.33-1.8z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 22c2.59 0 4.76-.86 6.36-2.37l-2.69-2.09c-.8.55-1.8.86-2.95.86-1.57 0-4.6 2.72-8.1 6.64v3.99C7.04 20.3 9.33 22 12 22z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.31 14.09c-.3-.89-.47-1.85-.47-2.83 0-.98.17-1.94.48-2.81v-3.8h-2.98v11.46c2.61 5.08 8.1 6.68 13.08 4.28-2.1 3.99-6.8 5.03-10.8 1.13z"
+              />
+              <path
+                fill="#1A0DAB"
+                d="M12 4.75c1.57 0 3.03.54 4.19 1.57l-3.05 2.47L12 11.4l4.19-1.51C15.36 5.8 13.79 4.75 12 4.75z"
+              />
+            </svg>
+            Continue with Google
+          </button>
 
-          {/* 版本信息 */}
-          <div className="text-center">
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              Emergency Version: SIMPLE_ZERO_DEPS_{Date.now().toString().slice(-6)}
-            </p>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              <a href="/new-login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                Try another local version
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <a href="/register" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                Sign up
               </a>
             </p>
           </div>
