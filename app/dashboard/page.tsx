@@ -135,8 +135,8 @@ export default function OptimizedDashboard() {
       
       const userDataPromise = supabase
         .from('users')
-        .select('id, email, points, created_at, updated_at') // 只选择必要字段
-        .eq('user_id', sessionData.session.user.id)
+        .select('id, email, remaining_points, total_points, created_at, updated_at') // 只选择必要字段
+        .eq('id', sessionData.session.user.id)
         .single()
       
       const userData = await Promise.race([userDataPromise, timeoutPromise]) as any
