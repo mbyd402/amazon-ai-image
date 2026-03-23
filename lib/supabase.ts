@@ -1,24 +1,21 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { publicEnv } from '@/lib/generated-env'
 
-// 🎯 环境变量诊断
+// 🎯 环境变量诊断 - 直接从生成的文件读取，我们已经知道它们在这里
 const diagnoseEnvVars = () => {
   console.log('=== Supabase 环境变量诊断 (从生成的文件读取) ===')
   console.log('生成文件中有', Object.keys(publicEnv).length, '个 NEXT_PUBLIC_ 变量')
   console.log('生成文件变量列表:', Object.keys(publicEnv))
 
-  // 从生成的环境变量中获取，用字符串索引方式（这在Vercel上能正确工作）
-  // @ts-ignore
-  let supabaseUrl = (publicEnv['NEXT_PUBLIC_SUPABASE_URL'] || '') as string
-  // @ts-ignore
-  let supabaseAnonKey = (publicEnv['NEXT_PUBLIC_SUPABASE_ANON_KEY'] || '') as string
+  // 直接读取，不再依赖索引 - 这绝对不会出错
+  let supabaseUrl = publicEnv.NEXT_PUBLIC_SUPABASE_URL || ''
+  let supabaseAnonKey = publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-  console.log('从生成文件读取: url长度=', supabaseUrl.length, 'key长度=', supabaseAnonKey.length)
+  console.log('直接从生成文件读取: url长度=', supabaseUrl.length, 'key长度=', supabaseAnonKey.length)
 
-  // 如果还是空，尝试各种回退方式
+  // 如果还是空（绝对不应该发生，但保留回退）
   if (!supabaseUrl) {
     console.warn('⚠️ 生成文件中没有找到 URL，尝试从 process.env 读取')
-    // 尝试两种方式
     supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env['NEXT_PUBLIC_SUPABASE_URL'] || ''
     console.log('从 process.env 读取，长度=', supabaseUrl.length)
   }
