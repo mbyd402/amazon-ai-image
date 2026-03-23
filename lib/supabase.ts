@@ -1,18 +1,30 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { publicEnv } from '@/lib/generated-env'
 
 // 🎯 环境变量诊断
 const diagnoseEnvVars = () => {
-  console.log('=== Supabase 环境变量诊断 ===')
+  console.log('=== Supabase 环境变量诊断 (从生成的文件读取) ===')
   
-  const allKeys = Object.keys(process.env)
+  // 优先使用生成的环境变量
+  let supabaseUrl = publicEnv.NEXT_PUBLIC_SUPABASE_URL || ''
+  let supabaseAnonKey = publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  
+  // 如果生成的文件为空，回退到 process.env
+  if (!supabaseUrl) {
+    console.warn('⚠️ 生成文件中没有找到 URL，回退到 process.env')
+    supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  }
+  if (!supabaseAnonKey) {
+    console.warn('⚠️ 生成文件中没有找到 Key，回退到 process.env')
+    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  }
+  
+  const allKeys = Object.keys(publicEnv)
   const nextPublicKeys = allKeys.filter(key => key.startsWith('NEXT_PUBLIC_'))
   
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  
   console.log('Supabase URL:', supabaseUrl ? `${supabaseUrl.substring(0, 15)}...` : '未找到')
-  console.log('Supabase Key:', supabaseAnonKey ? '***已设置***' : '未找到')
-  console.log('所有 NEXT_PUBLIC_ 变量:', nextPublicKeys)
+  console.log('Supabase Key:', supabaseAnonKey ? `***已设置 (长度: ${supabaseAnonKey.length})***` : '未找到')
+  console.log('所有 NEXT_PUBLIC_ 变量 (从生成文件):', nextPublicKeys)
   console.log('=== 诊断结束 ===')
   
   return { supabaseUrl, supabaseAnonKey }
