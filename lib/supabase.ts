@@ -1,30 +1,22 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { publicEnv } from '@/lib/generated-env'
 
-// 🎯 环境变量诊断 - 直接从生成的文件读取，我们已经知道它们在这里
+// 🎯 硬编码环境变量 - 绕过 Vercel 一切 bug
+// 因为这些都是 NEXT_PUBLIC_，本来就需要公开，所以完全安全
+const HARDCODED_ENV = {
+  NEXT_PUBLIC_SUPABASE_URL: "https://mtjprdkzncxbvbdhodmt.supabase.co",
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_A5P4p6bg0RYb1P8Ko9Bolw_hSM2Pg1-",
+  NEXT_PUBLIC_PAYPAL_CLIENT_ID: "AVDj9aDAeI7QkkxjPQ4r37YmftoJuvVJ2xbt36k2oGCVz9HQdXpBkNaeK6TiR-bBMFHE1N-e7ZHdPYpp"
+}
+
+// 🎯 环境变量诊断
 const diagnoseEnvVars = () => {
-  console.log('=== Supabase 环境变量诊断 (从生成的文件读取) ===')
-  console.log('生成文件中有', Object.keys(publicEnv).length, '个 NEXT_PUBLIC_ 变量')
-  console.log('生成文件变量列表:', Object.keys(publicEnv))
-
-  // 直接读取，不再依赖索引 - 这绝对不会出错
-  let supabaseUrl = publicEnv.NEXT_PUBLIC_SUPABASE_URL || ''
-  let supabaseAnonKey = publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-
-  console.log('直接从生成文件读取: url长度=', supabaseUrl.length, 'key长度=', supabaseAnonKey.length)
-
-  // 如果还是空（绝对不应该发生，但保留回退）
-  if (!supabaseUrl) {
-    console.warn('⚠️ 生成文件中没有找到 URL，尝试从 process.env 读取')
-    supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env['NEXT_PUBLIC_SUPABASE_URL'] || ''
-    console.log('从 process.env 读取，长度=', supabaseUrl.length)
-  }
-  if (!supabaseAnonKey) {
-    console.warn('⚠️ 生成文件中没有找到 Key，尝试从 process.env 读取')
-    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'] || ''
-    console.log('从 process.env 读取，长度=', supabaseAnonKey.length)
-  }
+  console.log('=== Supabase 环境变量诊断 (硬编码绕过 Vercel bug) ===')
   
+  // 直接从硬编码读取
+  let supabaseUrl = HARDCODED_ENV.NEXT_PUBLIC_SUPABASE_URL || ''
+  let supabaseAnonKey = HARDCODED_ENV.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+
+  console.log('硬编码读取: url长度=', supabaseUrl.length, 'key长度=', supabaseAnonKey.length)
   console.log('Supabase URL:', supabaseUrl ? `${supabaseUrl.substring(0, 15)}... (长度 ${supabaseUrl.length})` : '未找到')
   console.log('Supabase Key:', supabaseAnonKey ? `***已设置 (长度: ${supabaseAnonKey.length})***` : '未找到')
   console.log('=== 诊断结束 ===')
