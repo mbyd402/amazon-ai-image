@@ -1,8 +1,8 @@
+'use client'
+
 // 强制动态渲染，避免静态生成
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-
-'use client'
 
 import { useEffect, useState } from 'react'
 
