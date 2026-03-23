@@ -6,7 +6,9 @@ const diagnoseEnvVars = () => {
   console.log('=== Supabase 环境变量诊断 (从生成的文件读取) ===')
   
   // 优先使用生成的环境变量
+  // @ts-ignore - publicEnv 是动态生成的
   let supabaseUrl = publicEnv.NEXT_PUBLIC_SUPABASE_URL || ''
+  // @ts-ignore - publicEnv 是动态生成的
   let supabaseAnonKey = publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   
   // 如果生成的文件为空，回退到 process.env
