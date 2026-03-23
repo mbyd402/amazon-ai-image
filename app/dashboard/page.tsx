@@ -135,7 +135,7 @@ export default function OptimizedDashboard() {
       
       const userDataPromise = supabase
         .from('users')
-        .select('id, email, remaining_points, total_points, created_at, updated_at')
+        .select('*')
         .eq('id', sessionData.session.user.id)
         .single()
       
