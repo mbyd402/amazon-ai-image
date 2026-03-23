@@ -192,6 +192,18 @@ export default function OptimizedDashboard() {
     return () => clearInterval(interval)
   }, [])
 
+  // 🚨 Timeout: if still loading after 10 seconds, show error
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loading) {
+        console.error('⏱️ Loading timeout after 10 seconds')
+        setError('Loading timeout. Please refresh the page and try again.')
+        setLoading(false)
+      }
+    }, 10000)
+    return () => clearTimeout(timer)
+  }, [loading])
+
   // 🎯 Manual retry
   const handleRetry = () => {
     setRetryCount(0)
