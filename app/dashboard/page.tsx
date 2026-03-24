@@ -31,7 +31,15 @@ export default function SimpleDashboard() {
       addLog(`✅ Client created: ${!!client}`)
       
       addLog('🔍 Checking session...')
+
+      // Add timeout to avoid deadlock from Supabase lock issues
+      const timeoutId = setTimeout(() => {
+        addLog('⏰ TIMEOUT after 15 seconds - Supabase is deadlocked, refreshing page to fix...')
+        window.location.reload()
+      }, 15000)
+      
       client.auth.getSession().then(({ data, error }: { data: any, error: any }) => {
+        clearTimeout(timeoutId)
         addLog(`Session check done - error: ${error?.message || 'none'} - session: ${!!data.session}`)
         
         if (data.session?.user) {
@@ -79,10 +87,12 @@ export default function SimpleDashboard() {
             })
         } else {
           addLog('⚠️ No session found - redirecting to login...')
+          clearTimeout(timeoutId)
           window.location.href = '/login'
           setLoading(false)
         }
       }).catch((err: any) => {
+        clearTimeout(timeoutId)
         addLog(`❌ Unhandled error in getSession: ${err.message}`)
         setError(err.message)
         setLoading(false)
