@@ -229,9 +229,12 @@ export default function OptimizedDashboard() {
       console.log('🔔 Auth state changed:', event, session?.user?.email)
       
       if (session?.user) {
-        console.log('✅ Session ready, loading user data')
+        console.log('✅ Session ready for user:', session.user.email)
         setUser(session.user)
-        loadUserData(true)
+        // Use setTimeout to ensure state is updated before loading data
+        setTimeout(() => {
+          loadUserData(true)
+        }, 100)
       }
     })
     
