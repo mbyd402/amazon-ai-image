@@ -225,7 +225,7 @@ export default function OptimizedDashboard() {
     checkConnection()
     
     // Listen for auth state changes - this will catch the session when it's ready
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
       console.log('🔔 Auth state changed:', event, session?.user?.email)
       
       if (session?.user) {
