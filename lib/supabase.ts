@@ -8,12 +8,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase环境变量未设置，使用空客户端')
 }
 
-// 🎯 优化配置
+// 🎯 优化配置 - use implicit flow for OAuth to avoid PKCE code_verifier issues
 const supabaseConfig = {
   auth: {
-    // 🔐 PKCE认证流程（更安全）
-    flowType: 'pkce' as const,
-    // 🕒 更短的session有效期
+    // 🚀 Use implicit flow instead of PKCE to avoid code verifier storage problems
+    flowType: 'implicit' as const,
     detectSessionInUrl: true,
     persistSession: true,
     autoRefreshToken: true,
