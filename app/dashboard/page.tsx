@@ -28,37 +28,32 @@ export default function OptimizedDashboard() {
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
   
-  // Create client after component mount, inside useEffect where we can catch errors properly
+  // Create everything in one useEffect - this is the most reliable way
   const [supabase, setSupabase] = useState<ReturnType<typeof createClient> | null>(null)
 
-  // Initialize supabase client after mount
   useEffect(() => {
-    console.log('🔧 Creating supabase client on client-side...')
+    console.log('🔧 Starting initialization...')
+
+    // 1. Create supabase client
+    let client: ReturnType<typeof createClient> | null = null
     try {
-      const client = createClient()
+      console.log('🔧 Creating supabase client...')
+      client = createClient()
       console.log('✅ Supabase client created successfully:', !!client)
       setSupabase(client)
     } catch (err) {
       console.error('❌ Failed to create supabase client:', err)
       setError(`Failed to initialize Supabase: ${(err as Error).message}`)
-    }
-  }, [])
-
-  // After client is created, start loading everything
-  useEffect(() => {
-    if (!supabase) {
-      console.log('⏳ Waiting for supabase client to be created...')
       return
     }
-    console.log('🚀 Optimized dashboard loading...')
-    console.log('🔧 Supabase client exists:', !!supabase)
-    
+
+    // 2. Check connection
     const checkConnection = async () => {
       setConnectionStatus('checking')
       
       try {
         const startTime = Date.now()
-        const { data, error } = await supabase.auth.getSession()
+        const { data, error } = await client.auth.getSession()
         const responseTime = Date.now() - startTime
         
         if (responseTime > 5000) {
@@ -79,32 +74,35 @@ export default function OptimizedDashboard() {
 
     checkConnection()
     
-    // Listen for auth state changes - this will catch the session when it's ready
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
-      console.log('🔔 Auth state changed:', event, session?.user?.email)
+    // 3. Listen for auth state changes
+    if (client) {
+      const { data: { subscription } } = client.auth.onAuthStateChange((event: string, session: any) => {
+        console.log('🔔 Auth state changed:', event, session?.user?.email)
+        
+        if (session?.user) {
+          console.log('✅ Session ready for user:', session.user.email)
+          setUser(session.user)
+          // Use setTimeout to ensure state is updated before loading data
+          setTimeout(() => {
+            loadUserData(client)
+          }, 100)
+        }
+      })
+      console.log('✅ Auth listener registered')
       
-      if (session?.user) {
-        console.log('✅ Session ready for user:', session.user.email)
-        setUser(session.user)
-        // Use setTimeout to ensure state is updated before loading data
-        setTimeout(() => {
-          loadUserData(true)
-        }, 100)
+      // 4. Try loading immediately
+      loadUserData(client)
+      console.log('✅ Initial loadUserData started')
+      
+      // 5. Periodic connection check
+      const interval = setInterval(checkConnection, 30000)
+      return () => {
+        subscription.unsubscribe()
+        clearInterval(interval)
       }
-    })
-    console.log('✅ Auth listener registered')
-    
-    // Try loading immediately in case session is already ready
-    loadUserData(true)
-    console.log('✅ Initial loadUserData started')
-    
-    // Periodic connection check
-    const interval = setInterval(checkConnection, 30000)
-    return () => {
-      subscription.unsubscribe()
-      clearInterval(interval)
     }
-  }, [supabase])
+  }, [])
+
 
   // 🎯 Load user data (smart retry with cache)
   const loadUserData = async (useCache = true, attempt = 0) => {
