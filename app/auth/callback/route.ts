@@ -75,7 +75,7 @@ export async function GET(request: Request) {
     
     // Get all Set-Cookie headers from the response and forward them
     // Supabase auth already set the correct cookies after exchange
-    const cookies = supabaseAnon.auth.getAllCookies()
+    const cookies = (supabaseAnon.auth as any).getAllCookies()
     cookies.forEach(cookie => {
       response.headers.append('Set-Cookie', cookie)
     })
