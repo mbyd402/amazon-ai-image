@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getSupabaseClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase'
 import { PACKAGES } from '@/lib/config'
 
-// Use the shared singleton instance to avoid multiple GoTrueClient instances
-const supabase = getSupabaseClient()
+// Create client once inside component to avoid SSR issues
+let supabase: ReturnType<typeof createClient> | null = null
 
 // 🎯 智能缓存系统 - 10分钟缓存
 const CACHE_KEY = 'amazon_ai_dashboard_cache'
@@ -91,6 +91,11 @@ export default function OptimizedDashboard() {
     console.log('🚀 Starting loadUserData, useCache:', useCache, 'attempt:', attempt)
     setLoading(true)
     setError(null)
+    
+    // Create client once on client side only
+    if (!supabase) {
+      supabase = createClient()
+    }
     
     try {
       // 1. 尝试从缓存加载
