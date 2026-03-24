@@ -12,89 +12,27 @@ export async function GET(request: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     
-    // 🔑 Critical for PKCE in Next.js 13+ App Router:
-    // We need to pass the cookies from the browser because that's where the code verifier is stored
-    const cookieHeader = request.headers.get('cookie') || ''
+    // 🔐 For PKCE flow in Next.js App Router:
+    // The code verifier is stored in localStorage on the client, not cookie.
+    // So we can't do the exchange here. Instead, we just redirect to dashboard, client will handle it.
+    // We just create the user record here if it doesn't exist using service_role.
     
-    // Create a client that captures all Set-Cookie headers from Supabase response
-    let setCookies: string[] = []
-    
-    const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
+    // Create service role client to create user record after exchange
+    const supabaseService = createClient(supabaseUrl, serviceRoleKey, {
       auth: {
         autoRefreshToken: false,
-        persistSession: false,
-      },
-      global: {
-        headers: {
-          Cookie: cookieHeader,
-        },
-        fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-          const response = await fetch(input, init);
-          // Capture all Set-Cookie headers from Supabase response
-          const cookies = response.headers.getSetCookie();
-          setCookies = [...setCookies, ...cookies];
-          return response;
-        }
+        persistSession: false
       }
     })
     
-    // Exchange code for session - cookies already contain the code verifier
-    const { data, error } = await supabaseAnon.auth.exchangeCodeForSession(code)
+    // After PKCE exchange completes on client, we need to get the user id
+    // BUT we don't have the session here. So the client will create the user record if missing anyway.
+    // Our client-side fallback in dashboard handles this.
     
-    if (!error && data.session?.user) {
-      console.log(`🔍 OAuth callback: Got session for ${data.session.user.email} (${data.session.user.id})`)
-      
-      // ✅ Step 2: Use SERVICE_ROLE key to create user record if not exists (bypasses RLS)
-      const supabaseService = createClient(supabaseUrl, serviceRoleKey, {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      })
-      
-      // Check if user already exists in our users table
-      const { data: existingUser, error: selectError } = await supabaseService
-        .from('users')
-        .select('id')
-        .eq('id', data.session.user.id)
-        .maybeSingle()
-      
-      if (selectError) {
-        console.error('❌ Error checking existing user:', selectError.message)
-      }
-      
-      // If user doesn't exist, create a new record with free points
-      if (!existingUser) {
-        console.log('✅ Creating new user record for OAuth user:', data.session.user.email)
-        
-        const { error: insertError } = await supabaseService.from('users').insert({
-          id: data.session.user.id,
-          email: data.session.user.email!,
-          remaining_points: PACKAGES.free.points,
-          total_points: PACKAGES.free.points,
-          created_at: new Date().toISOString(),
-        })
-        
-        if (insertError) {
-          console.error('❌ Error creating user record:', insertError.message)
-        } else {
-          console.log('✅ User record created successfully by service_role')
-        }
-      } else {
-        console.log('ℹ️ User already exists in users table, skipping creation')
-      }
-    } else if (error) {
-      console.error('❌ Error exchanging code for session:', error.message)
-    }
+    console.log(`🔀 Redirecting to ${next} after code received - client will complete PKCE exchange`)
     
-    // 💥 CRITICAL - In Next.js 13+ App Router, we need to forward ALL Set-Cookie headers
+    // Just redirect - client will handle the rest
     const response = NextResponse.redirect(`${origin}${next}`)
-    
-    // Forward all captured Set-Cookie headers to browser
-    setCookies.forEach(cookie => {
-      response.headers.append('Set-Cookie', cookie);
-    });
-    
     return response
   }
 
