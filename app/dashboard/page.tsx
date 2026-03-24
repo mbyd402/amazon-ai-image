@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { PACKAGES } from '@/lib/config'
 
-// Create client once inside component to avoid SSR issues
-let supabase: ReturnType<typeof createClient> | null = null
-
 // 🎯 智能缓存系统 - 10分钟缓存
 const CACHE_KEY = 'amazon_ai_dashboard_cache'
 const CACHE_DURATION = 10 * 60 * 1000 // 10分钟
@@ -26,6 +23,9 @@ export default function OptimizedDashboard() {
   const [files, setFiles] = useState<File[]>([])
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
+  
+  // Create client once when component mounts (client-side only)
+  const [supabase] = useState(() => createClient())
 
   // 🎯 智能缓存系统
   const loadFromCache = () => {
@@ -65,11 +65,6 @@ export default function OptimizedDashboard() {
   const checkConnection = async () => {
     setConnectionStatus('checking')
     
-    // Create client if not exists
-    if (!supabase) {
-      supabase = createClient()
-    }
-    
     try {
       const startTime = Date.now()
       const { data, error } = await supabase.auth.getSession()
@@ -96,12 +91,6 @@ export default function OptimizedDashboard() {
     console.log('🚀 Starting loadUserData, useCache:', useCache, 'attempt:', attempt)
     setLoading(true)
     setError(null)
-    
-    // Create client once on client side only
-    if (!supabase) {
-      supabase = createClient()
-    }
-    
     try {
       // 1. 尝试从缓存加载
       if (useCache) {
@@ -232,11 +221,6 @@ export default function OptimizedDashboard() {
   // 🎯 初始化加载
   useEffect(() => {
     console.log('🚀 Optimized dashboard loading...')
-    
-    // Ensure client is initialized
-    if (!supabase) {
-      supabase = createClient()
-    }
     
     checkConnection()
     
