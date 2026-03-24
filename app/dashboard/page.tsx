@@ -111,8 +111,8 @@ export default function OptimizedDashboard() {
 
       // 2. 等待一小会让 PKCE 完成 session 初始化（OAuth callback 后可能需要时间）
       if (attempt === 0) {
-        console.log('⏳ Waiting 300ms for PKCE session initialization...')
-        await new Promise(resolve => setTimeout(resolve, 300))
+        console.log('⏳ Waiting 1000ms for PKCE session initialization...')
+        await new Promise(resolve => setTimeout(resolve, 1000))
       }
 
       // 3. 检查用户会话
@@ -125,11 +125,11 @@ export default function OptimizedDashboard() {
       }
       
       if (!sessionData.session) {
-        console.log('⚠️ No session found, attempt:', attempt)
-        // 如果是第一次没找到session，重试一次（给 PKCE 多一点时间）
-        if (attempt < 2) {
+        console.log('⚠️ No session found, attempt:', attempt, 'has session:', !!sessionData.session)
+        // 如果是第一次没找到session，重试（给 PKCE 多一点时间）
+        if (attempt < 3) {
           console.log('🔄 Retrying...')
-          setTimeout(() => loadUserData(useCache, attempt + 1), 500)
+          setTimeout(() => loadUserData(useCache, attempt + 1), 800)
           return
         }
         console.log('❌ No session after multiple retries')
