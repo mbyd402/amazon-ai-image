@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
+import { PACKAGES } from '@/lib/config'
 
 // 🎯 智能缓存系统 - 10分钟缓存
 const CACHE_KEY = 'amazon_ai_dashboard_cache'
