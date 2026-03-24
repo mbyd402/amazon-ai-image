@@ -21,8 +21,8 @@ export async function GET(request: Request) {
         persistSession: false,
       },
       global: {
-        fetch: async (url: string, options: any) => {
-          const response = await fetch(url, options);
+        fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+          const response = await fetch(input, init);
           // Capture all Set-Cookie headers
           const cookies = response.headers.getSetCookie();
           setCookieHeaders = [...setCookieHeaders, ...cookies];
