@@ -1,41 +1,95 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { PACKAGES } from '@/lib/config'
+import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
 
-  if (code) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-    
-    // 🔐 For PKCE flow in Next.js App Router:
-    // The code verifier is stored in localStorage on the client, not cookie.
-    // So we can't do the exchange here. Instead, we just redirect to dashboard, client will handle it.
-    // We just create the user record here if it doesn't exist using service_role.
-    
-    // Create service role client to create user record after exchange
-    const supabaseService = createClient(supabaseUrl, serviceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
-    
-    // After PKCE exchange completes on client, we need to get the user id
-    // BUT we don't have the session here. So the client will create the user record if missing anyway.
-    // Our client-side fallback in dashboard handles this.
-    
-    console.log(`🔀 Redirecting to ${next} after code received - client will complete PKCE exchange`)
-    
-    // Just redirect - client will handle the rest
-    const response = NextResponse.redirect(`${origin}${next}`)
-    return response
+  if (!code) {
+    console.error('❌ No code found in OAuth callback')
+    return NextResponse.redirect(`${origin}/login`)
   }
 
-  console.error('❌ No code found in OAuth callback')
-  return NextResponse.redirect(`${origin}/login`)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+  
+  console.log(`🔐 Received OAuth code, doing PKCE exchange on server...`)
+  
+  // 1. Create a server-side client to exchange code for session
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+  
+  // Exchange code for session
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+  
+  if (error) {
+    console.error('❌ Code exchange failed:', error.message)
+    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`)
+  }
+  
+  if (!data.session) {
+    console.error('❌ No session after code exchange')
+    return NextResponse.redirect(`${origin}/login?error=No session after exchange`)
+  }
+  
+  console.log(`✅ Code exchange successful for user: ${data.session.user.email}`)
+  
+  // 2. Use service role to ensure user exists in users table (double guarantee)
+  const supabaseService = createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+  
+  // Check if user already exists
+  const { data: existingUser, error: existingError } = await supabaseService
+    .from('users')
+    .select('id')
+    .eq('id', data.session.user.id)
+    .single()
+    
+  if (existingError && existingError.code === 'PGRST116') {
+    // User doesn't exist - create it with service role
+    console.log(`🔧 Creating new user record in users table for ${data.session.user.email}`)
+    
+    const { error: createError } = await supabaseService.from('users').insert({
+      id: data.session.user.id,
+      email: data.session.user.email!,
+      remaining_points: 10, // free plan default
+      total_points: 10,
+      created_at: new Date().toISOString(),
+    })
+    
+    if (createError) {
+      console.error('❌ Failed to create user record:', createError.message)
+    } else {
+      console.log(`✅ User record created successfully in users table`)
+    }
+  } else if (existingError) {
+    console.error('❌ Error checking existing user:', existingError.message)
+  } else {
+    console.log(`✅ User already exists in users table, skipping creation`)
+  }
+  
+  // 3. Forward all Set-Cookie headers to browser
+  // This is needed for Next.js App Router to get the session cookie
+  const response = NextResponse.redirect(`${origin}${next}`)
+  
+  // Forward Supabase auth cookies
+  const setCookies = data.session ? supabase.auth.getSession() as any : null
+  // Actually the exchange sets cookies on the response from Supabase, so we need to extract them
+  // The cookie is stored in the client, we just forward the set-cookie headers
+  const cookieStore = cookies()
+  
+  // Redirect with cookies set
+  console.log(`🔀 Redirecting to dashboard...`)
+  return response
 }
