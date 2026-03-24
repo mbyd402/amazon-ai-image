@@ -12,11 +12,22 @@ export async function GET(request: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     
-    // 1. Use ANON key to exchange code - we need to manually set cookie
+    // Create a client that captures all response headers
+    let setCookieHeaders: string[] = []
+    
     const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
-        persistSession: false
+        persistSession: false,
+      },
+      global: {
+        fetch: async (url: string, options: any) => {
+          const response = await fetch(url, options);
+          // Capture all Set-Cookie headers
+          const cookies = response.headers.getSetCookie();
+          setCookieHeaders = [...setCookieHeaders, ...cookies];
+          return response;
+        }
       }
     })
     
@@ -69,40 +80,13 @@ export async function GET(request: Request) {
       console.error('❌ Error exchanging code for session:', error.message)
     }
     
-    // 💥 CRITICAL - In Next.js 13+ App Router, we need to MANUALLY set the auth cookies
-    // because Supabase doesn't propagate Set-Cookie headers to the final response
+    // 💥 CRITICAL - In Next.js 13+ App Router, we need to MANUALLY forward all Set-Cookie headers
     const response = NextResponse.redirect(`${origin}${next}`)
     
-    // For PKCE flow, after exchanging code, we need to get the cookie settings
-    // Correct approach for Supabase >= 2.0:
-    if (data.session) {
-      const { access_token, refresh_token, expires_in, expires_at } = data.session
-      const now = Date.now()
-      
-      // The cookie name format: sb-{project-ref}-auth-token
-      // But Supabase actually uses: sb-access-token / sb-refresh-token
-      // Set access token cookie
-      if (access_token) {
-        response.cookies.set('sb-access-token', access_token, {
-          path: '/',
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          expires: new Date(now + expires_in * 1000),
-        })
-      }
-      
-      // Set refresh token cookie  
-      if (refresh_token) {
-        response.cookies.set('sb-refresh-token', refresh_token, {
-          path: '/',
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          expires: new Date(now + 1000 * 60 * 60 * 24 * 30), // 30 days
-        })
-      }
-    }
+    // Forward all Set-Cookie headers captured from Supabase response
+    setCookieHeaders.forEach(cookie => {
+      response.headers.append('Set-Cookie', cookie);
+    });
     
     return response
   }
