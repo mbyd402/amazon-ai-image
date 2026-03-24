@@ -12,12 +12,19 @@ export async function GET(request: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     
-    // 🔑 Correct approach for Next.js 13+ App Router:
-    // Pass all cookies from browser to Supabase client so it can get code verifier for PKCE
+    // 🔑 Critical for PKCE in Next.js 13+ App Router:
+    // We need to pass the cookies from the browser because that's where the code verifier is stored
+    const cookieHeader = request.headers.get('cookie') || ''
+    
     const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
+      },
+      global: {
+        headers: {
+          Cookie: cookieHeader,
+        },
       }
     })
     
