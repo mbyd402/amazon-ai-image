@@ -75,29 +75,33 @@ export async function GET(request: Request) {
     
     // For PKCE flow, after exchanging code, we need to get the cookie settings
     // Correct approach for Supabase >= 2.0:
-    const { access_token, refresh_token, expires_in, expires_at } = data.session
-    const now = Date.now()
-    
-    // Set access token cookie
-    if (access_token) {
-      response.cookies.set('sb-access-token', access_token, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        expires: new Date(now + expires_in * 1000),
-      })
-    }
-    
-    // Set refresh token cookie  
-    if (refresh_token) {
-      response.cookies.set('sb-refresh-token', refresh_token, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        expires: new Date(now + 1000 * 60 * 60 * 24 * 30), // 30 days
-      })
+    if (data.session) {
+      const { access_token, refresh_token, expires_in, expires_at } = data.session
+      const now = Date.now()
+      
+      // The cookie name format: sb-{project-ref}-auth-token
+      // But Supabase actually uses: sb-access-token / sb-refresh-token
+      // Set access token cookie
+      if (access_token) {
+        response.cookies.set('sb-access-token', access_token, {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          expires: new Date(now + expires_in * 1000),
+        })
+      }
+      
+      // Set refresh token cookie  
+      if (refresh_token) {
+        response.cookies.set('sb-refresh-token', refresh_token, {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          expires: new Date(now + 1000 * 60 * 60 * 24 * 30), // 30 days
+        })
+      }
     }
     
     return response
