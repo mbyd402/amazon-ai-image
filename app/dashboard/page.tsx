@@ -123,7 +123,7 @@ export default function OptimizedDashboard() {
       
       // 3. 获取用户数据（带超时）
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('请求超时，请检查网络连接')), 15000)
+        setTimeout(() => reject(new Error('Request timeout, check network connection')), 15000)
       )
       
       const userDataPromise = supabase
@@ -132,15 +132,48 @@ export default function OptimizedDashboard() {
         .eq('id', sessionData.session.user.id)
         .single()
       
-      const userData = await Promise.race([userDataPromise, timeoutPromise]) as any
+      const userDataResult = await Promise.race([userDataPromise, timeoutPromise]) as any
       
-      if (userData.error) {
-        throw new Error(`数据获取失败: ${userData.error.message}`)
+      // 4. If user doesn't exist in users table, create a new record (client-side fallback)
+      // This handles OAuth users created before our server-side fix
+      if (userDataResult.error && userDataResult.error.code === 'PGRST116') {
+        console.log('🔍 User not found in users table, creating new record...')
+        
+        const { error: createError } = await supabase.from('users').insert({
+          id: sessionData.session.user.id,
+          email: sessionData.session.user.email!,
+          remaining_points: PACKAGES.free.points,
+          total_points: PACKAGES.free.points,
+          created_at: new Date().toISOString(),
+        })
+        
+        if (createError) {
+          console.error('❌ Error creating user record client-side:', createError.message)
+          throw new Error(`Failed to create user profile: ${createError.message}`)
+        }
+        
+        console.log('✅ User record created successfully on client-side')
+        
+        // Fetch the newly created user data
+        const newUserDataResult = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', sessionData.session.user.id)
+          .single()
+          
+        if (newUserDataResult.data) {
+          setUserData(newUserDataResult.data)
+          saveToCache(newUserDataResult.data)
+        }
+      } else if (userDataResult.error) {
+        throw new Error(`Failed to fetch data: ${userDataResult.error.message}`)
+      } else {
+        // 4. Success - user already exists
+        setUserData(userDataResult.data)
+        saveToCache(userDataResult.data)
       }
       
-      // 4. 成功处理
-      setUserData(userData.data)
-      saveToCache(userData.data)
+      // 5. Finalize
       setLastUpdate(new Date().toLocaleTimeString())
       setRetryCount(0)
       setConnectionStatus('online')
