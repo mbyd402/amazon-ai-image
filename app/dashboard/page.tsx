@@ -232,6 +232,12 @@ export default function OptimizedDashboard() {
   // 🎯 初始化加载
   useEffect(() => {
     console.log('🚀 Optimized dashboard loading...')
+    
+    // Ensure client is initialized
+    if (!supabase) {
+      supabase = createClient()
+    }
+    
     checkConnection()
     
     // Listen for auth state changes - this will catch the session when it's ready
