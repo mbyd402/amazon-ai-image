@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     
-    // 1. Use ANON key to exchange code - this ensures session is saved to cookie for frontend
+    // 1. Use ANON key to exchange code - we need to manually set cookie
     const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       }
     })
     
-    // Exchange code for session - this sets the correct cookie
+    // Exchange code for session
     const { data, error } = await supabaseAnon.auth.exchangeCodeForSession(code)
     
     if (!error && data.session?.user) {
@@ -69,7 +69,17 @@ export async function GET(request: Request) {
       console.error('❌ Error exchanging code for session:', error.message)
     }
     
-    return NextResponse.redirect(`${origin}${next}`)
+    // 💥 CRITICAL - In Next.js 13+ App Router, we need to MANUALLY set the auth cookies
+    // because Supabase doesn't do it automatically for us in server route
+    const response = NextResponse.redirect(`${origin}${next}`)
+    
+    // Get all the cookies set by Supabase and forward them to the browser
+    const cookies = supabaseAnon.auth.getAllCookies()
+    cookies.forEach(cookie => {
+      response.headers.append('Set-Cookie', cookie)
+    })
+    
+    return response
   }
 
   console.error('❌ No code found in OAuth callback')
