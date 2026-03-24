@@ -16,6 +16,9 @@ export async function GET(request: Request) {
     // We need to pass the cookies from the browser because that's where the code verifier is stored
     const cookieHeader = request.headers.get('cookie') || ''
     
+    // Create a client that captures all Set-Cookie headers from Supabase response
+    let setCookies: string[] = []
+    
     const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
@@ -25,6 +28,13 @@ export async function GET(request: Request) {
         headers: {
           Cookie: cookieHeader,
         },
+        fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+          const response = await fetch(input, init);
+          // Capture all Set-Cookie headers from Supabase response
+          const cookies = response.headers.getSetCookie();
+          setCookies = [...setCookies, ...cookies];
+          return response;
+        }
       }
     })
     
@@ -80,12 +90,10 @@ export async function GET(request: Request) {
     // 💥 CRITICAL - In Next.js 13+ App Router, we need to forward ALL Set-Cookie headers
     const response = NextResponse.redirect(`${origin}${next}`)
     
-    // Get all Set-Cookie headers from the response and forward them
-    // Supabase auth already set the correct cookies after exchange
-    const cookies: string[] = (supabaseAnon.auth as any).getAllCookies()
-    cookies.forEach((cookie: string) => {
-      response.headers.append('Set-Cookie', cookie)
-    })
+    // Forward all captured Set-Cookie headers to browser
+    setCookies.forEach(cookie => {
+      response.headers.append('Set-Cookie', cookie);
+    });
     
     return response
   }
