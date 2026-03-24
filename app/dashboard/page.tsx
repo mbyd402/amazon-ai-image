@@ -224,6 +224,7 @@ export default function OptimizedDashboard() {
   // 🎯 初始化加载
   useEffect(() => {
     console.log('🚀 Optimized dashboard loading...')
+    console.log('🔧 supabase client exists:', !!supabase)
     
     checkConnection()
     
@@ -250,7 +251,7 @@ export default function OptimizedDashboard() {
       subscription.unsubscribe()
       clearInterval(interval)
     }
-  }, [])
+  }, [supabase])
 
   // 🎯 手动重试
   const handleRetry = () => {
