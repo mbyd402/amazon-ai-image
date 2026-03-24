@@ -87,8 +87,8 @@ export default function OptimizedDashboard() {
   }
 
   // 🎯 加载用户数据（智能重试）
-  const loadUserData = async (useCache = true) => {
-    console.log('🚀 Starting loadUserData, useCache:', useCache)
+  const loadUserData = async (useCache = true, attempt = 0) => {
+    console.log('🚀 Starting loadUserData, useCache:', useCache, 'attempt:', attempt)
     setLoading(true)
     setError(null)
     
@@ -109,7 +109,13 @@ export default function OptimizedDashboard() {
         console.log('📦 No valid cache, fetching from server')
       }
 
-      // 2. 检查用户会话
+      // 2. 等待一小会让 PKCE 完成 session 初始化（OAuth callback 后可能需要时间）
+      if (attempt === 0) {
+        console.log('⏳ Waiting 300ms for PKCE session initialization...')
+        await new Promise(resolve => setTimeout(resolve, 300))
+      }
+
+      // 3. 检查用户会话
       console.log('🔍 Checking user session...')
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
       
@@ -119,7 +125,14 @@ export default function OptimizedDashboard() {
       }
       
       if (!sessionData.session) {
-        console.log('⚠️ No session found')
+        console.log('⚠️ No session found, attempt:', attempt)
+        // 如果是第一次没找到session，重试一次（给 PKCE 多一点时间）
+        if (attempt < 2) {
+          console.log('🔄 Retrying...')
+          setTimeout(() => loadUserData(useCache, attempt + 1), 500)
+          return
+        }
+        console.log('❌ No session after multiple retries')
         setUser(null)
         setUserData(null)
         setLoading(false)
