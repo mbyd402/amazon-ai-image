@@ -37,6 +37,9 @@ export default function SimpleDashboard() {
         addLog('⏰ TIMEOUT after 15 seconds - Supabase is deadlocked, refreshing page to fix...')
         window.location.reload()
       }, 15000)
+
+      // Wait a tiny bit to let Navbar finish its auth stuff - avoids deadlock
+      setTimeout(() => {
       
       client.auth.getSession().then(({ data, error }: { data: any, error: any }) => {
         clearTimeout(timeoutId)
@@ -97,6 +100,8 @@ export default function SimpleDashboard() {
         setError(err.message)
         setLoading(false)
       })
+
+      }, 100) // 100ms delay to avoid deadlock with Navbar
       
     } catch (err: any) {
       addLog(`❌ FATAL ERROR creating client: ${err.message}`)
