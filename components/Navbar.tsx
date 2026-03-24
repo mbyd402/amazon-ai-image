@@ -9,42 +9,49 @@ export default function Navbar() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [supabase, setSupabase] = useState<any>(null)
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = getSupabaseClient()
 
+  // Create client inside useEffect after mount - avoids deadlock
   useEffect(() => {
+    const client = getSupabaseClient()
+    setSupabase(client)
+
     const getCurrentUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
+        const { data: { user } } = await client.auth.getUser()
         setUser(user)
-        console.log('Got user:', user?.id)
+        console.log('Navbar: Got user:', user?.id)
         
         if (user) {
-          const { data } = await supabase
+          const { data } = await client
             .from('users')
             .select('remaining_points, total_points')
             .eq('id', user.id)
           setUserData(data?.[0] || null)
-          console.log('User data loaded:', data)
+          console.log('Navbar: User data loaded:', data)
         } else {
           setUserData(null)
         }
       } catch (error) {
-        console.error('Error loading user data:', error)
+        console.error('Navbar: Error loading user data:', error)
         setUserData(null)
       } finally {
         setLoading(false)
       }
     }
 
-    getCurrentUser()
+    // Wait a bit to avoid deadlock - let dashboard get the lock first
+    setTimeout(() => {
+      getCurrentUser()
+    }, 200)
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
-      console.log('Auth state changed:', event, session?.user?.id)
+    const { data: { subscription } } = client.auth.onAuthStateChange(async (event: any, session: any) => {
+      console.log('Navbar: Auth state changed:', event, session?.user?.id)
       if (session?.user) {
         setUser(session.user)
-        const { data } = await supabase
+        const { data } = await client
           .from('users')
           .select('remaining_points, total_points')
           .eq('id', session.user.id)
