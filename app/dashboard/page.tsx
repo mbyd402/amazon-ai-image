@@ -65,6 +65,11 @@ export default function OptimizedDashboard() {
   const checkConnection = async () => {
     setConnectionStatus('checking')
     
+    // Create client if not exists
+    if (!supabase) {
+      supabase = createClient()
+    }
+    
     try {
       const startTime = Date.now()
       const { data, error } = await supabase.auth.getSession()
