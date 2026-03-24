@@ -46,20 +46,31 @@ const supabaseConfig = {
   }
 }
 
-// 🎯 创建Supabase客户端
+// 🎯 Singleton client - one instance only, no multiple instances = no lock conflicts
+let singletonClient: any = null
+
+// 🎯 创建Supabase客户端 - singleton to avoid multiple GoTrueClient instances
 export const createClient = () => {
+  // If we already created the client, return the singleton
+  if (singletonClient) {
+    console.log('🔄 Reusing existing singleton Supabase client')
+    return singletonClient
+  }
+
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('❌ Supabase环境变量缺失')
-    // 返回一个安全的空客户端
+    // Return a safe mock client
     return {
       auth: {
-        getSession: async () => ({ data: { session: null }, error: new Error('配置缺失') }),
-        signOut: async () => ({ error: new Error('配置缺失') })
+        getSession: async () => ({ data: { session: null }, error: new Error('Missing environment variables') }),
+        signOut: async () => ({ error: new Error('Missing environment variables') }),
+        onAuthStateChange: () => ({ subscription: { unsubscribe: () => {} } }),
+        exchangeCodeForSession: async () => ({ data: { session: null }, error: new Error('Missing environment variables') })
       },
       from: () => ({
         select: () => ({
           eq: () => ({
-            single: async () => ({ data: null, error: new Error('配置缺失') })
+            single: async () => ({ data: null, error: new Error('Missing environment variables') })
           })
         })
       })
@@ -67,9 +78,10 @@ export const createClient = () => {
   }
 
   try {
-    const client = createSupabaseClient(supabaseUrl, supabaseAnonKey, supabaseConfig)
+    console.log('🔧 Creating new singleton Supabase client')
+    const client = createSupabaseClient(supabaseUrl, supabaseAnonKey, supabaseConfig) as any
     
-    // 🔧 添加连接检查方法
+    // 🔧 Add connection check method
     client.checkConnection = async () => {
       try {
         const startTime = Date.now()
@@ -92,6 +104,8 @@ export const createClient = () => {
       }
     }
     
+    singletonClient = client
+    console.log('✅ Singleton Supabase client created successfully')
     return client
   } catch (error: any) {
     console.error('❌ Supabase客户端创建失败:', error.message)
@@ -99,14 +113,9 @@ export const createClient = () => {
   }
 }
 
-// 🎯 导出单例客户端（用于服务端渲染）
-let supabaseClient: ReturnType<typeof createClient> | null = null
-
+// 🎯 Get the singleton client
 export const getSupabaseClient = () => {
-  if (!supabaseClient) {
-    supabaseClient = createClient()
-  }
-  return supabaseClient
+  return createClient()
 }
 
 // 🎯 辅助函数：检查Supabase连接
