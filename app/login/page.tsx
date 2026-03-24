@@ -1,102 +1,246 @@
 'use client'
 
-// 🚨 简单登录页面 - 完全绕过Supabase
-// 直接重定向到紧急dashboard
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
-import { useState } from 'react'
-
-export default function SimpleLogin() {
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  // Only create client on client side to avoid auth lock conflicts
+  const [supabase, setSupabase] = useState<any>(null)
+  const router = useRouter()
 
-  const handleEmergencyLogin = () => {
+  // Create client on client side only
+  useEffect(() => {
+    setSupabase(createClient())
+  }, [])
+
+  // Handle OAuth callback when token is in hash (PKCE callback fallback)
+  useEffect(() => {
+    if (!supabase) return
+    
+    // Check if we have access_token in hash from PKCE callback
+    const handleHashCallback = async () => {
+      const hash = window.location.hash
+      console.log('🔍 Login page loaded, hash:', hash ? hash.substring(0, 50) + '...' : 'empty')
+      
+      if (!hash || !hash.includes('access_token')) {
+        console.log('No access_token in hash, skipping callback processing')
+        return
+      }
+      
+      console.log('✅ Found access_token in hash, processing PKCE callback...')
+      
+      try {
+        // Force Supabase to process the hash
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        console.log('📋 Get session result:', { 
+          hasSession: !!session, 
+          user: session?.user?.email,
+          error: error?.message 
+        })
+        
+        if (error) {
+          console.error('❌ Get session error from hash:', error)
+          setError(error.message)
+          return
+        }
+        
+        if (session?.user) {
+          console.log('✅ Got session from hash for user:', session.user.email)
+          
+          // Clear the hash before redirect
+          window.location.hash = ''
+          
+          // Redirect to dashboard
+          console.log('🔀 Redirecting to dashboard...')
+          window.location.replace('/dashboard')
+        }
+      } catch (err) {
+        console.error('❌ Error processing PKCE callback:', err)
+        setError((err as Error).message)
+      }
+    }
+    
+    // Wait a bit for everything to initialize
+    const timer = setTimeout(() => {
+      handleHashCallback()
+    }, 100)
+    
+    return () => clearTimeout(timer)
+  }, [supabase])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!supabase) return
+    
     setLoading(true)
+    setError('')
+
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (authError) {
+        setError(authError.message)
+        return
+      }
+
+      console.log('✅ Email login successful')
+      router.push('/dashboard')
+      router.refresh()
+    } catch (err: any) {
+      setError(err.message)
+      console.error('Login error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    if (!supabase) return
     
-    // 立即重定向到紧急dashboard
-    const userId = 'simple_' + Date.now()
-    const userEmail = `seller${Math.floor(Math.random() * 1000)}@amazon.com`
+    setLoading(true)
+    setError('')
     
-    localStorage.setItem('emergency_user_id', userId)
-    localStorage.setItem('emergency_user_email', userEmail)
-    localStorage.setItem('emergency_user_points', '15')
+    console.log('Starting Google login with PKCE flow...')
     
-    window.location.href = '/dashboard'
+    try {
+      // Get current origin correctly - window is only available on client
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://amazon-ai-image.vercel.app'
+      
+      console.log('Redirect URI:', `${origin}/auth/callback`)
+      
+      // Use PKCE flow
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${origin}/auth/callback`
+        }
+      })
+
+      console.log('OAuth result error:', error)
+
+      if (error) {
+        setError(error.message)
+        console.error('OAuth error:', error)
+      }
+    } catch (err: any) {
+      setError(err.message)
+      console.error('Google login unexpected error:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 dark:from-gray-900 dark:to-black flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        {/* 紧急通知 */}
-        <div className="mb-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl p-6 text-white text-center">
-          <div className="text-4xl mb-4">🚨</div>
-          <h2 className="text-2xl font-bold">EMERGENCY ACCESS</h2>
-          <p className="mt-2 opacity-90">
-            Supabase connection issues detected
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome Back
+          </h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Sign in to your Amazon AI Image Tools account
           </p>
         </div>
 
-        {/* 登录卡片 */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Amazon AI Tools
-            </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Emergency zero-dependency version
-            </p>
-          </div>
+          <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm text-red-600 dark:text-red-300">
+                {error}
+              </div>
+            )}
+            <div>
+              <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email Address
+              </label>
+              <input
+                id="email-address"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="you@example.com"
+              />
+            </div>
 
-          {/* 紧急登录按钮 */}
-          <div className="mb-6">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="••••••••"
+              />
+            </div>
+
             <button
-              onClick={handleEmergencyLogin}
-              disabled={loading}
-              className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-70 transition"
+              type="submit"
+              disabled={loading || !supabase}
+              className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Entering...' : '🚀 Enter Emergency Dashboard'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
-            <p className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              No login required • 15 free points
-            </p>
+          </form>
+
+          <div className="my-6 flex items-center">
+            <div className="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
+            <span className="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
+            <div className="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
           </div>
 
-          {/* 功能列表 */}
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-5 mb-6">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-              ✅ Emergency Version Features:
-            </h3>
-            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>Zero external dependencies</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>No Supabase connection timeouts</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>All data saved locally in your browser</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>15 free demo points included</span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
-                <span>Full image processing functionality</span>
-              </li>
-            </ul>
+          <div>
+            <button
+              onClick={handleGoogleLogin}
+              disabled={loading || !supabase}
+              className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+            >
+              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.35-4.98-1.11-.25-2.15-.72-3.12-1.37v3.58c2.22 0 4.02 1.35 4.78 3.29z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M6.35 14.29c-.25-.75-.38-1.56-.38-2.29s.13-1.54.38-2.29V6.13c-1.02.61-1.85 1.5-2.47 2.59v11.48c.62 1.09 1.45 1.98 2.47 2.59z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.67 0 3.17.57 4.27 1.7l3.14-3.14C17.46 1.63 14.97 0 12 0 8.69 0 5.74 1.92 3.88 4.66 6.35 7.58 4.75 12 4.75z"
+                />
+              </svg>
+              Continue with Google
+            </button>
           </div>
 
-          {/* 版本信息 */}
-          <div className="text-center">
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              Emergency Version: SIMPLE_ZERO_DEPS_{Date.now().toString().slice(-6)}
-            </p>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              <a href="/new-login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                Try another local version
-              </a>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <Link
+                href="/register"
+                className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                Sign up
+              </Link>
             </p>
           </div>
         </div>
