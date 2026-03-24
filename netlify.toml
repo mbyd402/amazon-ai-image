@@ -7,6 +7,9 @@
   # 🎯 禁用所有处理，直接使用Next.js输出
   processing.skip_processing = true
   
+  # 禁用缓存以避免大缓存问题
+  cache = false
+  
   # 环境变量（可选，不会导致构建失败）
   environment = { 
     CLIPDROP_API_KEY = "optional", 
@@ -17,7 +20,7 @@
     PAYPAL_CLIENT_SECRET = "optional", 
     REMOVE_BG_API_KEY = "optional", 
     SUPABASE_SERVICE_ROLE_KEY = "optional", 
-    NODE_VERSION = "18.20.4" 
+    NODE_VERSION = "20.10.0" 
   }
 
 # 🎯 重要：禁用所有插件，直接使用原生Next.js构建
@@ -25,12 +28,16 @@
 
 [build.environment]
   # Node.js版本
-  NODE_VERSION = "18.20.4"
+  NODE_VERSION = "20.10.0"
   # 标记构建环境
   IS_BUILD_TIME = "true"
   NETLIFY_BUILD = "true"
   # 减少内存使用
-  NODE_OPTIONS = "--max-old-space-size=4096"
+  NODE_OPTIONS = "--max-old-space-size=3072"
+  # 禁用 yarn
+  NETLIFY_USE_YARN = "false"
+  # 禁用 pnpm 缓存
+  PNPM_STORE_DIR = "/tmp/pnpm-store"
 
 # 重定向配置（简单版本）
 [[redirects]]
@@ -48,3 +55,7 @@
 
 # 🎯 关键：禁用所有Next.js相关的插件
 # 注释掉或删除所有插件配置
+
+# 禁用 Netlify 缓存
+[cache]
+  enabled = false
