@@ -12,21 +12,30 @@ export async function GET(request: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     
-    // Use service_role to bypass RLS when inserting user record (server-side)
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    // 1. Use ANON key to exchange code - this ensures session is saved to cookie for frontend
+    const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false
       }
     })
     
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    // Exchange code for session - this sets the correct cookie
+    const { data, error } = await supabaseAnon.auth.exchangeCodeForSession(code)
     
     if (!error && data.session?.user) {
-      console.log(`🔍 OAuth callback: checking if user exists ${data.session.user.email} (${data.session.user.id})`)
+      console.log(`🔍 OAuth callback: Got session for ${data.session.user.email} (${data.session.user.id})`)
+      
+      // 2. Use SERVICE_ROLE key to create user record if not exists (bypass RLS)
+      const supabaseService = createClient(supabaseUrl, serviceRoleKey, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      })
       
       // Check if user already exists in our users table
-      const { data: existingUser, error: selectError } = await supabase
+      const { data: existingUser, error: selectError } = await supabaseService
         .from('users')
         .select('id')
         .eq('id', data.session.user.id)
@@ -40,7 +49,7 @@ export async function GET(request: Request) {
       if (!existingUser) {
         console.log('✅ Creating new user record for OAuth user:', data.session.user.email)
         
-        const { error: insertError } = await supabase.from('users').insert({
+        const { error: insertError } = await supabaseService.from('users').insert({
           id: data.session.user.id,
           email: data.session.user.email!,
           remaining_points: PACKAGES.free.points,
@@ -51,7 +60,7 @@ export async function GET(request: Request) {
         if (insertError) {
           console.error('❌ Error creating user record:', insertError.message)
         } else {
-          console.log('✅ User record created successfully')
+          console.log('✅ User record created successfully by service_role')
         }
       } else {
         console.log('ℹ️ User already exists in users table, skipping creation')
