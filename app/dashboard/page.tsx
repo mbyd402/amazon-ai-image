@@ -25,10 +25,13 @@ export default function OptimizedDashboard() {
   const [results, setResults] = useState<string[]>([])
   
   // Create client once when component mounts (client-side only)
-  const [supabase] = useState(() => {
+  const [supabase] = useState(() => createClient())
+
+  // Log client creation after mount
+  useEffect(() => {
     console.log('🔧 Creating supabase client on client-side...')
-    return createClient()
-  })
+    console.log('🔧 supabase client created:', !!supabase)
+  }, [supabase])
 
   // 🎯 智能缓存系统
   const loadFromCache = () => {
