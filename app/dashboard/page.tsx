@@ -491,15 +491,87 @@ export default function OptimizedDashboard() {
               
               {files.length > 0 && (
                 <div className="mt-6">
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm text-gray-600 mb-4">
                     {files.length} file(s) selected
                   </p>
+                  
+                  {/* Image preview grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                    {files.map((file, index) => {
+                      const url = URL.createObjectURL(file)
+                      return (
+                        <div key={index} className="relative rounded overflow-hidden shadow">
+                          <img
+                            src={url}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-32 object-cover"
+                          />
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 truncate">
+                            {file.name}
+                          </div>
+                          <button
+                            onClick={() => {
+                              setFiles(files.filter((_, i) => i !== index))
+                            }}
+                            className="absolute top-1 right-1 w-6 h-6 bg-black/70 text-white rounded-full flex items-center justify-center hover:bg-black/90"
+                            title="Remove image"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+
                   <button
-                    onClick={() => setProcessing(true)}
-                    disabled={processing}
+                    onClick={async () => {
+                      if (!supabase || !user) {
+                        alert('Please wait for initialization or login again')
+                        return
+                      }
+                      if (files.length === 0) {
+                        alert('Please select at least one image to process')
+                        return
+                      }
+                      setProcessing(true)
+                      setResults([])
+                      
+                      try {
+                        const processedResults: string[] = []
+                        
+                        // Process each file one by one
+                        for (const file of files) {
+                          console.log('Processing:', file.name)
+                          
+                          // TODO: Replace with your real AI processing API call
+                          // const formData = new FormData()
+                          // formData.append('image', file)
+                          // formData.append('type', selectedTab)
+                          // const response = await fetch('/api/process', { method: 'POST', body: formData })
+                          // const result = await response.json()
+                          // processedResults.push(result.url)
+                          
+                          // For demonstration, use original URL - remove this when adding real API
+                          const objectUrl = URL.createObjectURL(file)
+                          processedResults.push(objectUrl)
+                          
+                          // Simulate processing delay
+                          await new Promise(resolve => setTimeout(resolve, 500))
+                        }
+                        
+                        setResults(processedResults)
+                        console.log('Processing complete:', processedResults.length, 'results')
+                      } catch (err: any) {
+                        console.error('Processing failed:', err)
+                        alert(`Processing failed: ${err.message}`)
+                      } finally {
+                        setProcessing(false)
+                      }
+                    }}
+                    disabled={processing || !supabase || !user || files.length === 0}
                     className="px-8 py-3 bg-green-600 text-white text-base font-medium rounded-xl hover:bg-green-700 transition disabled:opacity-50"
                   >
-                    {processing ? 'Processing...' : 'Start AI Processing'}
+                    {processing ? 'Processing...' : `Start AI Processing (${files.length} image${files.length > 1 ? 's' : ''})`}
                   </button>
                 </div>
               )}
