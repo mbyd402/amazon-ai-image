@@ -45,17 +45,9 @@ const supabaseConfig = {
   }
 }
 
-// 🎯 Singleton client - one instance only, no multiple instances = no lock conflicts
-let singletonClient: any = null
-
-// 🎯 创建Supabase客户端 - singleton to avoid multiple GoTrueClient instances
+// 🎯 Create a new client every time - avoids deadlock from shared locks
+// Supabase will warn about multiple instances but it won't deadlock
 export const createClient = () => {
-  // If we already created the client, return the singleton
-  if (singletonClient) {
-    console.log('🔄 Reusing existing singleton Supabase client')
-    return singletonClient
-  }
-
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('❌ Supabase环境变量缺失')
     // Return a safe mock client
@@ -77,7 +69,7 @@ export const createClient = () => {
   }
 
   try {
-    console.log('🔧 Creating new singleton Supabase client')
+    console.log('🔧 Creating new Supabase client')
     const client = createSupabaseClient(supabaseUrl, supabaseAnonKey, supabaseConfig) as any
     
     // 🔧 Add connection check method
@@ -103,8 +95,7 @@ export const createClient = () => {
       }
     }
     
-    singletonClient = client
-    console.log('✅ Singleton Supabase client created successfully')
+    console.log('✅ Supabase client created successfully')
     return client
   } catch (error: any) {
     console.error('❌ Supabase客户端创建失败:', error.message)
