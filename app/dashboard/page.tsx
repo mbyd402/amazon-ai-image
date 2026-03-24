@@ -221,13 +221,29 @@ export default function OptimizedDashboard() {
 
   // 🎯 初始化加载
   useEffect(() => {
-    console.log('🚀 优化Dashboard加载中...')
+    console.log('🚀 Optimized dashboard loading...')
     checkConnection()
+    
+    // Listen for auth state changes - this will catch the session when it's ready
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔔 Auth state changed:', event, session?.user?.email)
+      
+      if (session?.user) {
+        console.log('✅ Session ready, loading user data')
+        setUser(session.user)
+        loadUserData(true)
+      }
+    })
+    
+    // Try loading immediately in case session is already ready
     loadUserData(true)
     
     // 定期检查连接
     const interval = setInterval(checkConnection, 30000)
-    return () => clearInterval(interval)
+    return () => {
+      subscription.unsubscribe()
+      clearInterval(interval)
+    }
   }, [])
 
   // 🎯 手动重试
