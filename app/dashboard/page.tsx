@@ -191,10 +191,10 @@ export default function OptimizedDashboard() {
   // 🎯 渲染连接状态指示器
   const renderConnectionStatus = () => {
     const statusConfig = {
-      online: { emoji: '✅', text: '在线', color: 'text-green-600' },
-      offline: { emoji: '❌', text: '离线', color: 'text-red-600' },
-      slow: { emoji: '⚠️', text: '缓慢', color: 'text-yellow-600' },
-      checking: { emoji: '🔍', text: '检查中...', color: 'text-gray-600' }
+      online: { emoji: '✅', text: 'Online', color: 'text-green-600' },
+      offline: { emoji: '❌', text: 'Offline', color: 'text-red-600' },
+      slow: { emoji: '⚠️', text: 'Slow', color: 'text-yellow-600' },
+      checking: { emoji: '🔍', text: 'Checking...', color: 'text-gray-600' }
     }
     
     const config = statusConfig[connectionStatus]
@@ -218,7 +218,7 @@ export default function OptimizedDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center">
               <div className="text-6xl mb-4">😕</div>
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">加载遇到问题</h1>
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">Something Went Wrong</h1>
               <p className="text-gray-600 mb-6">{error}</p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -226,29 +226,29 @@ export default function OptimizedDashboard() {
                   onClick={handleRetry}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 >
-                  🔄 重试加载
+                  🔄 Retry Loading
                 </button>
                 
                 <button
                   onClick={handleClearCache}
                   className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
                 >
-                  🗑️ 清除缓存并重试
+                  🗑️ Clear Cache & Retry
                 </button>
                 
                 <a
                   href="/debug"
                   className="px-6 py-3 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition"
                 >
-                  🔧 运行诊断
+                  🔧 Run Diagnostics
                 </a>
               </div>
               
               <div className="mt-8 p-4 bg-gray-100 rounded-lg">
                 <p className="text-sm text-gray-600">
-                  <strong>提示：</strong> 
-                  如果问题持续，请检查网络连接或联系支持。
-                  错误详情已记录到控制台。
+                  <strong>Tip:</strong> 
+                  If the problem persists, check your network connection or contact support.
+                  Error details have been logged to the console.
                 </p>
               </div>
             </div>
@@ -264,16 +264,16 @@ export default function OptimizedDashboard() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-800">Amazon AI 图片处理</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Amazon AI Image Tools</h1>
             {renderConnectionStatus()}
           </div>
           
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">正在加载...</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">Loading...</h2>
               <p className="text-gray-600">
-                {retryCount > 0 ? `正在重试 (${retryCount}/3)` : '获取最新数据中'}
+                {retryCount > 0 ? `Retrying (${retryCount}/3)` : 'Fetching latest data'}
               </p>
             </div>
           </div>
@@ -289,8 +289,8 @@ export default function OptimizedDashboard() {
         {/* 顶部状态栏 */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Amazon AI 图片处理</h1>
-            <p className="text-gray-600">专业亚马逊商品图片处理工具</p>
+            <h1 className="text-2xl font-bold text-gray-800">Amazon AI Image Tools</h1>
+            <p className="text-gray-600">Professional AI image processing for Amazon sellers</p>
           </div>
           
           <div className="flex items-center gap-4">
@@ -309,7 +309,7 @@ export default function OptimizedDashboard() {
                     onClick={() => supabase.auth.signOut()}
                     className="text-xs text-gray-500 hover:text-gray-700"
                   >
-                    退出登录
+                    Logout
                   </button>
                 </div>
               </div>
@@ -321,21 +321,21 @@ export default function OptimizedDashboard() {
         {userData && (
           <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="font-semibold text-gray-700 mb-2">账户状态</h3>
-              <p className="text-2xl font-bold text-green-600">活跃</p>
+              <h3 className="font-semibold text-gray-700 mb-2">Account Status</h3>
+              <p className="text-2xl font-bold text-green-600">Active</p>
             </div>
             
             <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="font-semibold text-gray-700 mb-2">处理次数</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Images Processed</h3>
               <p className="text-2xl font-bold text-blue-600">
                 {userData.processed_count || 0}
               </p>
             </div>
             
             <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="font-semibold text-gray-700 mb-2">会员状态</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Subscription</h3>
               <p className="text-2xl font-bold text-purple-600">
-                {userData.subscription || '免费版'}
+                {userData.subscription || 'Free Plan'}
               </p>
             </div>
           </div>
@@ -356,10 +356,10 @@ export default function OptimizedDashboard() {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  {tab === 'background' && '背景移除'}
-                  {tab === 'watermark' && '水印去除'}
-                  {tab === 'upscale' && '画质提升'}
-                  {tab === 'compliance' && '合规检查'}
+                  {tab === 'background' && 'Background Remover'}
+                  {tab === 'watermark' && 'Watermark Remover'}
+                  {tab === 'upscale' && 'Image Upscale'}
+                  {tab === 'compliance' && 'Compliance Check'}
                 </button>
               ))}
             </nav>
@@ -372,10 +372,10 @@ export default function OptimizedDashboard() {
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
                 <div className="text-5xl mb-4">📸</div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  上传亚马逊商品图片
+                  Upload Amazon Product Images
                 </h3>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  支持 JPG、PNG 格式，最大 10MB。AI将自动优化图片以适应亚马逊要求。
+                  Supports JPG, PNG formats, up to 10MB. AI will automatically optimize images for Amazon requirements.
                 </p>
                 
                 <input
@@ -395,42 +395,42 @@ export default function OptimizedDashboard() {
                   htmlFor="file-upload"
                   className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
                 >
-                  选择图片文件
+                  Select Image Files
                 </label>
                 
                 {files.length > 0 && (
                   <div className="mt-6">
                     <p className="text-sm text-gray-600 mb-2">
-                      已选择 {files.length} 个文件
+                      {files.length} file(s) selected
                     </p>
                     <button
                       onClick={() => setProcessing(true)}
                       disabled={processing}
                       className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
                     >
-                      {processing ? '处理中...' : '开始AI处理'}
+                      {processing ? 'Processing...' : 'Start AI Processing'}
                     </button>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* 调试信息（开发环境显示） */}
+            {/* Debug Information (development only) */}
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
               <details className="text-sm">
                 <summary className="cursor-pointer text-gray-600 hover:text-gray-800">
-                  调试信息
+                  Debug Information
                 </summary>
                 <div className="mt-2 space-y-1">
-                  <p><strong>连接状态:</strong> {connectionStatus}</p>
-                  <p><strong>重试次数:</strong> {retryCount}</p>
-                  <p><strong>最后更新:</strong> {lastUpdate || '无'}</p>
-                  <p><strong>缓存状态:</strong> {loadFromCache() ? '有效' : '无效/过期'}</p>
+                  <p><strong>Connection:</strong> {connectionStatus}</p>
+                  <p><strong>Retry Count:</strong> {retryCount}</p>
+                  <p><strong>Last Update:</strong> {lastUpdate || 'None'}</p>
+                  <p><strong>Cache Status:</strong> {loadFromCache() ? 'Valid' : 'Invalid/Expired'}</p>
                   <button
                     onClick={handleClearCache}
                     className="text-xs text-gray-500 hover:text-gray-700"
                   >
-                    清除缓存
+                    Clear Cache
                   </button>
                 </div>
               </details>
@@ -438,10 +438,10 @@ export default function OptimizedDashboard() {
           </div>
         </div>
 
-        {/* 页脚 */}
+        {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>
-            遇到问题？访问 <a href="/debug" className="text-blue-600 hover:underline">调试页面</a> 或联系支持
+            Having issues? Visit the <a href="/debug" className="text-blue-600 hover:underline">debug page</a> or contact support
           </p>
         </div>
       </div>
