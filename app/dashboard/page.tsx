@@ -24,13 +24,23 @@ export default function OptimizedDashboard() {
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
   
-  // Create client once when component mounts (client-side only)
-  const [supabase] = useState(() => createClient())
+  // Create client once when component mounts (client-side only) with error handling
+  const [supabase] = useState(() => {
+    try {
+      console.log('🔧 Creating supabase client on client-side...')
+      const client = createClient()
+      console.log('🔧 supabase client created successfully:', !!client)
+      return client
+    } catch (err) {
+      console.error('❌ Failed to create supabase client:', err)
+      throw err
+    }
+  })
 
   // Log client creation after mount
   useEffect(() => {
-    console.log('🔧 Creating supabase client on client-side...')
-    console.log('🔧 supabase client created:', !!supabase)
+    console.log('🚀 Optimized dashboard loading...')
+    console.log('🔧 supabase client exists:', !!supabase)
   }, [supabase])
 
   // 🎯 智能缓存系统
