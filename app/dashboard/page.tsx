@@ -88,6 +88,7 @@ export default function OptimizedDashboard() {
 
   // 🎯 加载用户数据（智能重试）
   const loadUserData = async (useCache = true) => {
+    console.log('🚀 Starting loadUserData, useCache:', useCache)
     setLoading(true)
     setError(null)
     
@@ -96,30 +97,36 @@ export default function OptimizedDashboard() {
       if (useCache) {
         const cachedData = loadFromCache()
         if (cachedData) {
+          console.log('📦 Using cached data')
           setUserData(cachedData)
-          setLastUpdate('从缓存加载')
+          setLastUpdate('Loaded from cache')
           setLoading(false)
           
           // 后台更新
           setTimeout(() => loadUserData(false), 1000)
           return
         }
+        console.log('📦 No valid cache, fetching from server')
       }
 
       // 2. 检查用户会话
+      console.log('🔍 Checking user session...')
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
       
       if (sessionError) {
-        throw new Error(`认证失败: ${sessionError.message}`)
+        console.error('❌ Session error:', sessionError)
+        throw new Error(`Auth failed: ${sessionError.message}`)
       }
       
       if (!sessionData.session) {
+        console.log('⚠️ No session found')
         setUser(null)
         setUserData(null)
         setLoading(false)
         return
       }
       
+      console.log('✅ Got session for user:', sessionData.session.user.email)
       setUser(sessionData.session.user)
       
       // 3. 获取用户数据（带超时）
