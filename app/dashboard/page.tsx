@@ -129,7 +129,7 @@ export default function OptimizedDashboard() {
       const userDataPromise = supabase
         .from('users')
         .select('*')
-        .eq('user_id', sessionData.session.user.id)
+        .eq('id', sessionData.session.user.id)
         .single()
       
       const userData = await Promise.race([userDataPromise, timeoutPromise]) as any
