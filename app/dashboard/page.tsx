@@ -230,6 +230,7 @@ export default function OptimizedDashboard() {
     console.log('🔧 supabase client exists:', !!supabase)
     
     checkConnection()
+    console.log('✅ checkConnection completed')
     
     // Listen for auth state changes - this will catch the session when it's ready
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
@@ -244,9 +245,11 @@ export default function OptimizedDashboard() {
         }, 100)
       }
     })
+    console.log('✅ Auth listener registered')
     
     // Try loading immediately in case session is already ready
     loadUserData(true)
+    console.log('✅ Initial loadUserData started')
     
     // 定期检查连接
     const interval = setInterval(checkConnection, 30000)
