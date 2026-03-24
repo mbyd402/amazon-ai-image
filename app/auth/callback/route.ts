@@ -12,32 +12,22 @@ export async function GET(request: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     
-    // Create a client that captures all response headers
-    let setCookieHeaders: string[] = []
-    
+    // 🔑 Correct approach for Next.js 13+ App Router:
+    // Pass all cookies from browser to Supabase client so it can get code verifier for PKCE
     const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
-      },
-      global: {
-        fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-          const response = await fetch(input, init);
-          // Capture all Set-Cookie headers
-          const cookies = response.headers.getSetCookie();
-          setCookieHeaders = [...setCookieHeaders, ...cookies];
-          return response;
-        }
       }
     })
     
-    // Exchange code for session
+    // Exchange code for session - cookies already contain the code verifier
     const { data, error } = await supabaseAnon.auth.exchangeCodeForSession(code)
     
     if (!error && data.session?.user) {
       console.log(`🔍 OAuth callback: Got session for ${data.session.user.email} (${data.session.user.id})`)
       
-      // 2. Use SERVICE_ROLE key to create user record if not exists (bypass RLS)
+      // ✅ Step 2: Use SERVICE_ROLE key to create user record if not exists (bypasses RLS)
       const supabaseService = createClient(supabaseUrl, serviceRoleKey, {
         auth: {
           autoRefreshToken: false,
@@ -80,13 +70,15 @@ export async function GET(request: Request) {
       console.error('❌ Error exchanging code for session:', error.message)
     }
     
-    // 💥 CRITICAL - In Next.js 13+ App Router, we need to MANUALLY forward all Set-Cookie headers
+    // 💥 CRITICAL - In Next.js 13+ App Router, we need to forward ALL Set-Cookie headers
     const response = NextResponse.redirect(`${origin}${next}`)
     
-    // Forward all Set-Cookie headers captured from Supabase response
-    setCookieHeaders.forEach(cookie => {
-      response.headers.append('Set-Cookie', cookie);
-    });
+    // Get all Set-Cookie headers from the response and forward them
+    // Supabase auth already set the correct cookies after exchange
+    const cookies = supabaseAnon.auth.getAllCookies()
+    cookies.forEach(cookie => {
+      response.headers.append('Set-Cookie', cookie)
+    })
     
     return response
   }
