@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import { PACKAGES } from '@/lib/config'
+
+// Use the shared singleton instance to avoid multiple GoTrueClient instances
+const supabase = getSupabaseClient()
 
 // 🎯 智能缓存系统 - 10分钟缓存
 const CACHE_KEY = 'amazon_ai_dashboard_cache'
@@ -23,9 +26,6 @@ export default function OptimizedDashboard() {
   const [files, setFiles] = useState<File[]>([])
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
-
-  // 🎯 创建Supabase客户端
-  const supabase = createClient()
 
   // 🎯 智能缓存系统
   const loadFromCache = () => {
