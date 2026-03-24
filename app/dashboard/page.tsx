@@ -1,5 +1,7 @@
 'use client'
 
+console.log('🟢 Starting to render OptimizedDashboard component...')
+
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { PACKAGES } from '@/lib/config'
@@ -12,6 +14,8 @@ const CACHE_DURATION = 10 * 60 * 1000 // 10分钟
 type ConnectionStatus = 'online' | 'offline' | 'slow' | 'checking'
 
 export default function OptimizedDashboard() {
+  console.log('🟢 Inside OptimizedDashboard function...')
+
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
