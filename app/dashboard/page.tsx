@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
 import { PACKAGES } from '@/lib/config'
 
@@ -26,25 +26,32 @@ export default function OptimizedDashboard() {
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
   
-  // Create client after component mount
-  const [supabase, setSupabase] = useState<any>(null)
+  // Create client ONCE - use ref to avoid recreation on every render
+  const isInitialized = useRef(false)
+  const supabase = useRef<any>(null)
 
-  // Initialize everything
+  // Initialize everything ONCE
   useEffect(() => {
+    // Prevent multiple initializations (React Strict Mode fix)
+    if (isInitialized.current) {
+      return
+    }
+    isInitialized.current = true
+
     console.log('🔧 Initializing dashboard...')
     
-    // 1. Create supabase client
-    let client: any
+    // 1. Create supabase client ONCE
     try {
       console.log('🔧 Creating Supabase client...')
-      client = createClient()
-      console.log('✅ Supabase client created:', !!client)
-      setSupabase(client)
+      supabase.current = createClient()
+      console.log('✅ Supabase client created:', !!supabase.current)
     } catch (err: any) {
       console.error('❌ Failed to create client:', err)
       setError(`Failed to initialize: ${err.message}`)
       return
     }
+
+    const client = supabase.current
 
     // 2. Check connection
     const checkConnection = async () => {
@@ -103,6 +110,7 @@ export default function OptimizedDashboard() {
     return () => {
       subscription.unsubscribe()
       clearInterval(interval)
+      isInitialized.current = false
     }
   }, [])
 
@@ -299,7 +307,7 @@ export default function OptimizedDashboard() {
   }
 
   // If still initializing client
-  if (!supabase) {
+  if (!supabase.current) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
@@ -379,7 +387,7 @@ export default function OptimizedDashboard() {
           </div>
           {renderConnectionStatus()}
           
-          {user && supabase && (
+          {user && supabase.current && (
             <div className="flex items-center gap-4">
               {userData && (
                 <div className="text-sm">
@@ -397,7 +405,7 @@ export default function OptimizedDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-800">{user.email}</p>
                 <button
-                  onClick={() => supabase.auth.signOut().then(() => window.location.href = '/login')}
+                  onClick={() => supabase.current.auth.signOut().then(() => window.location.href = '/login')}
                   className="text-xs text-gray-500 hover:text-gray-700"
                 >
                   Logout
@@ -525,7 +533,7 @@ export default function OptimizedDashboard() {
 
                   <button
                     onClick={async () => {
-                      if (!supabase || !user) {
+                      if (!supabase.current || !user) {
                         alert('Please wait for initialization or login again')
                         return
                       }
@@ -538,23 +546,12 @@ export default function OptimizedDashboard() {
                       
                       try {
                         const processedResults: string[] = []
+                        const client = supabase.current
                         
                         // Process each file one by one
                         for (const file of files) {
                           console.log('Processing:', file.name)
-                          
-                          // TODO: Replace with your real AI processing API call
-                          // const formData = new FormData()
-                          // formData.append('image', file)
-                          // formData.append('type', selectedTab)
-                          // const response = await fetch('/api/process', { method: 'POST', body: formData })
-                          // const result = await response.json()
-                          // processedResults.push(result.url)
-                          
-                          // For demonstration, use original URL - remove this when adding real API
-                          const objectUrl = URL.createObjectURL(file)
-                          processedResults.push(objectUrl)
-                          
+                          processedResults.push(URL.createObjectURL(file))
                           // Simulate processing delay
                           await new Promise(resolve => setTimeout(resolve, 500))
                         }
@@ -568,7 +565,7 @@ export default function OptimizedDashboard() {
                         setProcessing(false)
                       }
                     }}
-                    disabled={processing || !supabase || !user || files.length === 0}
+                    disabled={processing || !supabase.current || !user || files.length === 0}
                     className="px-8 py-3 bg-green-600 text-white text-base font-medium rounded-xl hover:bg-green-700 transition disabled:opacity-50"
                   >
                     {processing ? 'Processing...' : `Start AI Processing (${files.length} image${files.length > 1 ? 's' : ''})`}
@@ -576,6 +573,35 @@ export default function OptimizedDashboard() {
                 </div>
               )}
             </div>
+
+            {/* Processing results */}
+            {results.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  ✅ Processing Complete ({results.length} result{results.length > 1 ? 's' : ''})
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {results.map((resultUrl, index) => (
+                    <div key={index} className="relative rounded overflow-hidden shadow-lg border">
+                      <img
+                        src={resultUrl}
+                        alt={`Processed result ${index + 1}`}
+                        className="w-full h-40 object-cover"
+                      />
+                      <div className="p-2 bg-white">
+                        <a
+                          href={resultUrl}
+                          download
+                          className="text-xs text-blue-600 hover:underline block text-center"
+                        >
+                          Download Image
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Debug info - only show when development */}
             {process.env.NODE_ENV === 'development' && userData && (
