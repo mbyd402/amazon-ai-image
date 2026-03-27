@@ -85,6 +85,9 @@ async function runtimePOST(request: Request) {
     const imageBuffer = Buffer.from(await file.arrayBuffer())
     let processedBuffer: Buffer
 
+    // Get optional mask for watermark (user-drawn)
+    const maskFile = formData.get('mask') as File | null
+
     switch (operation) {
       case 'background':
         if (!hasApiKeys.removeBg) {
@@ -113,6 +116,26 @@ async function runtimePOST(request: Request) {
         break
 
       case 'watermark':
+        if (!hasApiKeys.clipdrop) {
+          return NextResponse.json(
+            {
+              error: 'Clipdrop API key is not configured',
+              help: 'Set CLIPDROP_API_KEY environment variable'
+            },
+            { status: 503 }
+          )
+        }
+        // If user provided a mask (marked areas), use it
+        if (maskFile) {
+          const maskBuffer = Buffer.from(await maskFile.arrayBuffer())
+          processedBuffer = await removeWatermarkUserMask(imageBuffer, maskBuffer, AI_API, FormDataModule.default)
+        } else {
+          // Auto mode: clean four corners where watermarks are commonly found
+          processedBuffer = await removeWatermarkAuto(imageBuffer, AI_API, FormDataModule.default)
+        }
+        break
+
+      case 'compliance':
         if (!hasApiKeys.cloudmersive) {
           return NextResponse.json(
             {
@@ -122,11 +145,7 @@ async function runtimePOST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await removeWatermark(imageBuffer, AI_API, FormDataModule.default)
-        break
-
-      case 'compliance':
-        const complianceResult = await checkCompliance(imageBuffer)
+        const complianceResult = await checkCompliance(imageBuffer, AI_API, FormDataModule.default)
         
         // 对于compliance操作，不扣分并直接返回
         return NextResponse.json({
@@ -274,14 +293,158 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
   return Buffer.from(await response.arrayBuffer())
 }
 
-async function removeWatermark(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+// Automatic mode: clean four corners where watermarks are commonly found
+async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+  // Use Clipdrop Cleanup API to remove watermark
+  // Most e-commerce product image watermarks are at one of the four corners
+  // Strategy: keep center product area white (don't touch), black out four corners for cleaning
+  const sharp = require('sharp')
+  
+  // Get metadata to get image dimensions
+  const metadata = await sharp(imageBuffer).metadata()
+  const width = metadata.width || 1000
+  const height = metadata.height || 1000
+  
+  // Corner size = 30% of min dimension - large enough to cover most watermarks
+  const cornerSize = Math.floor(Math.min(width, height) * 0.30)
+  
+  // Create mask with all white (keep) + four black corners (clean)
+  const maskBuffer = await sharp({
+    create: {
+      width: width,
+      height: height,
+      channels: 3,
+      background: { r: 255, g: 255, b: 255 } // white = keep original
+    }
+  })
+  .composite([
+    // Top-left corner
+    {
+      input: {
+        create: {
+          width: cornerSize,
+          height: cornerSize,
+          channels: 3,
+          background: { r: 0, g: 0, b: 0 } // black = clean this area
+        }
+      },
+      top: 0,
+      left: 0
+    },
+    // Top-right corner
+    {
+      input: {
+        create: {
+          width: cornerSize,
+          height: cornerSize,
+          channels: 3,
+          background: { r: 0, g: 0, b: 0 }
+        }
+      },
+      top: 0,
+      left: width - cornerSize
+    },
+    // Bottom-left corner
+    {
+      input: {
+        create: {
+          width: cornerSize,
+          height: cornerSize,
+          channels: 3,
+          background: { r: 0, g: 0, b: 0 }
+        }
+      },
+      top: height - cornerSize,
+      left: 0
+    },
+    // Bottom-right corner (most common location for watermarks)
+    {
+      input: {
+        create: {
+          width: cornerSize,
+          height: cornerSize,
+          channels: 3,
+          background: { r: 0, g: 0, b: 0 }
+        }
+      },
+      top: height - cornerSize,
+      left: width - cornerSize
+    }
+  ])
+  .png()
+  .toBuffer()
+
   const form = new FormDataModule()
-  form.append('imageFile', imageBuffer as unknown as Blob, {
+  
+  form.append('image_file', imageBuffer as unknown as Blob, {
+    filename: 'image.png',
+    contentType: 'image/png',
+  })
+  
+  form.append('mask_file', maskBuffer as unknown as Blob, {
+    filename: 'mask.png',
+    contentType: 'image/png',
+  })
+  
+  const response = await fetch(AI_API.clipdrop.cleanupUrl, {
+    method: 'POST',
+    headers: {
+      'x-api-key': AI_API.clipdrop.apiKey,
+      ...form.getHeaders(),
+    },
+    body: form.getBuffer() as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
+  }
+
+  return Buffer.from(await response.arrayBuffer())
+}
+
+// User mode: use the mask that user drew on the canvas
+async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+  // User already drew the mask correctly on canvas - black = clean, white = keep
+  // Just send directly to Clipdrop Cleanup API
+  const form = new FormDataModule()
+  
+  form.append('image_file', imageBuffer as unknown as Blob, {
+    filename: 'image.png',
+    contentType: 'image/png',
+  })
+  
+  form.append('mask_file', maskBuffer as unknown as Blob, {
+    filename: 'mask.png',
+    contentType: 'image/png',
+  })
+  
+  const response = await fetch(AI_API.clipdrop.cleanupUrl, {
+    method: 'POST',
+    headers: {
+      'x-api-key': AI_API.clipdrop.apiKey,
+      ...form.getHeaders(),
+    },
+    body: form.getBuffer() as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
+  }
+
+  return Buffer.from(await response.arrayBuffer())
+}
+
+async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<{ compliant: boolean; issues: string[] }> {
+  // Use Cloudmersive API to check for inappropriate content in Amazon product images
+  const form = new FormDataModule()
+  form.append('image', imageBuffer as unknown as Blob, {
     filename: 'image.png',
     contentType: 'image/png',
   })
 
-  const response = await fetch(AI_API.cloudmersive.apiUrl, {
+  const response = await fetch('https://api.cloudmersive.com/image/analytics/check-content-safety', {
     method: 'POST',
     headers: {
       'Apikey': AI_API.cloudmersive.apiKey,
@@ -291,17 +454,24 @@ async function removeWatermark(imageBuffer: Buffer, AI_API: any, FormDataModule:
   })
 
   if (!response.ok) {
-    throw new Error(`Cloudmersive API error: ${response.statusText}`)
+    throw new Error(`Cloudmersive compliance check failed: ${response.statusText}`)
   }
 
-  return Buffer.from(await response.arrayBuffer())
-}
+  const result = await response.json()
+  const issues: string[] = []
 
-async function checkCompliance(imageBuffer: Buffer): Promise<{ compliant: boolean; issues: string[] }> {
-  // 这里可以添加真实的合规检查逻辑
-  // 暂时返回模拟结果
+  // Check for unsafe content categories
+  if (result.safeSearchResult) {
+    const { safeSearchResult } = result
+    if (safeSearchResult.adultContentScore > 0.5) issues.push('Adult content')
+    if (safeSearchResult.racyContentScore > 0.5) issues.push('Racy content')
+    if (safeSearchResult.medicalContentScore > 0.5) issues.push('Medical content')
+    if (safeSearchResult.violenceContentScore > 0.5) issues.push('Violence content')
+    if (safeSearchResult.nudityContentScore > 0.5) issues.push('Nudity content')
+  }
+
   return {
-    compliant: true,
-    issues: []
+    compliant: issues.length === 0,
+    issues
   }
 }
