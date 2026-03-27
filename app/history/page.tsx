@@ -19,7 +19,7 @@ const supabase = getSupabaseClient()
 
 const getOperationLabel = (type: string) => {
   switch (type) {
-    case 'background': return 'AI White Background'
+    case 'background': return 'Background Changer'
     case 'watermark': return 'Remove Watermark'
     case 'upscale': return 'Upscale & Enhance'
     case 'compliance': return 'Compliance Check'

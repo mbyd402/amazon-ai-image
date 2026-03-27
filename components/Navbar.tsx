@@ -20,7 +20,8 @@ export default function Navbar() {
 
     const getCurrentUser = async () => {
       try {
-        const { data: { user } } = await client.auth.getUser()
+        const { data: { session } } = await client.auth.getSession()
+        const user = session?.user || null
         setUser(user)
         console.log('Navbar: Got user:', user?.id)
         
@@ -47,7 +48,7 @@ export default function Navbar() {
       getCurrentUser()
     }, 200)
 
-    const { data: { subscription } } = client.auth.onAuthStateChange(async (event: any, session: any) => {
+    const authChangeResult = client.auth.onAuthStateChange(async (event: any, session: any) => {
       console.log('Navbar: Auth state changed:', event, session?.user?.id)
       if (session?.user) {
         setUser(session.user)
@@ -63,7 +64,14 @@ export default function Navbar() {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    // Safely get subscription - different supabase versions return different formats
+    const subscription = authChangeResult?.data?.subscription || authChangeResult?.subscription
+
+    return () => {
+      if (subscription?.unsubscribe) {
+        subscription.unsubscribe()
+      }
+    }
   }, [pathname])
 
   const handleLogout = async () => {
@@ -81,7 +89,7 @@ export default function Navbar() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white">
-                Amazon AI Image
+                Amazon Image Pro
               </Link>
             </div>
           </div>
@@ -96,7 +104,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white">
-              Amazon AI Image
+              Amazon Image Pro
             </Link>
             {user && (
               <div className="ml-10 flex items-baseline space-x-4">

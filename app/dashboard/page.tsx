@@ -25,6 +25,7 @@ export default function OptimizedDashboard() {
   const [files, setFiles] = useState<File[]>([])
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
   
   // Create client ONCE - use ref to avoid recreation on every render
   const isInitialized = useRef(false)
@@ -85,7 +86,7 @@ export default function OptimizedDashboard() {
     }, 100)
     
     // 3. Listen for auth state changes
-    const { data: { subscription } } = client.auth.onAuthStateChange((event: string, session: any) => {
+    const authChangeResult = client.auth.onAuthStateChange((event: string, session: any) => {
       console.log('🔔 Auth state changed:', event, session?.user?.email)
       
       if (session?.user) {
@@ -99,6 +100,9 @@ export default function OptimizedDashboard() {
     })
     console.log('✅ Auth listener registered')
     
+    // Safely get subscription - different supabase versions return different formats
+    const subscription = authChangeResult?.data?.subscription || authChangeResult?.subscription
+
     // 4. Try loading immediately
     setTimeout(() => {
       loadUserData(client, true)
@@ -108,7 +112,9 @@ export default function OptimizedDashboard() {
     // 5. Periodic connection check
     const interval = setInterval(checkConnection, 30000)
     return () => {
-      subscription.unsubscribe()
+      if (subscription?.unsubscribe) {
+        subscription.unsubscribe()
+      }
       clearInterval(interval)
       isInitialized.current = false
     }
@@ -312,10 +318,27 @@ export default function OptimizedDashboard() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <h1 className="text-2xl font-bold text-gray-900">Amazon AI Image Tools</h1>
             <div className="mt-6 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
               <p className="text-gray-500">Initializing...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // If no user after initialization, redirect to login
+  if (!loading && !user) {
+    console.log('🔒 No user logged in, redirecting to login page')
+    window.location.href = '/login'
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="mt-6 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+              <p className="text-gray-500">Redirecting to login...</p>
             </div>
           </div>
         </div>
@@ -329,7 +352,6 @@ export default function OptimizedDashboard() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <h1 className="text-2xl font-bold text-gray-900">Amazon AI Image Tools</h1>
             <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
               <h3 className="font-medium text-red-800">Error</h3>
               <p className="text-red-600 mt-2">{error}</p>
@@ -355,8 +377,7 @@ export default function OptimizedDashboard() {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Amazon AI Image Tools</h1>
-              <p className="text-gray-500">Professional AI image processing for Amazon sellers</p>
+              <p className="text-gray-500">Professional image processing for Amazon sellers</p>
             </div>
             {renderConnectionStatus()}
           </div>
@@ -382,8 +403,7 @@ export default function OptimizedDashboard() {
         {/* Top status bar */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Amazon AI Image Tools</h1>
-            <p className="text-gray-600">Professional AI image processing for Amazon sellers</p>
+            <p className="text-gray-600">Professional image processing for Amazon sellers</p>
           </div>
           {renderConnectionStatus()}
           
@@ -484,7 +504,20 @@ export default function OptimizedDashboard() {
                 multiple
                 onChange={(e) => {
                   if (e.target.files) {
-                    setFiles(Array.from(e.target.files))
+                    const newFiles = Array.from(e.target.files)
+                    // Check for duplicate files by name
+                    const existingNames = files.map(f => f.name)
+                    const duplicates = newFiles.filter(f => existingNames.includes(f.name))
+                    if (duplicates.length > 0) {
+                      alert(`The following ${duplicates.length} file(s) have already been added:\n${duplicates.map(f => f.name).join('\n')}\n\nSkipped duplicates.`)
+                    }
+                    // Filter out duplicates
+                    const uniqueNewFiles = newFiles.filter(f => !existingNames.includes(f.name))
+                    // Limit to maximum 5 files
+                    const combined = [...files, ...uniqueNewFiles].slice(0, 5)
+                    setFiles(combined)
+                    // Clear the input value so the same file can be selected again if needed
+                    e.target.value = ''
                   }
                 }}
                 className="hidden"
@@ -500,25 +533,26 @@ export default function OptimizedDashboard() {
               {files.length > 0 && (
                 <div className="mt-6">
                   <p className="text-sm text-gray-600 mb-4">
-                    {files.length} file(s) selected
+                    {files.length} / 5 file(s) selected
                   </p>
                   
                   {/* Image preview grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4">
                     {files.map((file, index) => {
                       const url = URL.createObjectURL(file)
                       return (
-                        <div key={index} className="relative rounded overflow-hidden shadow">
+                        <div key={index} className="relative rounded overflow-hidden shadow cursor-pointer" onClick={() => setPreviewImage(url)}>
                           <img
                             src={url}
                             alt={`Preview ${index + 1}`}
-                            className="w-full h-32 object-cover"
+                            className="w-full h-32 object-cover hover:opacity-80 transition"
                           />
                           <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 truncate">
                             {file.name}
                           </div>
                           <button
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation()
                               setFiles(files.filter((_, i) => i !== index))
                             }}
                             className="absolute top-1 right-1 w-6 h-6 bg-black/70 text-white rounded-full flex items-center justify-center hover:bg-black/90"
@@ -529,6 +563,15 @@ export default function OptimizedDashboard() {
                         </div>
                       )
                     })}
+                    {/* Add more button if less than 5 */}
+                    {files.length < 5 && (
+                      <label
+                        htmlFor="file-upload"
+                        className="border-2 border-dashed border-gray-300 rounded-lg h-32 flex items-center justify-center cursor-pointer hover:border-blue-500 transition"
+                      >
+                        <span className="text-3xl text-gray-400">+</span>
+                      </label>
+                    )}
                   </div>
 
                   <button
@@ -541,6 +584,11 @@ export default function OptimizedDashboard() {
                         alert('Please select at least one image to process')
                         return
                       }
+                      // Check if user has enough points
+                      if (userData && userData.remaining_points < files.length) {
+                        alert(`You don't have enough points. You need ${files.length} points, but you only have ${userData.remaining_points}.`)
+                        return
+                      }
                       setProcessing(true)
                       setResults([])
                       
@@ -548,15 +596,60 @@ export default function OptimizedDashboard() {
                         const processedResults: string[] = []
                         const client = supabase.current
                         
-                        // Process each file one by one
+                        // Process each file one by one via API
                         for (const file of files) {
-                          console.log('Processing:', file.name)
-                          processedResults.push(URL.createObjectURL(file))
-                          // Simulate processing delay
+                          console.log('Processing:', file.name, 'type:', selectedTab)
+                          
+                          // Create form data for upload
+                          const formData = new FormData()
+                          formData.append('image', file)
+                          formData.append('operation', selectedTab)
+                          formData.append('userId', user.id)
+                          // API expects user_id, not userId
+                          formData.append('user_id', user.id)
+                          
+                          // Call processing API
+                          const response = await fetch('/api/process', {
+                            method: 'POST',
+                            body: formData,
+                          })
+                          
+                          if (!response.ok) {
+                            const error = await response.text()
+                            throw new Error(`Processing failed: ${response.status} ${error}`)
+                          }
+                          
+                          const data = await response.json()
+                          if (data.success && data.results && data.results.length > 0) {
+                            processedResults.push(...data.results)
+                            console.log('Processing successful:', data.results)
+                          } else if (data.success && data.processedUrl) {
+                            processedResults.push(data.processedUrl)
+                            console.log('Processing successful:', data.processedUrl)
+                          } else {
+                            throw new Error(data.error || 'Processing failed')
+                          }
+                          
+                          // Small delay between requests
                           await new Promise(resolve => setTimeout(resolve, 500))
                         }
                         
                         setResults(processedResults)
+                        
+                        // API already deducts points on server side, just refresh user data
+                        if (userData && user) {
+                          const { data: result } = await client
+                            .from('users')
+                            .select('remaining_points, processed_count, total_points')
+                            .eq('id', user.id)
+                          console.log('Refreshed user data after processing:', result)
+                          if (result && result.length > 0) {
+                            setUserData(result[0])
+                            saveToCache(result[0])
+                            console.log('Points updated:', result[0].remaining_points)
+                          }
+                        }
+                        
                         console.log('Processing complete:', processedResults.length, 'results')
                       } catch (err: any) {
                         console.error('Processing failed:', err)
@@ -568,7 +661,7 @@ export default function OptimizedDashboard() {
                     disabled={processing || !supabase.current || !user || files.length === 0}
                     className="px-8 py-3 bg-green-600 text-white text-base font-medium rounded-xl hover:bg-green-700 transition disabled:opacity-50"
                   >
-                    {processing ? 'Processing...' : `Start AI Processing (${files.length} image${files.length > 1 ? 's' : ''})`}
+                    {processing ? 'Processing...' : `Start Processing (${files.length} image${files.length > 1 ? 's' : ''})`}
                   </button>
                 </div>
               )}
@@ -582,17 +675,18 @@ export default function OptimizedDashboard() {
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {results.map((resultUrl, index) => (
-                    <div key={index} className="relative rounded overflow-hidden shadow-lg border">
+                    <div key={index} className="relative rounded overflow-hidden shadow-lg border cursor-pointer" onClick={() => setPreviewImage(resultUrl)}>
                       <img
                         src={resultUrl}
                         alt={`Processed result ${index + 1}`}
-                        className="w-full h-40 object-cover"
+                        className="w-full h-40 object-cover hover:opacity-80 transition"
                       />
                       <div className="p-2 bg-white">
                         <a
                           href={resultUrl}
                           download
                           className="text-xs text-blue-600 hover:underline block text-center"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           Download Image
                         </a>
@@ -600,23 +694,6 @@ export default function OptimizedDashboard() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Debug info - only show when development */}
-            {process.env.NODE_ENV === 'development' && userData && (
-              <div className="mt-8 p-4 bg-gray-50 rounded-lg text-left">
-                <details>
-                  <summary className="cursor-pointer text-sm font-medium text-gray-700">
-                    Debug Information
-                  </summary>
-                  <div className="mt-2 text-xs text-gray-500">
-                    <p>User ID: {user?.id}</p>
-                    <p>User Email: {user?.email}</p>
-                    <p>Has user data: {!!userData}</p>
-                    {userData && <p>Remaining points: {userData.remaining_points}</p>}
-                  </div>
-                </details>
               </div>
             )}
 
@@ -636,6 +713,28 @@ export default function OptimizedDashboard() {
           </p>
         </div>
       </div>
+
+      {/* Image preview modal */}
+      {previewImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <img 
+              src={previewImage} 
+              alt="Preview"
+              className="max-w-full max-h-[90vh] object-contain rounded"
+            />
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-4 -right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

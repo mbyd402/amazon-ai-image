@@ -8,7 +8,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
-              AI Image Tools for <span className="text-blue-600">Amazon Sellers</span>
+              Image Tools for <span className="text-blue-600">Amazon Sellers</span>
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
               One-stop solution for your Amazon product images. Create pure white background, remove watermark, upscale images, and check compliance.
@@ -35,7 +35,7 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.584-4.585a2 2 0 012.83 0L16 16m-2-2l1.584-1.585a2 2 0 012.83 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI White Background</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Background Changer</h3>
             <p className="mt-2 text-gray-500 dark:text-gray-300">
               Automatically remove background and set pure white (RGB 255,255,255) that meets Amazon's requirements.
             </p>
@@ -61,7 +61,7 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l1.4-1.4A4 4 0 017.8 14H16a2 2 0 012 2v1.5m.25-6.858l2.408-2.408c.78-.78.217-2.108-.879-2.108H18.5m-7 11h.01" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Upscale & Enhance</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Upscale & Enhance</h3>
             <p className="mt-2 text-gray-500 dark:text-gray-300">
               Upscale images up to 4x while enhancing quality. Meet Amazon's 1000px minimum requirement for zoom.
             </p>
@@ -177,7 +177,7 @@ export default function Home() {
                   <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span className="ml-2 text-gray-500 dark:text-gray-300">Batch up to 10 images</span>
+                  <span className="ml-2 text-gray-500 dark:text-gray-300">Batch up to 5 images</span>
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -230,7 +230,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
           <div className="border-t border-gray-200 dark:border-gray-700 pt-8 flex flex-col md:flex-row justify-between">
             <div className="text-gray-500 dark:text-gray-400 text-sm">
-              © {new Date().getFullYear()} Amazon AI Image Tools. All rights reserved.
+              © {new Date().getFullYear()} Amazon Image Pro. All rights reserved.
             </div>
             <div className="mt-4 md:mt-0 space-x-6">
               <Link href="/privacy" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Privacy Policy</Link>

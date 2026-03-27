@@ -143,23 +143,37 @@ async function runtimePOST(request: Request) {
         )
     }
 
-    // Generate a unique filename
-    const timestamp = Date.now()
-    const processedFilename = `${timestamp}_${operation}_processed.png`
+    // Convert processed buffer to base64 data URL for immediate display
+    const base64 = processedBuffer.toString('base64')
+    const processedUrl = `data:image/png;base64,${base64}`
 
-    // Upload to storage (simulated for now)
-    const processedUrl = `/processed/${processedFilename}`
-
-    // Deduct points from user
-    const pointsToDeduct = 10
+    // Deduct points from user - 1 point per image
+    const pointsToDeduct = 1
+    
+    // First get current remaining points
+    const { data: currentUser, error: fetchError } = await supabaseAdmin
+      .from('users')
+      .select('remaining_points, processed_count')
+      .eq('id', userId)
+      .single()
+    
+    let newRemainingPoints = 0
+    let newProcessedCount = 0
+    if (fetchError) {
+      console.error('Error fetching current points:', fetchError)
+    } else if (currentUser) {
+      newRemainingPoints = Math.max(0, (currentUser.remaining_points || 0) - pointsToDeduct)
+      newProcessedCount = (currentUser.processed_count || 0) + 1
+    }
     
     const { error: updateError } = await supabaseAdmin
       .from('users')
       .update({
-        remaining_points: supabaseAdmin.rpc('decrement_points', { user_id: userId, points: pointsToDeduct }),
+        remaining_points: newRemainingPoints,
+        processed_count: newProcessedCount,
         updated_at: new Date().toISOString()
       })
-      .eq('user_id', userId)
+      .eq('id', userId)
 
     if (updateError) {
       console.error('Error updating user points:', updateError)

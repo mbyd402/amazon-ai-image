@@ -114,7 +114,7 @@ export default function LoginPage() {
     
     try {
       // Get current origin correctly - window is only available on client
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://amazon-ai-image.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://amazon-image-pro.vercel.app'
       
       console.log('Redirect URI:', `${origin}/auth/callback`)
       
@@ -148,7 +148,7 @@ export default function LoginPage() {
             Welcome Back
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Sign in to your Amazon AI Image Tools account
+            Sign in to your Amazon Image Pro account
           </p>
         </div>
 

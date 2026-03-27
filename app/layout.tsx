@@ -4,8 +4,8 @@ import Navbar from '@/components/Navbar'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
-  title: 'Amazon AI Image Tools - AI Background, Watermark Remover, Upscale & Compliance Check',
-  description: 'One-stop AI image tools for Amazon sellers. Create pure white background, remove watermark/text/logo, upscale image, check compliance.',
+  title: 'Amazon Image Pro - Background, Watermark Remover, Upscale & Compliance Check',
+  description: 'One-stop image tools for Amazon sellers. Create pure white background, remove watermark/text/logo, upscale image, check compliance.',
 }
 
 export default function RootLayout({

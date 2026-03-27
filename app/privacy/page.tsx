@@ -69,8 +69,8 @@ export default function PrivacyPolicy() {
           </section>
 
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <Link href="/" className="text-blue-600 hover:text-blue-500">
-              ← Back to home
+            <Link href="/register" className="text-blue-600 hover:text-blue-500">
+              ← Back to registration
             </Link>
           </div>
         </div>
