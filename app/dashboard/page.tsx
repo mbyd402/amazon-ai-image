@@ -640,12 +640,19 @@ export default function OptimizedDashboard() {
                         if (userData && user) {
                           const { data: result } = await client
                             .from('users')
-                            .select('remaining_points, processed_count, total_points')
+                            .select('remaining_points, total_points')
                             .eq('id', user.id)
                           console.log('Refreshed user data after processing:', result)
                           if (result && result.length > 0) {
-                            setUserData(result[0])
-                            saveToCache(result[0])
+                            // Keep existing processed_count if we have it
+                            setUserData({
+                              ...userData,
+                              ...result[0]
+                            })
+                            saveToCache({
+                              ...userData,
+                              ...result[0]
+                            })
                             console.log('Points updated:', result[0].remaining_points)
                           }
                         }

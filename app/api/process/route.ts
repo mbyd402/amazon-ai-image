@@ -153,24 +153,21 @@ async function runtimePOST(request: Request) {
     // First get current remaining points
     const { data: currentUser, error: fetchError } = await supabaseAdmin
       .from('users')
-      .select('remaining_points, processed_count')
+      .select('remaining_points')
       .eq('id', userId)
       .single()
     
     let newRemainingPoints = 0
-    let newProcessedCount = 0
     if (fetchError) {
       console.error('Error fetching current points:', fetchError)
     } else if (currentUser) {
       newRemainingPoints = Math.max(0, (currentUser.remaining_points || 0) - pointsToDeduct)
-      newProcessedCount = (currentUser.processed_count || 0) + 1
     }
     
     const { error: updateError } = await supabaseAdmin
       .from('users')
       .update({
         remaining_points: newRemainingPoints,
-        processed_count: newProcessedCount,
         updated_at: new Date().toISOString()
       })
       .eq('id', userId)
