@@ -842,7 +842,12 @@ export default function OptimizedDashboard() {
                       console.log('Processing complete:', processedResults.length, 'results')
                     } catch (err: any) {
                       console.error('Processing failed:', err)
-                      alert(`Processing failed: ${err.message}`)
+                      let errorMsg = 'Processing failed'
+                      if (err.message) {
+                        errorMsg += `: ${err.message}`
+                      }
+                      // Try to get more details from response if possible
+                      alert(errorMsg)
                     } finally {
                       setProcessing(false)
                     }
