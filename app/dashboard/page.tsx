@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
 
 // 🎯 Smart caching system - 10 minute cache
@@ -9,6 +9,11 @@ const CACHE_DURATION = 10 * 60 * 1000 // 10 minutes
 
 // 🔧 Connection status type
 type ConnectionStatus = 'online' | 'offline' | 'slow' | 'checking'
+
+// Style constants as requested
+const SELECTION_BORDER_COLOR = '#007AFF' // iOS/Apple native blue
+const SELECTION_BORDER_WIDTH = 2
+const SELECTION_FILL_COLOR = 'rgba(0, 122, 255, 0.20)'
 
 export default function OptimizedDashboard() {
   console.log('🚀 Starting OptimizedDashboard render...')
@@ -39,10 +44,86 @@ export default function OptimizedDashboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [startPos, setStartPos] = useState({x: 0, y: 0})
+  const [currentTempRect, setCurrentTempRect] = useState<{x: number, y: number, w: number, h: number} | null>(null)
+  const lastDrawTimeRef = useRef<number>(0)
   
   // Create client ONCE - use ref to avoid recreation on every render
   const isInitialized = useRef(false)
   const supabase = useRef<any>(null)
+  const imageRef = useRef<HTMLImageElement | null>(null)
+
+  // Keep latest state in refs for redraw (avoids closure issues)
+  const markedRectsRef = useRef<{x: number, y: number, w: number, h: number}[]>([])
+  const currentTempRectRef = useRef<{x: number, y: number, w: number, h: number} | null>(null)
+  const isDrawingRef = useRef(false)
+
+  // Sync refs with state
+  markedRectsRef.current = markedRects
+  currentTempRectRef.current = currentTempRect
+  isDrawingRef.current = isDrawing
+
+  // Redraw all marked rectangles when markedRects changes
+  // This ensures all selections are always visible after React re-renders
+  const redrawAllSelections = useCallback(() => {
+    if (!canvasRef.current || !imageRef.current || !imageRef.current.complete) return
+
+    const ctx = canvasRef.current.getContext('2d')
+    if (!ctx) return
+
+    // Clear canvas and redraw original image
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    ctx.drawImage(imageRef.current, 0, 0)
+
+    // Draw all saved selections with proper styling - use ref for latest value
+    markedRectsRef.current.forEach(rect => {
+      // Semi-transparent fill
+      ctx.fillStyle = SELECTION_FILL_COLOR
+      ctx.fillRect(rect.x, rect.y, rect.w, rect.h)
+      // Blue border
+      ctx.strokeStyle = SELECTION_BORDER_COLOR
+      ctx.lineWidth = SELECTION_BORDER_WIDTH
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h)
+    })
+
+    // Draw current temporary selection if we're dragging
+    const tempRect = currentTempRectRef.current
+    if (tempRect && isDrawingRef.current) {
+      ctx.fillStyle = SELECTION_FILL_COLOR
+      ctx.fillRect(tempRect.x, tempRect.y, tempRect.w, tempRect.h)
+      ctx.strokeStyle = SELECTION_BORDER_COLOR
+      ctx.lineWidth = SELECTION_BORDER_WIDTH
+      ctx.strokeRect(tempRect.x, tempRect.y, tempRect.w, tempRect.h)
+    }
+  }, [])
+
+  // Throttled mousemove handler to reduce rendering frequency
+  const handleMouseMoveThrottled = useCallback((e: MouseEvent) => {
+    if (!isDrawingRef.current || !canvasRef.current || !markingImage || !imageRef.current || !imageRef.current.complete) return
+
+    const now = Date.now()
+    // Throttle to ~30fps (about 33ms between renders)
+    if (now - lastDrawTimeRef.current < 33) return
+    lastDrawTimeRef.current = now
+
+    const canvasRect = canvasRef.current.getBoundingClientRect()
+    const scaleX = markingImage.naturalWidth / canvasRect.width
+    const scaleY = markingImage.naturalHeight / canvasRect.height
+    const currX = (e.clientX - canvasRect.left) * scaleX
+    const currY = (e.clientY - canvasRect.top) * scaleY
+
+    const x = Math.min(startPos.x, currX)
+    const y = Math.min(startPos.y, currY)
+    const w = Math.abs(currX - startPos.x)
+    const h = Math.abs(currY - startPos.y)
+
+    setCurrentTempRect({x, y, w, h})
+    redrawAllSelections()
+  }, [startPos, markingImage, redrawAllSelections])
+
+  // When markedRects or currentTempRect changes, redraw everything
+  useEffect(() => {
+    redrawAllSelections()
+  }, [markedRects, currentTempRect, redrawAllSelections])
 
   // Initialize everything ONCE
   useEffect(() => {
@@ -420,6 +501,9 @@ export default function OptimizedDashboard() {
                     if (selectedTab === 'watermark') {
                       if (e.target.files[0]) {
                         setFiles([e.target.files[0]])
+                        // Clear all existing marked rectangles when changing to a new image
+                        setMarkedRects([])
+                        setCurrentTempRect(null)
                       }
                     } else {
                       // For other operations, allow up to 5 files
@@ -511,14 +595,15 @@ export default function OptimizedDashboard() {
                       </h4>
                       <p className="text-sm text-gray-600 mb-3">
                         Click and drag on the image to select the area containing the watermark. You can mark multiple separate areas.
-                        Each selected area will be marked with a red border that stays visible.
+                        Each selected area will be marked with a blue semi-transparent overlay.
                       </p>
                       <div className="relative border border-gray-300 rounded-lg overflow-hidden" style={{ maxWidth: '800px', margin: '0 auto' }}>
                         {files[0] && (
                           <>
                             {(() => {
-                              // Keep image reference for redraws
+                              // Keep image reference for redraws (stored in ref for useEffect redraw)
                               const img = new Image()
+                              imageRef.current = img
                               img.crossOrigin = "anonymous"
                               img.src = URL.createObjectURL(files[0])
                               img.onload = () => {
@@ -528,8 +613,6 @@ export default function OptimizedDashboard() {
                                   if (ctx) {
                                     canvas.width = img.naturalWidth
                                     canvas.height = img.naturalHeight
-                                    // Draw original image
-                                    ctx.drawImage(img, 0, 0)
                                     setMarkingImage({
                                       width: canvas.width,
                                       height: canvas.height,
@@ -537,38 +620,11 @@ export default function OptimizedDashboard() {
                                       naturalWidth: img.naturalWidth,
                                       naturalHeight: img.naturalHeight,
                                     })
-                                    // Force redraw any existing marked rectangles when image finishes loading
-                                    setTimeout(() => {
-                                      const ctx = canvasRef.current?.getContext('2d')
-                                      if (ctx && markedRects.length > 0) {
-                                        ctx.drawImage(img, 0, 0)
-                                        markedRects.forEach(r => {
-                                          ctx.strokeStyle = 'red'
-                                          ctx.lineWidth = 3
-                                          ctx.strokeRect(r.x, r.y, r.w, r.h)
-                                        })
-                                      }
-                                    }, 100)
+                                    // After image loads, redraw all selections (includes any existing marked rects)
+                                    redrawAllSelections()
                                   }
                                 }
                               }
-
-                              // Redraw all marked rectangles when markedRects changes
-                              // We need this because React re-renders and we need to keep the red borders
-                              const redrawAllMarked = () => {
-                                if (!canvasRef.current || !img.complete) return
-                                const ctx = canvasRef.current.getContext('2d')
-                                if (!ctx) return
-                                ctx.drawImage(img, 0, 0)
-                                markedRects.forEach(r => {
-                                  ctx.strokeStyle = 'red'
-                                  ctx.lineWidth = 3
-                                  ctx.strokeRect(r.x, r.y, r.w, r.h)
-                                })
-                              }
-
-                              // Call redraw after React renders canvas
-                              setTimeout(redrawAllMarked, 50)
 
                               return (
                                 <canvas
@@ -581,63 +637,52 @@ export default function OptimizedDashboard() {
                                   }}
                                   onMouseDown={(e) => {
                                     if (!markingImage || !canvasRef.current) return
+
+                                    // Get correct canvas-relative coordinates (corrected for display scaling)
                                     const rect = e.currentTarget.getBoundingClientRect()
                                     const scaleX = markingImage.naturalWidth / rect.width
                                     const scaleY = markingImage.naturalHeight / rect.height
                                     const x = (e.clientX - rect.left) * scaleX
                                     const y = (e.clientY - rect.top) * scaleY
-                                    setStartPos({x, y})
-                                    setIsDrawing(true)
-                                  }}
-                                  onMouseMove={(e) => {
-                                    if (!isDrawing || !canvasRef.current || !markingImage || !img.complete) return
-                                    const rect = e.currentTarget.getBoundingClientRect()
-                                    const scaleX = markingImage.naturalWidth / rect.width
-                                    const scaleY = markingImage.naturalHeight / rect.height
-                                    const currX = (e.clientX - rect.left) * scaleX
-                                    const currY = (e.clientY - rect.top) * scaleY
-                                    const ctx = canvasRef.current.getContext('2d')
-                                    if (ctx) {
-                                      // Redraw original image + all existing marked areas + current selection
-                                      ctx.drawImage(img, 0, 0)
-                                      markedRects.forEach(r => {
-                                        ctx.strokeStyle = 'red'
-                                        ctx.lineWidth = 3
-                                        ctx.strokeRect(r.x, r.y, r.w, r.h)
-                                      })
-                                      // Current selection - darker red
-                                      ctx.strokeStyle = 'darkred'
-                                      ctx.lineWidth = 3
-                                      ctx.strokeRect(startPos.x, startPos.y, currX - startPos.x, currY - startPos.y)
+
+                                    // Only start drawing inside canvas bounds
+                                    if (x >= 0 && x <= markingImage.naturalWidth && y >= 0 && y <= markingImage.naturalHeight) {
+                                      setStartPos({x, y})
+                                      setIsDrawing(true)
                                     }
                                   }}
-                                  onMouseUp={(event) => {
-                                    if (!isDrawing || !canvasRef.current || !markingImage || !img.complete) return
+                                  onMouseMove={(e) => {
+                                    handleMouseMoveThrottled(e as any)
+                                  }}
+                                  onMouseUp={(e) => {
+                                    if (!isDrawing || !canvasRef.current || !markingImage) return
+
                                     setIsDrawing(false)
-                                    const rect = canvasRef.current.getBoundingClientRect()
-                                    const scaleX = markingImage.naturalWidth / rect.width
-                                    const scaleY = markingImage.naturalHeight / rect.height
-                                    const x = Math.min(startPos.x, (event.clientX - rect.left) * scaleX)
-                                    const y = Math.min(startPos.y, (event.clientY - rect.top) * scaleY)
-                                    const w = Math.abs((event.clientX - rect.left) * scaleX - x)
-                                    const h = Math.abs((event.clientY - rect.top) * scaleY - y)
-                                    
+                                    const canvasRect = canvasRef.current.getBoundingClientRect()
+                                    const scaleX = markingImage.naturalWidth / canvasRect.width
+                                    const scaleY = markingImage.naturalHeight / canvasRect.height
+                                    const endX = (e.clientX - canvasRect.left) * scaleX
+                                    const endY = (e.clientY - canvasRect.top) * scaleY
+
+                                    const x = Math.min(startPos.x, endX)
+                                    const y = Math.min(startPos.y, endY)
+                                    const w = Math.abs(endX - startPos.x)
+                                    const h = Math.abs(endY - startPos.y)
+
+                                    // Only add if selection is larger than minimum size (filter accidental tiny selections)
                                     if (w > 10 && h > 10) {
                                       const newRects = [...markedRects, {x, y, w, h}]
                                       setMarkedRects(newRects)
-                                      
-                                      // Immediate redraw with all borders
-                                      const ctx = canvasRef.current?.getContext('2d')
-                                      if (ctx) {
-                                        ctx.drawImage(img, 0, 0)
-                                        newRects.forEach(r => {
-                                          ctx.strokeStyle = 'red'
-                                          ctx.lineWidth = 3
-                                          ctx.strokeRect(r.x, r.y, r.w, r.h)
-                                        })
-                                      }
                                     }
-                                    setIsDrawing(false)
+
+                                    setCurrentTempRect(null)
+                                  }}
+                                  onMouseLeave={() => {
+                                    // Cancel drawing if mouse leaves canvas
+                                    if (isDrawing) {
+                                      setIsDrawing(false)
+                                      setCurrentTempRect(null)
+                                    }
                                   }}
                                 />
                               )
@@ -659,20 +704,13 @@ export default function OptimizedDashboard() {
                         <button
                           onClick={() => {
                             setMarkedRects([])
-                            if (canvasRef.current && files[0]) {
+                            setCurrentTempRect(null)
+                            if (canvasRef.current && imageRef.current && imageRef.current.complete) {
                               const ctx = canvasRef.current.getContext('2d')
                               if (ctx) {
-                                // Reload original image to clear all red borders
-                                const img = new Image()
-                                img.crossOrigin = "anonymous"
-                                img.src = URL.createObjectURL(files[0])
-                                img.onload = () => {
-                                  if (ctx && canvasRef.current) {
-                                    canvasRef.current.width = img.naturalWidth
-                                    canvasRef.current.height = img.naturalHeight
-                                    ctx.drawImage(img, 0, 0)
-                                  }
-                                }
+                                canvasRef.current.width = imageRef.current.naturalWidth
+                                canvasRef.current.height = imageRef.current.naturalHeight
+                                ctx.drawImage(imageRef.current, 0, 0)
                               }
                             }
                           }}
@@ -746,7 +784,7 @@ export default function OptimizedDashboard() {
                             })
                             if (maskBlob) {
                               formData.append('mask', maskBlob, 'mask.png')
-                              console.log('Mask created with', markedRects.length, 'marked areas (correct color inverted for Clipdrop API)')
+                              console.log('Mask created with', markedRects.length, 'marked areas')
                             }
                           }
                         }

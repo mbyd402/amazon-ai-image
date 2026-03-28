@@ -120,7 +120,8 @@ async function runtimePOST(request: Request) {
           return NextResponse.json(
             {
               error: 'Clipdrop API key is not configured',
-              help: 'Set CLIPDROP_API_KEY environment variable'
+              help: 'Set CLIPDROP_API_KEY environment variable in .env.local',
+              status: 'missing_api_key'
             },
             { status: 503 }
           )
@@ -254,20 +255,32 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
   })
   form.append('size', 'auto')
 
-  const response = await fetch(AI_API.removeBg.apiUrl, {
-    method: 'POST',
-    headers: {
-      'X-Api-Key': AI_API.removeBg.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
+  // Add 60 second timeout
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 60000)
 
-  if (!response.ok) {
-    throw new Error(`Remove.bg API error: ${response.statusText}`)
+  try {
+    const response = await fetch(AI_API.removeBg.apiUrl, {
+      method: 'POST',
+      headers: {
+        'X-Api-Key': AI_API.removeBg.apiKey,
+        ...form.getHeaders(),
+      },
+      body: form.getBuffer() as unknown as BodyInit,
+      signal: controller.signal,
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      throw new Error(`Remove.bg API error: ${response.statusText}`)
+    }
+
+    return Buffer.from(await response.arrayBuffer())
+  } catch (err) {
+    clearTimeout(timeoutId)
+    throw err
   }
-
-  return Buffer.from(await response.arrayBuffer())
 }
 
 async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
@@ -277,20 +290,32 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
     contentType: 'image/png',
   })
 
-  const response = await fetch(AI_API.clipdrop.upscaleUrl, {
-    method: 'POST',
-    headers: {
-      'x-api-key': AI_API.clipdrop.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
+  // Add 60 second timeout
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 60000)
 
-  if (!response.ok) {
-    throw new Error(`Clipdrop API error: ${response.statusText}`)
+  try {
+    const response = await fetch(AI_API.clipdrop.upscaleUrl, {
+      method: 'POST',
+      headers: {
+        'x-api-key': AI_API.clipdrop.apiKey,
+        ...form.getHeaders(),
+      },
+      body: form.getBuffer() as unknown as BodyInit,
+      signal: controller.signal,
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      throw new Error(`Clipdrop API error: ${response.statusText}`)
+    }
+
+    return Buffer.from(await response.arrayBuffer())
+  } catch (err) {
+    clearTimeout(timeoutId)
+    throw err
   }
-
-  return Buffer.from(await response.arrayBuffer())
 }
 
 // Automatic mode: clean four corners where watermarks are commonly found
@@ -374,66 +399,132 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
   .png()
   .toBuffer()
 
-  const form = new FormDataModule()
-  
-  form.append('image_file', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-  
-  form.append('mask_file', maskBuffer as unknown as Blob, {
-    filename: 'mask.png',
-    contentType: 'image/png',
-  })
-  
-  const response = await fetch(AI_API.clipdrop.cleanupUrl, {
-    method: 'POST',
-    headers: {
-      'x-api-key': AI_API.clipdrop.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
+  // Add auto-retry for unstable network connections (common when accessing from China)
+  const maxRetries = 2
+  let lastError: any = null
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const form = new FormDataModule()
+      
+      form.append('image_file', imageBuffer as unknown as Blob, {
+        filename: 'image.png',
+        contentType: 'image/png',
+      })
+      
+      form.append('mask_file', maskBuffer as unknown as Blob, {
+        filename: 'mask.png',
+        contentType: 'image/png',
+      })
+      
+      // 3 minute timeout for unstable networks
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 180000)
+
+      console.log(`📡 Clipdrop API attempt ${attempt + 1}/${maxRetries}...`)
+      const startTime = Date.now()
+
+      const response = await fetch(AI_API.clipdrop.cleanupUrl, {
+        method: 'POST',
+        headers: {
+          'x-api-key': AI_API.clipdrop.apiKey,
+          ...form.getHeaders(),
+        },
+        body: form.getBuffer() as unknown as BodyInit,
+        signal: controller.signal,
+      })
+
+      const elapsed = Date.now() - startTime
+      console.log(`⚡ Clipdrop responded in ${elapsed}ms`)
+
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
+      }
+
+      const resultBuffer = Buffer.from(await response.arrayBuffer())
+      console.log(`✅ Complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+      return resultBuffer
+    } catch (err) {
+      lastError = err
+      console.warn(`⚠️ Attempt ${attempt + 1} failed:`, err)
+      if (attempt < maxRetries - 1) {
+        console.log('🔄 Retrying...')
+        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2s before retry
+      }
+    }
   }
 
-  return Buffer.from(await response.arrayBuffer())
+  // All retries failed
+  throw lastError
 }
 
 // User mode: use the mask that user drew on the canvas
 async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
   // User already drew the mask correctly on canvas - black = clean, white = keep
   // Just send directly to Clipdrop Cleanup API
-  const form = new FormDataModule()
-  
-  form.append('image_file', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-  
-  form.append('mask_file', maskBuffer as unknown as Blob, {
-    filename: 'mask.png',
-    contentType: 'image/png',
-  })
-  
-  const response = await fetch(AI_API.clipdrop.cleanupUrl, {
-    method: 'POST',
-    headers: {
-      'x-api-key': AI_API.clipdrop.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
+  // Add auto-retry for unstable network connections (common when accessing from China)
+  const maxRetries = 2
+  let lastError: any = null
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const form = new FormDataModule()
+      
+      form.append('image_file', imageBuffer as unknown as Blob, {
+        filename: 'image.png',
+        contentType: 'image/png',
+      })
+      
+      form.append('mask_file', maskBuffer as unknown as Blob, {
+        filename: 'mask.png',
+        contentType: 'image/png',
+      })
+      
+      // 3 minute timeout for unstable networks
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 180000)
+
+      console.log(`📡 Clipdrop API attempt ${attempt + 1}/${maxRetries}...`)
+      const startTime = Date.now()
+
+      const response = await fetch(AI_API.clipdrop.cleanupUrl, {
+        method: 'POST',
+        headers: {
+          'x-api-key': AI_API.clipdrop.apiKey,
+          ...form.getHeaders(),
+        },
+        body: form.getBuffer() as unknown as BodyInit,
+        signal: controller.signal,
+      })
+
+      const elapsed = Date.now() - startTime
+      console.log(`⚡ Clipdrop responded in ${elapsed}ms`)
+
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
+      }
+
+      const resultBuffer = Buffer.from(await response.arrayBuffer())
+      console.log(`✅ Complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+      return resultBuffer
+    } catch (err) {
+      lastError = err
+      console.warn(`⚠️ Attempt ${attempt + 1} failed:`, err)
+      if (attempt < maxRetries - 1) {
+        console.log('🔄 Retrying...')
+        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2s before retry
+      }
+    }
   }
 
-  return Buffer.from(await response.arrayBuffer())
+  // All retries failed
+  throw lastError
 }
 
 async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<{ compliant: boolean; issues: string[] }> {
@@ -444,34 +535,46 @@ async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule:
     contentType: 'image/png',
   })
 
-  const response = await fetch('https://api.cloudmersive.com/image/analytics/check-content-safety', {
-    method: 'POST',
-    headers: {
-      'Apikey': AI_API.cloudmersive.apiKey,
-      ...form.getHeaders(),
-    },
-    body: form.getBuffer() as unknown as BodyInit,
-  })
+  // Add 60 second timeout
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 60000)
 
-  if (!response.ok) {
-    throw new Error(`Cloudmersive compliance check failed: ${response.statusText}`)
-  }
+  try {
+    const response = await fetch('https://api.cloudmersive.com/image/analytics/check-content-safety', {
+      method: 'POST',
+      headers: {
+        'Apikey': AI_API.cloudmersive.apiKey,
+        ...form.getHeaders(),
+      },
+      body: form.getBuffer() as unknown as BodyInit,
+      signal: controller.signal,
+    })
 
-  const result = await response.json()
-  const issues: string[] = []
+    clearTimeout(timeoutId)
 
-  // Check for unsafe content categories
-  if (result.safeSearchResult) {
-    const { safeSearchResult } = result
-    if (safeSearchResult.adultContentScore > 0.5) issues.push('Adult content')
-    if (safeSearchResult.racyContentScore > 0.5) issues.push('Racy content')
-    if (safeSearchResult.medicalContentScore > 0.5) issues.push('Medical content')
-    if (safeSearchResult.violenceContentScore > 0.5) issues.push('Violence content')
-    if (safeSearchResult.nudityContentScore > 0.5) issues.push('Nudity content')
-  }
+    if (!response.ok) {
+      throw new Error(`Cloudmersive compliance check failed: ${response.statusText}`)
+    }
 
-  return {
-    compliant: issues.length === 0,
-    issues
+    const result = await response.json()
+    const issues: string[] = []
+
+    // Check for unsafe content categories
+    if (result.safeSearchResult) {
+      const { safeSearchResult } = result
+      if (safeSearchResult.adultContentScore > 0.5) issues.push('Adult content')
+      if (safeSearchResult.racyContentScore > 0.5) issues.push('Racy content')
+      if (safeSearchResult.medicalContentScore > 0.5) issues.push('Medical content')
+      if (safeSearchResult.violenceContentScore > 0.5) issues.push('Violence content')
+      if (safeSearchResult.nudityContentScore > 0.5) issues.push('Nudity content')
+    }
+
+    return {
+      compliant: issues.length === 0,
+      issues
+    }
+  } catch (err) {
+    clearTimeout(timeoutId)
+    throw err
   }
 }
