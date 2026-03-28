@@ -29,3 +29,42 @@
 ## Project Renaming
 - Renamed project from "Amazon AI Image / Amazon AI Image Tools" to **"Amazon Image Pro"**
 - Removed all "AI" mentions from UI across all pages
+
+---
+
+# BUG FIXES & IMPROVEMENTS - 2026-03-28
+
+## Watermark Selection Interactive Fixes
+1. **Fixed multiple selection disappearing issue**: After you finish dragging a selection, the blue box would disappear because of React closure bug - `redrawAllSelections` was capturing old `markedRects`
+   - Solution: Use refs to always get the latest selection list, guaranteeing correct redraw
+   - Now all selected areas stay permanently visible until you click "Clear All Marks"
+
+2. **Followed exact drawing specification from requirements**:
+   - Border color: `#007AFF` (iOS/Apple native professional blue)
+   - Border width: `2px`
+   - Selection fill overlay: `rgba(0, 122, 255, 0.20)` semi-transparent blue
+   - Added mousemove throttling (30fps max) to reduce rendering frequency and improve performance
+   - Correct coordinate correction using `getBoundingClientRect()` to eliminate page offset
+   - Only start drawing when mousedown is inside canvas bounds
+   - Only save selection when width & height > 10px (filters accidental tiny selections)
+   - Cancel drawing automatically when mouse leaves canvas
+
+3. **Fixed stale selection issue when changing images**:
+   - When user selects a new image to replace the old one, automatically clear all previous selected areas
+   - Prevents old selection boxes from staying on the new image which confuses users
+
+## Network/API Performance Improvements (for slow connections from China)
+1. **Increased timeout from 60s to 180s (3 minutes)**: Gives slow international connections enough time to complete
+2. **Added automatic retry**: If first attempt fails, wait 2 seconds and retry once automatically - greatly improves success rate on unstable networks
+3. **Added detailed server logging**: Logs each attempt's response time so you can diagnose network issues
+4. **Fixed error swallowing bug**: When all retries fail, correctly throw an Error object so frontend can display the actual error message instead of generic "Processing failed"
+5. **Improved frontend error message**: Shows full error details to help diagnose problems faster
+
+## Summary
+- ✅ All selected areas stay visible (no more disappearing after mouse move)
+- ✅ Selection style matches the iOS/Apple professional blue spec
+- ✅ Changing images automatically clears old selections
+- ✅ Better tolerance for slow/unstable international network connections
+  - Auto-retry improves success rate
+  - Longer timeout accommodates slow download
+  - Better error messages when things go wrong
