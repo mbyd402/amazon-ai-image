@@ -1,4 +1,13 @@
 {
   "version": 2,
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "installCommand": "pnpm install --force"
+      }
+    }
+  ]
 }

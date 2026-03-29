@@ -357,8 +357,8 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
   try {
     sharp = require('sharp')
   } catch (err) {
-    console.error('Failed to load sharp:', err)
-    throw new Error('sharp module is not available. Please check your Vercel deployment configuration.')
+    console.error('❌ Failed to load sharp module on Vercel:', err)
+    throw new Error('sharp module failed to load on this platform. Please use manual mode (draw the watermark area yourself on the canvas) instead of automatic mode. If you need automatic mode, check your Vercel build configuration.')
   }
   
   // Get metadata to get image dimensions
