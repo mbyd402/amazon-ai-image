@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase 手动测试</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .success {
+            background-color: #f0f8f0;
+            border-color: #0a0;
+        }
+        .error {
+            background-color: #f8f0f0;
+            border-color: #d00;
+        }
+        .warning {
+            background-color: #fff8f0;
+            border-color: #f90;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow: auto;
+            font-size: 0.9rem;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem 0;
+        }
+        button:hover {
+            background-color: #0051a8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Supabase 手动测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 环境变量状态</h2>
+        <div id="env-status">检查中...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Supabase 客户端测试</h2>
+        <p>使用硬编码配置测试 Supabase 连接：</p>
+        <button onclick="testSupabase()">测试 Supabase 连接</button>
+        <div id="supabase-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 诊断信息</h2>
+        <div id="diagnostics"></div>
+    </div>
+    
+    <div class="test-section warning">
+        <h2>💡 问题诊断</h2>
+        <p>如果环境变量检测为空，但 Vercel 中配置了值，可能的原因：</p>
+        <ul>
+            <li><strong>Next.js 构建问题</strong>：环境变量未在构建时注入</li>
+            <li><strong>Vercel 缓存</strong>：需要清除缓存重新部署</li>
+            <li><strong>变量名称</strong>：检查大小写和拼写</li>
+            <li><strong>特殊字符</strong>：值中包含特殊字符被截断</li>
+        </ul>
+        
+        <h3>解决方案：</h3>
+        <ol>
+            <li>在 Vercel 中删除并重新添加环境变量</li>
+            <li>清除 Vercel 构建缓存</li>
+            <li>手动触发全新部署</li>
+            <li>检查构建日志中的环境变量输出</li>
+        </ol>
+    </div>
+
+    <script>
+        // 1. 检查环境变量
+        function checkEnvVars() {
+            const envStatus = document.getElementById('env-status')
+            const diagnostics = document.getElementById('diagnostics')
+            
+            // 模拟 process.env 检查
+            const mockEnv = {
+                NEXT_PUBLIC_SUPABASE_URL: '',
+                NEXT_PUBLIC_SUPABASE_ANON_KEY: ''
+            }
+            
+            // 实际值（从你的 Vercel 配置复制）
+            const actualValues = {
+                supabaseUrl: 'https://hglupebrcszqblgxlsnu.supabase.co',
+                supabaseKey: '你的 Supabase Anon Key 在这里'
+            }
+            
+            let html = '<h3>检测到的值：</h3>'
+            html += `<p><strong>NEXT_PUBLIC_SUPABASE_URL:</strong> ${mockEnv.NEXT_PUBLIC_SUPABASE_URL || '<span style="color:red">空/未定义</span>'}</p>`
+            html += `<p><strong>NEXT_PUBLIC_SUPABASE_ANON_KEY:</strong> ${mockEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '***已设置***' : '<span style="color:red">空/未定义</span>'}</p>`
+            
+            html += '<h3>应有值：</h3>'
+            html += `<p><strong>Supabase URL:</strong> ${actualValues.supabaseUrl.substring(0, 20)}...</p>`
+            html += `<p><strong>Supabase Key:</strong> ${actualValues.supabaseKey.substring(0, 10)}...</p>`
+            
+            envStatus.innerHTML = html
+            
+            // 诊断信息
+            let diagHtml = '<h3>控制台命令测试：</h3>'
+            diagHtml += '<pre>// 在浏览器控制台运行：\n'
+            diagHtml += 'console.log(\'NEXT_PUBLIC_SUPABASE_URL:\', process.env.NEXT_PUBLIC_SUPABASE_URL)\n'
+            diagHtml += 'console.log(\'NEXT_PUBLIC_SUPABASE_ANON_KEY exists:\', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)\n'
+            diagHtml += 'console.log(\'All NEXT_PUBLIC_ vars:\', Object.keys(process.env).filter(k => k.startsWith(\'NEXT_PUBLIC_\')))</pre>'
+            
+            diagnostics.innerHTML = diagHtml
+        }
+        
+        // 2. 测试 Supabase 连接
+        async function testSupabase() {
+            const resultDiv = document.getElementById('supabase-result')
+            resultDiv.innerHTML = '<p>测试中...</p>'
+            
+            try {
+                // 硬编码配置
+                const supabaseUrl = 'https://hglupebrcszqblgxlsnu.supabase.co'
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnbHVwZWJrc3p6cWJsZ3hsc251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEwMDQ4MDAsImV4cCI6MjAyNjU4MDgwMH0.3cqlQw6vT5w5q5w6vT5w5q5w6vT5w5q5w6vT5w5q5w'
+                
+                // 创建 Supabase 客户端
+                const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm')
+                const supabase = createClient(supabaseUrl, supabaseKey)
+                
+                // 测试连接
+                const { data, error } = await supabase.auth.getSession()
+                
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">
+                        <h3>❌ 连接失败</h3>
+                        <p>错误：${error.message}</p>
+                        <p>但 Supabase 客户端创建成功！</p>
+                    </div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="success">
+                        <h3>✅ 连接成功</h3>
+                        <p>Supabase 客户端创建成功</p>
+                        <p>会话状态：${data.session ? '已登录' : '未登录'}</p>
+                    </div>`
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">
+                    <h3>❌ 测试失败</h3>
+                    <p>错误：${error.message}</p>
+                    <p>这可能是因为：</p>
+                    <ul>
+                        <li>Supabase URL 或 Key 不正确</li>
+                        <li>网络连接问题</li>
+                        <li>Supabase 项目被暂停</li>
+                    </ul>
+                </div>`
+            }
+        }
+        
+        // 页面加载时检查
+        document.addEventListener('DOMContentLoaded', checkEnvVars)
+        
+        // 添加控制台测试按钮
+        window.addConsoleTest = function() {
+            console.log('=== 环境变量手动测试 ===')
+            console.log('1. 检查 NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+            console.log('2. 检查 NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+            console.log('3. 所有 NEXT_PUBLIC_ 变量:', Object.keys(process.env).filter(k => k.startsWith('NEXT_PUBLIC_')))
+            console.log('=== 测试结束 ===')
+        }
+    </script>
+    
+    <div class="test-section">
+        <h2>4. 手动控制台测试</h2>
+        <button onclick="addConsoleTest()">在控制台运行测试</button>
+        <p>然后打开浏览器控制台（F12 → Console）查看结果。</p>
+    </div>
+</body>
+</html>

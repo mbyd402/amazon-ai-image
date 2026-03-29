@@ -84,6 +84,7 @@ async function runtimePOST(request: Request) {
     const file = formData.get('image') as File
     const operation = formData.get('operation') as string
     const userId = formData.get('userId') as string
+    const scale = formData.get('scale') as string || '2' // default to 2x
 
     if (!file || !operation || !userId) {
       return NextResponse.json(
@@ -122,7 +123,7 @@ async function runtimePOST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await upscaleImage(imageBuffer, AI_API, FormDataModule.default)
+        processedBuffer = await upscaleImage(imageBuffer, AI_API, FormDataModule.default, scale)
         break
 
       case 'watermark':
@@ -298,9 +299,48 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
       throw new Error(`Remove.bg API error: ${response.status} ${errorText}`)
     }
 
-    const resultBuffer = Buffer.from(await response.arrayBuffer())
-    console.log(`✅ Background removal complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
-    return resultBuffer
+    const transparentBuffer = Buffer.from(await response.arrayBuffer())
+    console.log(`✅ Background removed by Remove.bg, adding white background for Amazon...`)
+
+    // 🎯 Amazon requirement: white background (not transparent)
+    // Use sharp to composite the transparent image onto a white canvas
+    let sharp
+    try {
+      sharp = require('sharp')
+    } catch (err) {
+      console.error('❌ Failed to load sharp for adding white background:', err)
+      // If sharp fails, just return the transparent image as-is
+      return transparentBuffer
+    }
+
+    // Get image dimensions
+    const metadata = await sharp(transparentBuffer).metadata()
+    const width = metadata.width || 1000
+    const height = metadata.height || 1000
+
+    // Create a white background image and composite the transparent product on top
+    const whiteBackgroundBuffer = await sharp({
+      create: {
+        width: width,
+        height: height,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255 } // pure white - perfect for Amazon
+      }
+    })
+    .png()
+    .toBuffer()
+
+    // Composite transparent image on top of white background
+    const finalBuffer = await sharp(whiteBackgroundBuffer)
+      .composite([{
+        input: transparentBuffer,
+        blend: 'over'
+      }])
+      .png()
+      .toBuffer()
+
+    console.log(`✅ Amazon-ready white background added, final size: ${(finalBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+    return finalBuffer
   } catch (err) {
     clearTimeout(timeoutId)
     console.error(`❌ Background removal failed:`, err)
@@ -308,16 +348,29 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
   }
 }
 
-async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any, scale: string = '2'): Promise<Buffer> {
+  // For 1x: we still use 2x API to get AI processing (denoise + sharpen), then scale back to original size
+  // This gives the user AI enhancement without changing dimensions
+  const isOneX = scale === '1'
+  const apiScale = isOneX ? '2' : scale
+  const originalWidth = await (async () => {
+    let sharp = require('sharp')
+    const metadata = await sharp(imageBuffer).metadata()
+    return metadata.width || 0
+  })()
+
   const form = new FormDataModule()
   form.append('image_file', imageBuffer as unknown as Blob, {
     filename: 'image.png',
     contentType: 'image/png',
   })
+  form.append('scale', apiScale) // Clipdrop uses form parameter to specify scale
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
-  // Use 8s timeout to be safe for Hobby plan
-  const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
+  // For China network, give more time for DNS/connection
+  const baseTimeout = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 20000 : 180000
+  // Local development has no timeout limit, give 3 minutes
+  const timeoutMs = !process.env.VERCEL ? 180000 : (apiScale === '4' ? Math.floor(baseTimeout * 0.8) : baseTimeout)
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
     console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
@@ -325,7 +378,7 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
   }, timeoutMs)
 
   try {
-    console.log(`📡 Clipdrop upscale request timeout=${timeoutMs}ms...`)
+    console.log(`📡 Clipdrop ${scale}x upscale request timeout=${timeoutMs}ms...`)
     const startTime = Date.now()
     const response = await fetch(AI_API.clipdrop.upscaleUrl, {
       method: 'POST',
@@ -344,16 +397,38 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error(`❌ Clipdrop upscale error: status=${response.status}, body=${errorText}`)
-      throw new Error(`Clipdrop API error: ${response.status} ${errorText}`)
+      console.error(`❌ Clipdrop ${scale}x upscale error: status=${response.status}, body=${errorText}`)
+      throw new Error(`Clipdrop ${scale}x upscale API error: ${response.status} ${errorText}`)
     }
 
-    const resultBuffer = Buffer.from(await response.arrayBuffer())
-    console.log(`✅ Upscale complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+    let resultBuffer = Buffer.from(await response.arrayBuffer())
+
+    // For 1x: scale back to original size after 2x AI processing
+    // This gives AI denoise/sharpen without changing dimensions
+    if (isOneX && originalWidth > 0) {
+      console.log(`📏 1x mode: scaling back to original width ${originalWidth}px after AI processing...`)
+      let sharp
+      try {
+        sharp = require('sharp')
+      } catch (err) {
+        console.error('❌ Failed to load sharp for 1x resizing:', err)
+        // If sharp fails, just return the 2x result as-is
+        console.log(`✅ ${scale}x upscale complete (fallback to 2x), result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+        return resultBuffer
+      }
+      // Resize back to original width, maintain aspect ratio with lanczos3 for high quality
+      resultBuffer = await sharp(resultBuffer)
+        .resize(originalWidth, null, { kernel: sharp.kernel.lanczos3 })
+        .png()
+        .toBuffer()
+      console.log(`✅ 1x complete (AI denoise + sharpen, original dimensions kept), result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+    }
+
+    console.log(`✅ ${scale}x upscale complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
     return resultBuffer
   } catch (err) {
     clearTimeout(timeoutId)
-    console.error(`❌ Upscale failed:`, err)
+    console.error(`❌ ${scale}x upscale failed:`, err)
     throw err
   }
 }

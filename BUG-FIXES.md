@@ -68,3 +68,52 @@
   - Auto-retry improves success rate
   - Longer timeout accommodates slow download
   - Better error messages when things go wrong
+
+---
+
+# BUG FIXES & IMPROVEMENTS - 2026-03-29
+
+## Vercel Deployment Fixes (Watermark processing always failed)
+1. **Root cause**: `isBuildTime` detection logic was wrong - `process.env.VERCEL` is always `true` on Vercel (both build time **and** runtime), so API always returned simulated response even at runtime
+   - Fixed: Only detect as build time when `IS_BUILD_TIME=true` or `NETLIFY=true`
+   - Now Vercel runtime correctly executes real processing logic
+
+2. **Fixed "Lock broken by another request with the 'steal' option" Supabase error**:
+   - Added `isLoadingUserData` lock to prevent concurrent requests to `getSession()`
+   - Multiple `loadUserData` calls no longer conflict with each other
+
+3. **Vercel Hobby timeout optimization**:
+   - Vercel Hobby plan has 10s maximum timeout, Pro has 60s
+   - Automatically adjust timeout based on environment: Hobby 8-20s, Pro longer
+   - Increased retry from 2 to 3 attempts for better success rate
+   - Added much more detailed server logging for debugging
+
+## Product Changes
+1. **Menu rename**: `Background Remover` → **`White Background`**
+   - More accurate description of the actual feature: generate Amazon-ready main images with pure white background
+
+2. **White Background feature completed**:
+   - Step 1: Remove.bg removes background → transparent PNG
+   - Step 2: Use sharp to create pure white canvas (RGB 255,255,255)
+   - Step 3: Composite transparent product onto white background → output Amazon-ready image
+   - Fallback: If sharp fails, still returns transparent image (no error)
+
+3. **Image Upscale feature completed**:
+   - Frontend added 1x/2x/4x selection buttons (user can choose scale factor)
+   - **1x mode**: AI denoise + sharpen **without changing original dimensions**
+     - Works by: 2x upscale via Clipdrop API → sharp resize back to original width
+     - Result: Original size but AI enhanced with better clarity and less noise
+   - **2x mode**: 2x super-resolution upscaling via Clipdrop API
+   - **4x mode**: 4x super-resolution upscaling via Clipdrop API
+   - Added tip: "1x = AI denoise & sharpen only (no size change), 2x is faster and sufficient for most Amazon images. 4x gives larger output but takes longer time."
+
+4. **Fixed Clipdrop upscale URL 404 error**:
+   - Final correct URL matching cleanup pattern: `https://clipdrop-api.co/upscale/v1`
+
+## Summary
+- ✅ Vercel watermark processing now works (was always returning simulated response before)
+- ✅ Fixed Supabase concurrent request lock error
+- ✅ Renamed menu to more accurate "White Background"
+- ✅ Completed White Background feature (adds pure white background after removing background)
+- ✅ Completed Image Upscale feature with 1x/2x/4x options
+- ✅ Fixed 404 error for upscale API endpoint

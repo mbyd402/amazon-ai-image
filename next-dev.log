@@ -1,0 +1,724 @@
+
+> amazon-ai-image@0.1.0 dev /root/.openclaw/workspace/agent1
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+   - Environments: .env.local
+
+ ⚠ Disabling SWC Minifer will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues
+Warning: Reverting webpack devtool to 'eval-source-map'.
+Changing the webpack devtool in development mode will cause severe performance regressions.
+Read more: https://nextjs.org/docs/messages/improper-devtool
+ ✓ Ready in 2.9s
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 6.9s (563 modules)
+🚀 Starting OptimizedDashboard render...
+ ✓ Compiled in 635ms (287 modules)
+ ○ Compiling /api/process ...
+ ✓ Compiled /api/process in 1622ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=60000ms...
+⚡ Clipdrop responded in 8086ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 136ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=60000ms...
+⚡ Clipdrop responded in 8466ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 105ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=60000ms...
+⚡ Clipdrop responded in 8761ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 147ms (399 modules)
+ ✓ Compiled in 735ms (686 modules)
+📡 Clipdrop 1x upscale request timeout=60000ms...
+❌ 1x upscale failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:14902:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async globalThis.fetch (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57569)
+    at async upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:329:26)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13) {
+  [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: clipdrop-api.co:443, timeout: 10000ms)
+      at onConnectTimeout (node:internal/deps/undici/undici:2718:28)
+      at Immediate._onImmediate (node:internal/deps/undici/undici:2699:11)
+      at process.processImmediate (node:internal/timers:484:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'UND_ERR_CONNECT_TIMEOUT',
+    [Symbol(undici.error.UND_ERR)]: true,
+    [Symbol(undici.error.UND_ERR_CONNECT_TIMEOUT)]: true
+  }
+}
+Processing error: TypeError: fetch failed
+    at node:internal/deps/undici/undici:14902:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async globalThis.fetch (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57569)
+    at async upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:329:26)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13) {
+  [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: clipdrop-api.co:443, timeout: 10000ms)
+      at onConnectTimeout (node:internal/deps/undici/undici:2718:28)
+      at Immediate._onImmediate (node:internal/deps/undici/undici:2699:11)
+      at process.processImmediate (node:internal/timers:484:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'UND_ERR_CONNECT_TIMEOUT',
+    [Symbol(undici.error.UND_ERR)]: true,
+    [Symbol(undici.error.UND_ERR_CONNECT_TIMEOUT)]: true
+  }
+}
+ ✓ Compiled in 584ms (686 modules)
+📡 Clipdrop 1x upscale request timeout=120000ms...
+⚡ Clipdrop responded in 7466ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:344:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:344:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 185ms (399 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 868ms (678 modules)
+📡 Clipdrop 1x upscale request timeout=120000ms...
+⚡ Clipdrop responded in 8513ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:344:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:344:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 148ms (404 modules)
+ ✓ Compiled in 170ms (404 modules)
+ ✓ Compiled in 96ms (276 modules)
+ ✓ Compiled /api/process in 125ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=120000ms...
+⚡ Clipdrop responded in 7997ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:344:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:344:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 109ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=120000ms...
+❌ 1x upscale failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:14902:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async globalThis.fetch (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57569)
+    at async upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:329:26)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13) {
+  [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: clipdrop-api.co:443, timeout: 10000ms)
+      at onConnectTimeout (node:internal/deps/undici/undici:2718:28)
+      at Immediate._onImmediate (node:internal/deps/undici/undici:2699:11)
+      at process.processImmediate (node:internal/timers:484:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'UND_ERR_CONNECT_TIMEOUT',
+    [Symbol(undici.error.UND_ERR)]: true,
+    [Symbol(undici.error.UND_ERR_CONNECT_TIMEOUT)]: true
+  }
+}
+Processing error: TypeError: fetch failed
+    at node:internal/deps/undici/undici:14902:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async globalThis.fetch (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57569)
+    at async upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:329:26)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13) {
+  [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: clipdrop-api.co:443, timeout: 10000ms)
+      at onConnectTimeout (node:internal/deps/undici/undici:2718:28)
+      at Immediate._onImmediate (node:internal/deps/undici/undici:2699:11)
+      at process.processImmediate (node:internal/timers:484:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'UND_ERR_CONNECT_TIMEOUT',
+    [Symbol(undici.error.UND_ERR)]: true,
+    [Symbol(undici.error.UND_ERR_CONNECT_TIMEOUT)]: true
+  }
+}
+ ✓ Compiled in 686ms (687 modules)
+📡 Clipdrop 1x upscale request timeout=180000ms...
+⚡ Clipdrop responded in 8310ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 190ms (276 modules)
+ ✓ Compiled /api/process in 128ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=180000ms...
+⚡ Clipdrop responded in 7649ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 126ms (399 modules)
+📡 Clipdrop 1x upscale request timeout=180000ms...
+⚡ Clipdrop responded in 6938ms
+❌ Clipdrop 1x upscale error: status=404, body={"error":"Unknown url"}
+❌ 1x upscale failed: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 1x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+🚀 Starting OptimizedDashboard render...
+📡 Clipdrop 2x upscale request timeout=180000ms...
+⚡ Clipdrop responded in 9516ms
+❌ Clipdrop 2x upscale error: status=404, body={"error":"Unknown url"}
+❌ 2x upscale failed: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 157ms (276 modules)
+🚀 Starting OptimizedDashboard render...
+ ✓ Compiled /api/process in 287ms (399 modules)
+📡 Clipdrop 2x upscale request timeout=180000ms...
+⚡ Clipdrop responded in 7566ms
+❌ Clipdrop 2x upscale error: status=404, body={"error":"Unknown url"}
+❌ 2x upscale failed: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 215ms (276 modules)
+ ○ Compiling /not-found ...
+ ✓ Compiled /not-found in 966ms (555 modules)

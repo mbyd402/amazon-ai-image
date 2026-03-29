@@ -1,0 +1,34 @@
+diff --git a/app/api/process/route.ts b/app/api/process/route.ts
+index xxxxxxx..xxxxxxx
+--- a/app/api/process/route.ts
++++ b/app/api/process/route.ts
+@@ -358,7 +358,10 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+   // All retries failed
+   throw lastError
+ }
++  // All retries failed
++  if (lastError instanceof Error) {
++    throw lastError
++  }
++  // If lastError is not an Error, wrap it
++  throw new Error(String(lastError) || 'All retry attempts failed')
++}
+ 
+ // User mode: use the mask that user drew on the canvas
+ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+@@ -492,7 +498,10 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+   }
+ 
+   // All retries failed
+   throw lastError
+ }
++  // All retries failed
++  if (lastError instanceof Error) {
++    throw lastError
++  }
++  // If lastError is not an Error, wrap it
++  throw new Error(String(lastError) || 'All retry attempts failed')
++}
+ 
+ async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<{ compliant: boolean; issues: string[] }> {
+   // Use Cloudmersive API to check for inappropriate content in Amazon product images

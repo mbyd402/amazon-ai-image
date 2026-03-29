@@ -30,6 +30,7 @@ export default function OptimizedDashboard() {
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [upscaleScale, setUpscaleScale] = useState<'1x' | '2x' | '4x'>('2x')
   
   // For interactive watermark marking - user draws mask on canvas
   const [markingImage, setMarkingImage] = useState<{
@@ -467,7 +468,7 @@ export default function OptimizedDashboard() {
             <nav className="flex">
               {(['background', 'watermark', 'upscale', 'compliance'] as const).map((tab) => {
                 const label = {
-                  background: 'Background Remover',
+                  background: 'White Background',
                   watermark: 'Watermark Remover',
                   upscale: 'Image Upscale',
                   compliance: 'Compliance Check',
@@ -734,6 +735,31 @@ export default function OptimizedDashboard() {
                 </div>
               )}
 
+              {/* Upscale scale selection - only show when selected tab is upscale */}
+              {selectedTab === 'upscale' && files.length > 0 && (
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-700 mb-3">Select upscale factor:</p>
+                  <div className="flex gap-3">
+                    {(['1x', '2x', '4x'] as const).map((scale) => (
+                      <button
+                        key={scale}
+                        onClick={() => setUpscaleScale(scale)}
+                        className={`px-6 py-2 rounded-md font-medium text-sm transition ${
+                          upscaleScale === scale
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {scale}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    💡 Tip: 1x = AI denoise & sharpen only (no size change), 2x is faster and sufficient for most Amazon images. 4x gives larger output but takes longer time.
+                  </p>
+                </div>
+              )}
+
               {/* Processing button - only show when there are files selected */}
               {files.length > 0 && (
                 <button
@@ -769,6 +795,10 @@ export default function OptimizedDashboard() {
                         formData.append('operation', selectedTab)
                         formData.append('userId', user.id)
                         formData.append('user_id', user.id)
+                        // Pass upscale scale factor for image upscale
+                        if (selectedTab === 'upscale') {
+                          formData.append('scale', upscaleScale.replace('x', ''))
+                        }
                         
                         // For watermark with marked areas - convert canvas to mask image
                         // Clipdrop Cleanup API: mask should be WHITE where you want to REMOVE content

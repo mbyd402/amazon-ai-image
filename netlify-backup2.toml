@@ -1,0 +1,32 @@
+[build]
+  command = "npm install --include=dev && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18.20.4"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  
+  # 必需的环境变量（设为空避免构建失败）
+  NEXT_PUBLIC_SUPABASE_URL = ""
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
+  
+  # 可选API密钥
+  REMOVE_BG_API_KEY = ""
+  CLOUDMERSIVE_API_KEY = ""
+  CLIPDROP_API_KEY = ""
+  NEXT_PUBLIC_PAYPAL_CLIENT_ID = ""
+  PAYPAL_CLIENT_SECRET = ""
+  SUPABASE_SERVICE_ROLE_KEY = ""
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
