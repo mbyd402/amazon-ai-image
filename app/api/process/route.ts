@@ -5,7 +5,13 @@ import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 // 🎯 构建时检测
-const isBuildTime = process.env.NODE_ENV === 'production' && (process.env.NETLIFY || process.env.VERCEL || process.env.IS_BUILD_TIME === 'true')
+// Only treat it as build time during the actual build process
+// Vercel: check if we're in the build phase by looking at IS_BUILD_TIME or NETLIFY
+// On Vercel runtime, process.env.VERCEL is still true but we shouldn't simulate anymore
+const isBuildTime = (
+  process.env.NODE_ENV === 'production' && 
+  (process.env.IS_BUILD_TIME === 'true' || process.env.NETLIFY === 'true')
+)
 
 // 🎯 构建时模拟响应
 const buildTimeResponse = NextResponse.json(
