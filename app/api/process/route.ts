@@ -255,11 +255,18 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
   })
   form.append('size', 'auto')
 
-  // Add 60 second timeout
+  // Vercel Hobby plan has 10s timeout, Pro has 60s
+  // Use 8s timeout to be safe for Hobby plan
+  const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 60000)
+  const timeoutId = setTimeout(() => {
+    console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
+    controller.abort()
+  }, timeoutMs)
 
   try {
+    console.log(`📡 Remove.bg request timeout=${timeoutMs}ms...`)
+    const startTime = Date.now()
     const response = await fetch(AI_API.removeBg.apiUrl, {
       method: 'POST',
       headers: {
@@ -270,15 +277,23 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
       signal: controller.signal,
     })
 
+    const elapsed = Date.now() - startTime
+    console.log(`⚡ Remove.bg responded in ${elapsed}ms`)
+
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      throw new Error(`Remove.bg API error: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error(`❌ Remove.bg error: status=${response.status}, body=${errorText}`)
+      throw new Error(`Remove.bg API error: ${response.status} ${errorText}`)
     }
 
-    return Buffer.from(await response.arrayBuffer())
+    const resultBuffer = Buffer.from(await response.arrayBuffer())
+    console.log(`✅ Background removal complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+    return resultBuffer
   } catch (err) {
     clearTimeout(timeoutId)
+    console.error(`❌ Background removal failed:`, err)
     throw err
   }
 }
@@ -290,11 +305,18 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
     contentType: 'image/png',
   })
 
-  // Add 60 second timeout
+  // Vercel Hobby plan has 10s timeout, Pro has 60s
+  // Use 8s timeout to be safe for Hobby plan
+  const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 60000)
+  const timeoutId = setTimeout(() => {
+    console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
+    controller.abort()
+  }, timeoutMs)
 
   try {
+    console.log(`📡 Clipdrop upscale request timeout=${timeoutMs}ms...`)
+    const startTime = Date.now()
     const response = await fetch(AI_API.clipdrop.upscaleUrl, {
       method: 'POST',
       headers: {
@@ -305,15 +327,23 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
       signal: controller.signal,
     })
 
+    const elapsed = Date.now() - startTime
+    console.log(`⚡ Clipdrop responded in ${elapsed}ms`)
+
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      throw new Error(`Clipdrop API error: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error(`❌ Clipdrop upscale error: status=${response.status}, body=${errorText}`)
+      throw new Error(`Clipdrop API error: ${response.status} ${errorText}`)
     }
 
-    return Buffer.from(await response.arrayBuffer())
+    const resultBuffer = Buffer.from(await response.arrayBuffer())
+    console.log(`✅ Upscale complete, result size: ${(resultBuffer.length / 1024 / 1024).toFixed(2)} MB`)
+    return resultBuffer
   } catch (err) {
     clearTimeout(timeoutId)
+    console.error(`❌ Upscale failed:`, err)
     throw err
   }
 }
@@ -323,7 +353,13 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
   // Use Clipdrop Cleanup API to remove watermark
   // Most e-commerce product image watermarks are at one of the four corners
   // Strategy: keep center product area white (don't touch), black out four corners for cleaning
-  const sharp = require('sharp')
+  let sharp
+  try {
+    sharp = require('sharp')
+  } catch (err) {
+    console.error('Failed to load sharp:', err)
+    throw new Error('sharp module is not available. Please check your Vercel deployment configuration.')
+  }
   
   // Get metadata to get image dimensions
   const metadata = await sharp(imageBuffer).metadata()
@@ -400,7 +436,8 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
   .toBuffer()
 
   // Add auto-retry for unstable network connections (common when accessing from China)
-  const maxRetries = 2
+  // Vercel Serverless Functions have a max 10s timeout on Hobby plan, 60s on Pro
+  const maxRetries = 3
   let lastError: any = null
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -417,11 +454,16 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
         contentType: 'image/png',
       })
       
-      // 3 minute timeout for unstable networks
+      // Vercel Hobby plan has 10s timeout, Pro has 60s
+      // Use 8s timeout to be safe for Hobby plan
+      const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 180000)
+      const timeoutId = setTimeout(() => {
+        console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
+        controller.abort()
+      }, timeoutMs)
 
-      console.log(`📡 Clipdrop API attempt ${attempt + 1}/${maxRetries}...`)
+      console.log(`📡 Clipdrop API attempt ${attempt + 1}/${maxRetries} timeout=${timeoutMs}ms...`)
       const startTime = Date.now()
 
       const response = await fetch(AI_API.clipdrop.cleanupUrl, {
@@ -441,6 +483,7 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
 
       if (!response.ok) {
         const errorText = await response.text()
+        console.error(`❌ Clipdrop API error: status=${response.status}, body=${errorText}`)
         throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
       }
 
@@ -452,12 +495,13 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
       console.warn(`⚠️ Attempt ${attempt + 1} failed:`, err)
       if (attempt < maxRetries - 1) {
         console.log('🔄 Retrying...')
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2s before retry
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1s before retry
       }
     }
   }
 
   // All retries failed
+  console.error(`❌ All ${maxRetries} attempts failed`, lastError)
   throw lastError
 }
 
@@ -466,7 +510,8 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
   // User already drew the mask correctly on canvas - black = clean, white = keep
   // Just send directly to Clipdrop Cleanup API
   // Add auto-retry for unstable network connections (common when accessing from China)
-  const maxRetries = 2
+  // Vercel Serverless Functions have a max 10s timeout on Hobby plan, 60s on Pro
+  const maxRetries = 3
   let lastError: any = null
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -483,11 +528,16 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
         contentType: 'image/png',
       })
       
-      // 3 minute timeout for unstable networks
+      // Vercel Hobby plan has 10s timeout, Pro has 60s
+      // Use 8s timeout to be safe for Hobby plan
+      const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 180000)
+      const timeoutId = setTimeout(() => {
+        console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
+        controller.abort()
+      }, timeoutMs)
 
-      console.log(`📡 Clipdrop API attempt ${attempt + 1}/${maxRetries}...`)
+      console.log(`📡 Clipdrop API (user mask) attempt ${attempt + 1}/${maxRetries} timeout=${timeoutMs}ms...`)
       const startTime = Date.now()
 
       const response = await fetch(AI_API.clipdrop.cleanupUrl, {
@@ -507,6 +557,7 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
 
       if (!response.ok) {
         const errorText = await response.text()
+        console.error(`❌ Clipdrop API error: status=${response.status}, body=${errorText}`)
         throw new Error(`Clipdrop Cleanup API error: ${response.status} ${errorText}`)
       }
 
@@ -518,12 +569,13 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
       console.warn(`⚠️ Attempt ${attempt + 1} failed:`, err)
       if (attempt < maxRetries - 1) {
         console.log('🔄 Retrying...')
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2s before retry
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1s before retry
       }
     }
   }
 
   // All retries failed
+  console.error(`❌ All ${maxRetries} attempts failed`, lastError)
   throw lastError
 }
 

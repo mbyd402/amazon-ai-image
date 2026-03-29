@@ -49,6 +49,7 @@ export default function OptimizedDashboard() {
   
   // Create client ONCE - use ref to avoid recreation on every render
   const isInitialized = useRef(false)
+  const isLoadingUserData = useRef(false)
   const supabase = useRef<any>(null)
   const imageRef = useRef<HTMLImageElement | null>(null)
 
@@ -174,6 +175,14 @@ export default function OptimizedDashboard() {
     // 3. Load user data
     const loadUserData = async (client: any, useCache = true, attempt = 0) => {
       console.log('🚀 Starting loadUserData, useCache:', useCache, 'attempt:', attempt)
+      
+      // 🔒 Prevent concurrent requests - fixes "Lock broken by another request" error
+      if (isLoadingUserData.current) {
+        console.log('⚠️ loadUserData already in progress, skipping...')
+        return
+      }
+      
+      isLoadingUserData.current = true
       setLoading(true)
       setError(null)
       
@@ -252,6 +261,7 @@ export default function OptimizedDashboard() {
         }
       } finally {
         setLoading(false)
+        isLoadingUserData.current = false
       }
     }
 
