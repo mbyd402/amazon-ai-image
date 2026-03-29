@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// 🔧 Force dynamic rendering - fixes "Dynamic server usage" error on Vercel
+export const dynamic = 'force-dynamic'
+
 // 测试接口：测试点数扣减逻辑
 // GET /api/test-points?userId=xxx
 // 不调用第三方API，只测试数据库扣减是否正常
