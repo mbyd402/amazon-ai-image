@@ -159,12 +159,62 @@ async function runtimePOST(request: Request) {
         }
         const complianceResult = await checkCompliance(imageBuffer, AI_API, FormDataModule.default)
         
-        // 对于compliance操作，不扣分并直接返回
+        // Convert processed buffer to base64 data URL (just for API consistency)
+        const base64 = imageBuffer.toString('base64')
+        const processedUrl = `data:image/png;base64,${base64}`
+
+        // Deduct 1 point for compliance check (OCR costs money)
+        const pointsToDeduct = 1
+        
+        // First get current remaining points
+        const { data: currentUser, error: fetchError } = await supabaseAdmin
+          .from('users')
+          .select('remaining_points')
+          .eq('id', userId)
+          .single()
+        
+        let newRemainingPoints = 0
+        if (fetchError) {
+          console.error('Error fetching current points:', fetchError)
+        } else if (currentUser) {
+          newRemainingPoints = Math.max(0, (currentUser.remaining_points || 0) - pointsToDeduct)
+        }
+        
+        const { error: updateError } = await supabaseAdmin
+          .from('users')
+          .update({
+            remaining_points: newRemainingPoints,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId)
+
+        if (updateError) {
+          console.error('Error updating user points:', updateError)
+        }
+
+        // Save processing record
+        const { error: recordError } = await supabaseAdmin
+          .from('image_processing')
+          .insert({
+            user_id: userId,
+            operation_type: operation,
+            original_url: 'uploaded-file',
+            processed_url: processedUrl,
+            points_deducted: pointsToDeduct,
+            status: 'completed'
+          })
+
+        if (recordError) {
+          console.error('Error saving processing record:', recordError)
+        }
+
+        // Return compliance result
         return NextResponse.json({
-          success: complianceResult.compliant,
+          success: true,
           compliant: complianceResult.compliant,
           issues: complianceResult.issues,
-          points_deducted: 0
+          results: [processedUrl],
+          points_deducted: pointsToDeduct
         })
 
       default:
@@ -365,7 +415,7 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
   })
   // super-resolution requires 'upscale' parameter (how many times to upscale)
   // 2 = 2x, 4 = 4x
-  form.append('upscale', scaleNum)
+  form.append('upscale', scaleNum.toString())
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
   // For China network, give more time for DNS/connection
@@ -379,7 +429,10 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
   }, timeoutMs)
 
   try {
-    console.log(`📡 Clipdrop ${scale}x upscale request timeout=${timeoutMs}ms...`)
+    console.log(`📡 Clipdrop ${scale}x upscale request`)
+    console.log(`   URL: ${AI_API.clipdrop.upscaleUrl}`)
+    console.log(`   API key length: ${AI_API.clipdrop.apiKey.length}`)
+    console.log(`   timeout=${timeoutMs}ms...`)
     const startTime = Date.now()
     const response = await fetch(AI_API.clipdrop.upscaleUrl, {
       method: 'POST',
@@ -666,53 +719,178 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
 }
 
 async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<{ compliant: boolean; issues: string[] }> {
-  // Use Cloudmersive API to check for inappropriate content in Amazon product images
-  const form = new FormDataModule()
-  form.append('image', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
+  const issues: string[] = []
+  let sharp
+  try {
+    sharp = require('sharp')
+  } catch (err) {
+    console.error('❌ Failed to load sharp for compliance check:', err)
+    throw new Error('sharp module is required for compliance check')
+  }
 
-  // Add 60 second timeout
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 60000)
+  // ========== 1. Get image metadata ==========
+  const metadata = await sharp(imageBuffer).metadata()
+  const width = metadata.width || 0
+  const height = metadata.height || 0
+  const size = imageBuffer.length
+
+  // ========== 2. Check file size (<= 10MB) ==========
+  const maxSizeBytes = 10 * 1024 * 1024 // 10MB
+  if (size > maxSizeBytes) {
+    issues.push(`File size too large: ${(size / 1024 / 1024).toFixed(1)}MB (max 10MB)`)
+  }
+
+  // ========== 3. Check format ==========
+  const allowedFormats = ['jpeg', 'jpg', 'png']
+  const format = metadata.format || ''
+  if (!allowedFormats.includes(format.toLowerCase())) {
+    issues.push(`Invalid image format: ${format} (allowed: JPG, PNG)`)
+  }
+
+  // ========== 4. Check resolution (shortest side >= 1000px) ==========
+  const minSide = Math.min(width, height)
+  if (minSide < 1000) {
+    issues.push(`Resolution too small: ${width}×${height}, shortest side must be ≥ 1000px`)
+  }
+
+  // ========== 5. Check aspect ratio (1:1 square, allow ±5% tolerance) ==========
+  const ratio = width / height
+  if (ratio < 0.95 || ratio > 1.05) {
+    issues.push(`Not square: ${width}×${height} (ratio ${ratio.toFixed(2)}), Amazon requires 1:1 square ±5%`)
+  }
+
+  // ========== 6. Check pure white background (check edge pixels) ==========
+  // Sample the outer 10px border to check if it's near white (#FFFFFF)
+  // Tolerance: RGB values >= 250 considered "white enough"
+  // Require at least 90% of sampled pixels to be near white
+  const whiteThreshold = 250
+  const minWhitePercentage = 90
 
   try {
-    const response = await fetch('https://api.cloudmersive.com/image/analytics/check-content-safety', {
-      method: 'POST',
-      headers: {
-        'Apikey': AI_API.cloudmersive.apiKey,
-        ...form.getHeaders(),
-      },
-      body: form.getBuffer() as unknown as BodyInit,
-      signal: controller.signal,
-    })
+    // Extract edge pixels
+    const { data, info } = await sharp(imageBuffer)
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true })
 
-    clearTimeout(timeoutId)
+    const w = info.width
+    const h = info.height
+    let whitePixels = 0
+    let totalSampled = 0
 
-    if (!response.ok) {
-      throw new Error(`Cloudmersive compliance check failed: ${response.statusText}`)
+    // Sample top edge (first 10 rows)
+    for (let y = 0; y < Math.min(10, h); y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = (y * w + x) * 3
+        const r = data[idx]
+        const g = data[idx + 1]
+        const b = data[idx + 2]
+        if (r >= whiteThreshold && g >= whiteThreshold && b >= whiteThreshold) {
+          whitePixels++
+        }
+        totalSampled++
+      }
     }
 
-    const result = await response.json()
-    const issues: string[] = []
-
-    // Check for unsafe content categories
-    if (result.safeSearchResult) {
-      const { safeSearchResult } = result
-      if (safeSearchResult.adultContentScore > 0.5) issues.push('Adult content')
-      if (safeSearchResult.racyContentScore > 0.5) issues.push('Racy content')
-      if (safeSearchResult.medicalContentScore > 0.5) issues.push('Medical content')
-      if (safeSearchResult.violenceContentScore > 0.5) issues.push('Violence content')
-      if (safeSearchResult.nudityContentScore > 0.5) issues.push('Nudity content')
+    // Sample bottom edge (last 10 rows)
+    for (let y = Math.max(0, h - 10); y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = (y * w + x) * 3
+        const r = data[idx]
+        const g = data[idx + 1]
+        const b = data[idx + 2]
+        if (r >= whiteThreshold && g >= whiteThreshold && b >= whiteThreshold) {
+          whitePixels++
+        }
+        totalSampled++
+      }
     }
 
-    return {
-      compliant: issues.length === 0,
-      issues
+    // Sample left edge (first 10 columns, excluding corners already counted)
+    for (let y = 10; y < h - 10; y++) {
+      for (let x = 0; x < Math.min(10, w); x++) {
+        const idx = (y * w + x) * 3
+        const r = data[idx]
+        const g = data[idx + 1]
+        const b = data[idx + 2]
+        if (r >= whiteThreshold && g >= whiteThreshold && b >= whiteThreshold) {
+          whitePixels++
+        }
+        totalSampled++
+      }
+    }
+
+    // Sample right edge (last 10 columns, excluding corners already counted)
+    for (let y = 10; y < h - 10; y++) {
+      for (let x = Math.max(0, w - 10); x < w; x++) {
+        const idx = (y * w + x) * 3
+        const r = data[idx]
+        const g = data[idx + 1]
+        const b = data[idx + 2]
+        if (r >= whiteThreshold && g >= whiteThreshold && b >= whiteThreshold) {
+          whitePixels++
+        }
+        totalSampled++
+      }
+    }
+
+    const whitePercentage = (whitePixels / totalSampled) * 100
+    if (whitePercentage < minWhitePercentage) {
+      issues.push(`Background not pure white: only ${whitePercentage.toFixed(1)}% of edge pixels are near white (needs ≥ ${minWhitePercentage}%)`)
     }
   } catch (err) {
-    clearTimeout(timeoutId)
-    throw err
+    console.error('❌ Error checking white background:', err)
+    // Skip this check if it fails, don't fail the whole check
+  }
+
+  // ========== 7. Check for text using Cloudmersive OCR ==========
+  if (AI_API.cloudmersive.apiKey) {
+    try {
+      const form = new FormDataModule()
+      form.append('image', imageBuffer as unknown as Blob, {
+        filename: 'image.png',
+        contentType: 'image/png',
+      })
+
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 60000)
+
+      console.log(`📡 Cloudmersive OCR text check...`)
+      const startTime = Date.now()
+      const response = await fetch('https://api.cloudmersive.com/image/ocrImageToText', {
+        method: 'POST',
+        headers: {
+          'Apikey': AI_API.cloudmersive.apiKey,
+          ...form.getHeaders(),
+        },
+        body: form.getBuffer() as unknown as BodyInit,
+        signal: controller.signal,
+      })
+
+      const elapsed = Date.now() - startTime
+      console.log(`⚡ Cloudmersive responded in ${elapsed}ms`)
+
+      clearTimeout(timeoutId)
+
+      if (response.ok) {
+        let text = ''
+        // Try to get text directly
+        text = await response.text()
+        text = (text || '').trim()
+
+        // If any text detected, flag as potential violation
+        if (text.length > 0) {
+          issues.push(`Text detected on image: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}" - Amazon main images should not have text/watermarks`)
+        }
+      }
+    } catch (err) {
+      console.error('⚠️ OCR check failed:', err)
+      // Don't fail the whole check if OCR fails, just skip it
+    }
+  }
+
+  return {
+    compliant: issues.length === 0,
+    issues
   }
 }

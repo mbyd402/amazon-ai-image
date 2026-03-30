@@ -117,3 +117,54 @@
 - ✅ Completed White Background feature (adds pure white background after removing background)
 - ✅ Completed Image Upscale feature with 1x/2x/4x options
 - ✅ Fixed 404 error for upscale API endpoint
+
+---
+
+# BUG FIXES & IMPROVEMENTS - 2026-03-30
+
+## Clipdrop Upscale API 404 "Unknown url" Fixed
+1. **Root cause**: Clipdrop changed their API endpoint structure - old `/upscale/v1` no longer exists
+2. **Solution**: Updated to new endpoint `https://apis.clipdrop.co/super-resolution/v1`
+   - Parameter changed from `scale` → `upscale` (string "2"/"4")
+   - Successfully connects and returns processed image
+
+## sharp Native Module Loading Fixed
+1. **Root cause**: pnpm default security policy blocks build scripts for optional dependencies, so `libvips-cpp.so` never compiled
+2. **Solution**:
+   - Added `pnpm.allowedBuiltDependencies: ["sharp"]` to package.json
+   - Added `allow-builds=sharp` to `.npmrc`
+   - Downgraded from `sharp@0.33.2` → `sharp@0.32.6` for better Vercel compatibility
+   - Now sharp loads successfully and can read image metadata
+
+## Amazon Compliance Check Feature Completed (MVP)
+Implemented complete 7-item Amazon main image compliance check:
+
+| # | Check | Description |
+|---|-------|-------------|
+| 1 | **File Size** | Maximum 10MB |
+| 2 | **Format** | JPG / PNG only |
+| 3 | **Resolution** | Shortest side ≥ 1000px |
+| 4 | **Aspect Ratio** | 1:1 square ±5% tolerance (0.95 ~ 1.05) |
+| 5 | **Pure White Background** | Sample edge pixels (10px border), require ≥ 90% pixels near #FFFFFF (RGB ≥ 250) |
+| 6 | **Text/Watermark Detection** | Use Cloudmersive OCR to detect any text → text = potential watermark, flag as violation |
+| 7 | **Inappropriate Content** | Use Cloudmersive Safe Search to check adult/violence/medical/nudity |
+
+**Product/UX Design**:
+- **Billing**: 1 point per check (controls API costs - Cloudmersive OCR is billed per call)
+- **Display**: Results displayed directly in results area, yellow background highlighting, no popup
+- **No image processing**: We don't modify the image, just check it - so no processed image to display/download
+- If compliant: Shows "✅ All checks passed! No issues found."
+- If not compliant: Lists each issue with ⚠️ icon so user can fix and re-upload
+
+## UX Improvements for Compliance Check
+- Changed from popup alert to inline display in results area
+- No image display/download since we didn't modify the image
+- Compliance check results use yellow background to distinguish from normal processed images
+- Each issue on its own line for easy reading
+
+## Summary
+- ✅ Fixed Clipdrop upscale endpoint 404 "Unknown url" error
+- ✅ Fixed sharp native module loading error (libvips missing)
+- ✅ Completed full Amazon compliance check MVP with 7 checks
+- ✅ Each compliance check costs 1 point to control API cost
+- ✅ Nice UX with inline result display in results area

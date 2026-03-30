@@ -842,7 +842,19 @@ export default function OptimizedDashboard() {
                         
                         const data = await response.json()
                         console.log('API response:', data)
-                        if (data.success && data.results && data.results.length > 0) {
+                        
+                        // Special handling for compliance check
+                        if (selectedTab === 'compliance') {
+                          console.log('Compliance check complete, compliant:', data.compliant, 'issues:', data.issues)
+                          // For compliance check, we still don't modify the image
+                          // But we add a special "result" that contains the compliance report
+                          if (data.compliant) {
+                            processedResults.push('compliance:✅ All checks passed! No issues found.')
+                          } else {
+                            const issueHtml = data.issues.map((i: string) => `compliance:⚠️ ${i}`)
+                            processedResults.push(...issueHtml)
+                          }
+                        } else if (data.success && data.results && data.results.length > 0) {
                           processedResults.push(...data.results)
                           console.log('Processing successful:', data.results)
                         } else if (data.success && data.processedUrl) {
@@ -908,25 +920,35 @@ export default function OptimizedDashboard() {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               ✅ Processing Complete ({results.length} result{results.length > 1 ? 's' : ''})
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {results.map((resultUrl, index) => (
-                <div key={index} className="relative rounded overflow-hidden shadow-lg border cursor-pointer" onClick={() => setPreviewImage(resultUrl)}>
-                  <img
-                    src={resultUrl}
-                    alt={`Processed result ${index + 1}`}
-                    className="w-full h-40 object-cover hover:opacity-80 transition"
-                  />
-                  <div className="p-2 bg-white">
-                    <a
-                      href={resultUrl}
-                      download
-                      className="text-xs text-blue-600 hover:underline block text-center"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Download Image
-                    </a>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {results.map((result, index) => (
+                result.startsWith('compliance:') ? (
+                  // Compliance check result - show text instead of image
+                  <div key={index} className="relative rounded overflow-hidden shadow-lg border bg-yellow-50 p-4">
+                    <div className="text-sm whitespace-pre-line text-gray-800">
+                      {result.substring('compliance:'.length)}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  // Normal image result
+                  <div key={index} className="relative rounded overflow-hidden shadow-lg border cursor-pointer" onClick={() => setPreviewImage(result)}>
+                    <img
+                      src={result}
+                      alt={`Processed result ${index + 1}`}
+                      className="w-full h-40 object-cover hover:opacity-80 transition"
+                    />
+                    <div className="p-2 bg-white">
+                      <a
+                        href={result}
+                        download
+                        className="text-xs text-blue-600 hover:underline block text-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Download Image
+                      </a>
+                    </div>
+                  </div>
+                )
               ))}
             </div>
           </div>
