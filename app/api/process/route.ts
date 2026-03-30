@@ -365,7 +365,7 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
   })
   // super-resolution requires 'upscale' parameter (how many times to upscale)
   // 2 = 2x, 4 = 4x
-  form.append('upscale', scaleNum.toString())
+  form.append('upscale', scaleNum)
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
   // For China network, give more time for DNS/connection
