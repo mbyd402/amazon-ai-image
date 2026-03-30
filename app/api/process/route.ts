@@ -349,10 +349,9 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
 }
 
 async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any, scale: string = '2'): Promise<Buffer> {
-  // For 1x: we still use 2x API to get AI processing (denoise + sharpen), then scale back to original size
-  // This gives the user AI enhancement without changing dimensions
+  // super-resolution uses target_width instead of scale
   const isOneX = scale === '1'
-  const apiScale = isOneX ? '2' : scale
+  const scaleNum = parseInt(isOneX ? '2' : scale, 10)
   const originalWidth = await (async () => {
     let sharp = require('sharp')
     const metadata = await sharp(imageBuffer).metadata()
@@ -364,13 +363,20 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
     filename: 'image.png',
     contentType: 'image/png',
   })
-  form.append('scale', apiScale) // Clipdrop uses form parameter to specify scale
+  // Calculate target width = original width * scale
+  if (originalWidth > 0) {
+    const targetWidth = Math.round(originalWidth * scaleNum)
+    form.append('target_width', targetWidth.toString())
+  } else {
+    // Fallback: if can't get original width, use scale=2
+    form.append('scale', '2')
+  }
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
   // For China network, give more time for DNS/connection
   const baseTimeout = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 20000 : 180000
   // Local development has no timeout limit, give 3 minutes
-  const timeoutMs = !process.env.VERCEL ? 180000 : (apiScale === '4' ? Math.floor(baseTimeout * 0.8) : baseTimeout)
+  const timeoutMs = !process.env.VERCEL ? 180000 : (scaleNum === 4 ? Math.floor(baseTimeout * 0.8) : baseTimeout)
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
     console.error(`⏱️ Request timeout after ${timeoutMs}ms`)

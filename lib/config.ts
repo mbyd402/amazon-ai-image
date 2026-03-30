@@ -14,9 +14,9 @@ export const AI_API = {
   },
   clipdrop: {
     apiKey: process.env.CLIPDROP_API_KEY!,
-    inpaintUrl: 'https://api.clipdrop.co/v1/inpainting',
-    cleanupUrl: 'https://api.clipdrop.co/v1/cleanup',
-    upscaleUrl: 'https://api.clipdrop.co/v1/image-upscale',
+    inpaintUrl: 'https://clipdrop-api.co/inpainting/v1',
+    cleanupUrl: 'https://clipdrop-api.co/cleanup/v1',
+    upscaleUrl: 'https://apis.clipdrop.co/super-resolution/v1',
   },
   cloudmersive: {
     apiKey: process.env.CLOUDMERSIVE_API_KEY || '',
