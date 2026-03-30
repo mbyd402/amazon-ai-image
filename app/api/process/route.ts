@@ -363,14 +363,9 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
     filename: 'image.png',
     contentType: 'image/png',
   })
-  // Calculate target width = original width * scale
-  if (originalWidth > 0) {
-    const targetWidth = Math.round(originalWidth * scaleNum)
-    form.append('target_width', targetWidth.toString())
-  } else {
-    // Fallback: if can't get original width, use scale=2
-    form.append('scale', '2')
-  }
+  // super-resolution requires 'upscale' parameter (how many times to upscale)
+  // 2 = 2x, 4 = 4x
+  form.append('upscale', scaleNum.toString())
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
   // For China network, give more time for DNS/connection
