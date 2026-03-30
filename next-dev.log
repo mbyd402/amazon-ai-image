@@ -722,3 +722,404 @@ Processing error: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown ur
  ✓ Compiled in 215ms (276 modules)
  ○ Compiling /not-found ...
  ✓ Compiled /not-found in 966ms (555 modules)
+ ✓ Compiled / in 409ms (281 modules)
+ ⨯ null
+TypeError: Cannot read properties of null (reading 'message')
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:38:987
+    at eL (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:266405)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:277983
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+TypeError: Cannot read properties of null (reading 'message')
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:38:987
+    at eL (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:266405)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:277983
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+ ⨯ unhandledRejection: TypeError: Cannot read properties of null (reading 'message')
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:38:987
+    at eL (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:266405)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:277983
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+ ⨯ unhandledRejection: TypeError: Cannot read properties of null (reading 'message')
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:38:987
+    at eL (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:266405)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:277983
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 2.5s (561 modules)
+ ✓ Compiled /not-found in 206ms (566 modules)
+🚀 Starting OptimizedDashboard render...
+ ○ Compiling /api/process ...
+ ✓ Compiled /api/process in 950ms (408 modules)
+📡 Clipdrop 2x upscale request timeout=180000ms...
+⚡ Clipdrop responded in 8165ms
+❌ Clipdrop 2x upscale error: status=404, body={"error":"Unknown url"}
+❌ 2x upscale failed: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+Processing error: Error: Clipdrop 2x upscale API error: 404 {"error":"Unknown url"}
+    at upscaleImage (webpack-internal:///(rsc)/./app/api/process/route.ts:345:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async runtimePOST (webpack-internal:///(rsc)/./app/api/process/route.ts:112:35)
+    at async POST (webpack-internal:///(rsc)/./app/api/process/route.ts:44:12)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:63809
+    at async eU.execute (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53964)
+    at async eU.handle (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:65062)
+    at async doRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1333:42)
+    at async cacheEntry.responseCache.get.routeKind (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1555:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1463:28)
+    at async DevServer.renderPageComponent (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1856:24)
+    at async DevServer.renderToResponseImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:1894:32)
+    at async DevServer.pipeImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:911:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/next-server.js:271:17)
+    at async DevServer.handleRequestImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/base-server.js:807:17)
+    at async /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:331:20
+    at async Span.traceAsyncFn (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/trace/trace.js:151:20)
+    at async DevServer.handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/dev/next-dev-server.js:328:24)
+    at async invokeRender (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:163:21)
+    at async handleRequest (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:342:24)
+    at async requestHandlerImpl (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/router-server.js:366:13)
+    at async Server.requestListener (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/lib/start-server.js:140:13)
+ ✓ Compiled in 225ms (285 modules)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:25:42)
+    at JSON.parse (<anonymous>)
+TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:25:42)
+    at F (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94693)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97108
+    at W._fromJSON (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97546)
+    at JSON.parse (<anonymous>)
+    at N (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94414)
+    at j (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:93211)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64925)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:25:42)
+    at F (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94693)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97108
+    at W._fromJSON (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97546)
+    at JSON.parse (<anonymous>)
+    at N (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94414)
+    at j (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:93211)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64925)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7) {
+  page: '/dashboard'
+}
+ ○ Compiling /_error ...
+TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:25:42)
+    at F (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94693)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97108
+    at W._fromJSON (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97546)
+    at JSON.parse (<anonymous>)
+    at N (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94414)
+    at j (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:93211)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64925)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:25:42)
+    at JSON.parse (<anonymous>)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:25:42)
+    at F (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94693)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97108
+    at W._fromJSON (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97546)
+    at JSON.parse (<anonymous>)
+    at N (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94414)
+    at j (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:93211)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64925)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7) {
+  page: '/dashboard'
+}
+ ✓ Compiled /_error in 9.2s (724 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/root/.openclaw/workspace/agent1/.next/server/app/not-found.js'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../../../../.next/server/app/not-found' in /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/.openclaw/workspace/agent1/.next/server/app/not-found.js', but to 'Error: Can't resolve '../../../../../../../.next/server/app/not-found' in '/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../../../../.next/server/app/not-found (expected /root/.openclaw/workspace/agent1/.next/server/app/not-found.js)
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:33:42)
+    at JSON.parse (<anonymous>)
+TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:33:42)
+    at F (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94693)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97108
+    at W._fromJSON (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97546)
+    at JSON.parse (<anonymous>)
+    at N (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94414)
+    at j (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:93211)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64925)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:33:42)
+    at F (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94693)
+    at /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97108
+    at W._fromJSON (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:97546)
+    at JSON.parse (<anonymous>)
+    at N (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:94414)
+    at j (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:93211)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64925)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7) {
+  page: '/dashboard'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ○ Compiling /not-found ...
+ ✓ Compiled /not-found in 1116ms (729 modules)
+Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162991)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/navigation.js:123:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/error-boundary.js:160:50)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47419)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:61663)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64957)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:33:42)
+    at JSON.parse (<anonymous>)
+ ⨯ TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162991)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/navigation.js:123:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/error-boundary.js:160:50)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47419)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:61663)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64957)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7) {
+  page: '/dashboard'
+}
+Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162991)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/navigation.js:123:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/error-boundary.js:160:50)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47419)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:61663)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64957)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:33:42)
+    at JSON.parse (<anonymous>)
+ ⨯ TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162991)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/navigation.js:123:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/error-boundary.js:160:50)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47419)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:61663)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64957)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7) {
+  page: '/dashboard'
+}
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/root/.openclaw/workspace/agent1/.next/server/webpack-runtime.js:33:42)
+    at JSON.parse (<anonymous>)
+Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162991)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/navigation.js:123:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/error-boundary.js:160:50)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47419)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:61663)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64957)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+ ⨯ TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162991)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/navigation.js:123:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/error-boundary.js:160:50)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47419)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:61663)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64957)
+    at nI (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:46806)
+    at nM (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:47570)
+    at nN (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:64674)
+    at nG (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:72265)
+    at Timeout._onTimeout (/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:44403)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7) {
+  page: '/dashboard'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/root/.openclaw/workspace/agent1/.next/server/pages'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../../../../.next/server/pages/_error' in /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/.openclaw/workspace/agent1/.next/server/pages/_error.js', but to 'Error: Can't resolve '../../../../../../../.next/server/pages/_error' in '/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../../../../.next/server/pages/_error (expected /root/.openclaw/workspace/agent1/.next/server/pages/_error.js)
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../../../../.next/server/pages/_app' in /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/.openclaw/workspace/agent1/.next/server/pages/_app.js', but to 'Error: Can't resolve '../../../../../../../.next/server/pages/_app' in '/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../../../../.next/server/pages/_app (expected /root/.openclaw/workspace/agent1/.next/server/pages/_app.js)
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../../../../.next/server/pages/_document' in /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/.openclaw/workspace/agent1/.next/server/pages/_document.js', but to 'Error: Can't resolve '../../../../../../../.next/server/pages/_document' in '/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../../../../.next/server/pages/_document (expected /root/.openclaw/workspace/agent1/.next/server/pages/_document.js)
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../../../../.next/server/app/dashboard/page' in /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/.openclaw/workspace/agent1/.next/server/app/dashboard/page.js', but to 'Error: Can't resolve '../../../../../../../.next/server/app/dashboard/page' in '/root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../../../../.next/server/app/dashboard/page (expected /root/.openclaw/workspace/agent1/.next/server/app/dashboard/page.js)
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/worker.js
+<w>  at file dependencies /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/.openclaw/workspace/agent1/node_modules/.pnpm/next@14.1.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+[?25h
+ ELIFECYCLE  Command failed.
