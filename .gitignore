@@ -30,3 +30,7 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+project/
+approve-sharp.expect
+test-upscale-api.cjs.bak
+package-lock.json
