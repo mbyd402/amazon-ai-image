@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
-// 🎯 Edge Runtime for Cloudflare Pages
-export const runtime = 'edge'
+// 🎯 Node.js Runtime for Cloudflare Workers (supports sharp)
+export const runtime = 'nodejs'
 
 // 🔧 Force dynamic rendering
 // This prevents Next.js from trying to statically optimize this API route
