@@ -30,14 +30,8 @@ const nextConfig = {
   // 禁用trailing slash处理
   trailingSlash: false,
   
-  // Webpack配置：最小化
-  webpack: (config, { isServer, isEdgeRuntime }) => {
-    // Cloudflare Pages 构建时 externalize sharp
-    if (isServer && (process.env.CF_PAGES || process.env.CLOUDFLARE_PAGES)) {
-      // 外部化 sharp，避免在 Edge 构建时出问题
-      config.externals = [...(config.externals || []), 'sharp']
-    }
-    
+  // Webpack配置：Cloudflare Pages 构建优化
+  webpack: (config, { isServer }) => {
     if (isServer) {
       // 简化服务器端构建
       config.optimization = {
@@ -46,6 +40,12 @@ const nextConfig = {
       
       // 禁用source maps
       config.devtool = false
+      
+      // Cloudflare Pages 环境：将 sharp 外部化（不打包）
+      if (process.env.CF_PAGES || process.env.CLOUDFLARE_PAGES) {
+        config.externals = [...(config.externals || []), 'sharp']
+        console.log('🔧 Cloudflare Pages: externalizing sharp')
+      }
     }
     
     return config

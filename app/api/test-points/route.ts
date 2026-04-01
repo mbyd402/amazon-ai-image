@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// 🎯 Node.js Runtime for Cloudflare Pages
-export const runtime = 'nodejs'
+// 🎯 Edge Runtime for Cloudflare Pages
+export const runtime = 'edge'
 
 // 🔧 Force dynamic rendering - fixes "Dynamic server usage" error on Vercel
 export const dynamic = 'force-dynamic'
