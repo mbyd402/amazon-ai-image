@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+// 🎯 Node.js Runtime for Cloudflare Pages
+export const runtime = 'nodejs'
+
 // For implicit flow, the access_token is in the hash fragment
 // We need to redirect back to login with the same hash so login can process it
 export async function GET(request: Request) {

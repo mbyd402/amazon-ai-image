@@ -31,7 +31,13 @@ const nextConfig = {
   trailingSlash: false,
   
   // Webpack配置：最小化
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, isEdgeRuntime }) => {
+    // Cloudflare Pages 构建时 externalize sharp
+    if (isServer && (process.env.CF_PAGES || process.env.CLOUDFLARE_PAGES)) {
+      // 外部化 sharp，避免在 Edge 构建时出问题
+      config.externals = [...(config.externals || []), 'sharp']
+    }
+    
     if (isServer) {
       // 简化服务器端构建
       config.optimization = {

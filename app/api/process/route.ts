@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+// 🎯 Node.js Runtime for Cloudflare Pages (sharp doesn't work with Edge)
+export const runtime = 'nodejs'
+
 // 🔧 Force dynamic rendering - critical for Vercel deployment
 // This prevents Next.js from trying to statically optimize this API route
 export const dynamic = 'force-dynamic'

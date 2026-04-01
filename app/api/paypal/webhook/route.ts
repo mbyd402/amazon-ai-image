@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+// 🎯 Node.js Runtime for Cloudflare Pages (sharp compatibility)
+export const runtime = 'nodejs'
+
 // 🎯 构建时检测
 const isBuildTime = process.env.NODE_ENV === 'production' && (process.env.NETLIFY || process.env.VERCEL || process.env.IS_BUILD_TIME === 'true')
 
