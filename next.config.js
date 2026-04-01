@@ -46,17 +46,28 @@ const nextConfig = {
   },
 }
 
-// 🎯 Netlify环境：极简配置
-if (process.env.NETLIFY) {
-  console.log('🔧 Netlify极简构建模式')
+// 🎯 Cloudflare Pages 环境配置
+if (process.env.CF_PAGES || process.env.VERCEL) {
+  console.log('🔧 Cloudflare Pages 或 Vercel 构建模式')
   
   // 标记构建环境
   process.env.IS_BUILD_TIME = 'true'
-  process.env.NETLIFY_BUILD = 'true'
+  
+  // Cloudflare Pages 特定配置
+  if (process.env.CF_PAGES) {
+    console.log('☁️ 部署到 Cloudflare Pages')
+    process.env.CLOUDFLARE_PAGES = 'true'
+  }
+  
+  // Vercel 特定配置
+  if (process.env.VERCEL) {
+    console.log('▲ 部署到 Vercel')
+  }
   
   // 确保API路由知道这是构建时
   nextConfig.generateBuildId = () => {
-    return `netlify-build-${Date.now()}`
+    const platform = process.env.CF_PAGES ? 'cloudflare' : 'vercel'
+    return `${platform}-build-${Date.now()}`
   }
   
   // 禁用所有可能导致问题的功能

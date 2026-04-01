@@ -5,13 +5,15 @@ import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 // 🎯 构建时检测
-// Only treat it as build time during the actual build process
 // Vercel: check if we're in the build phase by looking at IS_BUILD_TIME or NETLIFY
-// On Vercel runtime, process.env.VERCEL is still true but we shouldn't simulate anymore
+// Cloudflare Pages: check CF_PAGES environment variable
 const isBuildTime = (
   process.env.NODE_ENV === 'production' && 
   (process.env.IS_BUILD_TIME === 'true' || process.env.NETLIFY === 'true')
 )
+
+// 🎯 Cloudflare Pages 环境检测
+const isCloudflarePages = process.env.CF_PAGES === 'true' || process.env.CLOUDFLARE_PAGES === 'true'
 
 // 🎯 构建时模拟响应
 const buildTimeResponse = NextResponse.json(
@@ -61,10 +63,23 @@ export async function GET() {
 // ========== 运行时代码（构建时不加载） ==========
 async function runtimePOST(request: Request) {
   try {
-    // 动态导入运行时依赖
+    // 🎯 动态导入运行时依赖（兼容 Cloudflare 和 Node.js 环境）
     const { createClient } = await import('@supabase/supabase-js')
     const { AI_API } = await import('@/lib/config')
-    const FormDataModule = await import('form-data')
+    
+    // 🎯 Cloudflare Pages 不支持 form-data，使用原生 fetch
+    // Vercel/Node.js 环境使用 form-data
+    let FormDataModule: any
+    let isUsingNativeFormData = false
+    
+    if (isCloudflarePages) {
+      // Cloudflare: 使用 Web API 的 FormData（如果需要）或 fetch 直接发送
+      isUsingNativeFormData = true
+      console.log('☁️ Cloudflare Pages 环境，禁用 form-data 模块')
+    } else {
+      // Vercel/Node.js: 使用 form-data 包
+      FormDataModule = (await import('form-data')).default
+    }
     
     // 检查API密钥是否存在
     const hasApiKeys = {
@@ -110,7 +125,7 @@ async function runtimePOST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await removeBackground(imageBuffer, AI_API, FormDataModule.default)
+        processedBuffer = await removeBackground(imageBuffer, AI_API, FormDataModule, isUsingNativeFormData)
         break
 
       case 'upscale':
@@ -123,7 +138,7 @@ async function runtimePOST(request: Request) {
             { status: 503 }
           )
         }
-        processedBuffer = await upscaleImage(imageBuffer, AI_API, FormDataModule.default, scale)
+        processedBuffer = await upscaleImage(imageBuffer, AI_API, FormDataModule, scale, isUsingNativeFormData)
         break
 
       case 'watermark':
@@ -140,10 +155,10 @@ async function runtimePOST(request: Request) {
         // If user provided a mask (marked areas), use it
         if (maskFile) {
           const maskBuffer = Buffer.from(await maskFile.arrayBuffer())
-          processedBuffer = await removeWatermarkUserMask(imageBuffer, maskBuffer, AI_API, FormDataModule.default)
+          processedBuffer = await removeWatermarkUserMask(imageBuffer, maskBuffer, AI_API, FormDataModule, isUsingNativeFormData)
         } else {
           // Auto mode: clean four corners where watermarks are commonly found
-          processedBuffer = await removeWatermarkAuto(imageBuffer, AI_API, FormDataModule.default)
+          processedBuffer = await removeWatermarkAuto(imageBuffer, AI_API, FormDataModule, isUsingNativeFormData)
         }
         break
 
@@ -157,7 +172,7 @@ async function runtimePOST(request: Request) {
             { status: 503 }
           )
         }
-        const complianceResult = await checkCompliance(imageBuffer, AI_API, FormDataModule.default)
+        const complianceResult = await checkCompliance(imageBuffer, AI_API, FormDataModule, isUsingNativeFormData)
         
         // Convert processed buffer to base64 data URL (just for API consistency)
         const base64 = imageBuffer.toString('base64')
@@ -308,17 +323,66 @@ async function runtimeGET() {
 }
 
 // ========== 辅助函数 ==========
-async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
-  const form = new FormDataModule()
-  form.append('image_file', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-  form.append('size', 'auto')
+
+// 🎯 Cloudflare 兼容的 FormData 辅助函数
+// Cloudflare Workers 不支持 form-data 包，需要使用 Web API FormData
+function createMultipartBody(
+  imageBuffer: Buffer, 
+  additionalFields: Record<string, string>,
+  useNativeFormData: boolean,
+  FormDataModule?: any
+): { body: BodyInit; headers: Record<string, string> } {
+  if (useNativeFormData) {
+    // Cloudflare/浏览器环境：使用 Web API FormData
+    const formData = new FormData()
+    
+    // 将 Buffer 转为 Blob（使用 Uint8Array 避免类型问题）
+    const uint8Array = new Uint8Array(imageBuffer)
+    const blob = new Blob([uint8Array], { type: 'image/png' })
+    formData.append('image_file', blob, 'image.png')
+    
+    // 添加其他字段
+    for (const [key, value] of Object.entries(additionalFields)) {
+      formData.append(key, value)
+    }
+    
+    // Web API FormData 不需要手动设置 Content-Type
+    return { 
+      body: formData as unknown as BodyInit, 
+      headers: {} 
+    }
+  } else {
+    // Node.js 环境：使用 form-data 包
+    const form = new FormDataModule()
+    form.append('image_file', imageBuffer as unknown as Blob, {
+      filename: 'image.png',
+      contentType: 'image/png',
+    })
+    
+    for (const [key, value] of Object.entries(additionalFields)) {
+      form.append(key, value)
+    }
+    
+    return { 
+      body: form.getBuffer() as unknown as BodyInit, 
+      headers: form.getHeaders() 
+    }
+  }
+}
+
+async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule: any, isUsingNativeFormData: boolean): Promise<Buffer> {
+  // 使用兼容的 multipart 辅助函数
+  const { body, headers } = createMultipartBody(
+    imageBuffer, 
+    { size: 'auto' },
+    isUsingNativeFormData,
+    FormDataModule
+  )
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
-  // Use 8s timeout to be safe for Hobby plan
-  const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
+  // Cloudflare Workers has 10-30s timeout depending on plan
+  // Use 8s timeout to be safe
+  const timeoutMs = 8000
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
     console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
@@ -332,12 +396,11 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
       method: 'POST',
       headers: {
         'X-Api-Key': AI_API.removeBg.apiKey,
-        ...form.getHeaders(),
+        ...headers,
       },
-      body: form.getBuffer() as unknown as BodyInit,
+      body: body,
       signal: controller.signal,
     })
-
     const elapsed = Date.now() - startTime
     console.log(`⚡ Remove.bg responded in ${elapsed}ms`)
 
@@ -398,7 +461,7 @@ async function removeBackground(imageBuffer: Buffer, AI_API: any, FormDataModule
   }
 }
 
-async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any, scale: string = '2'): Promise<Buffer> {
+async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: any, scale: string = '2', isUsingNativeFormData: boolean = false): Promise<Buffer> {
   // super-resolution uses target_width instead of scale
   const isOneX = scale === '1'
   const scaleNum = parseInt(isOneX ? '2' : scale, 10)
@@ -408,14 +471,13 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
     return metadata.width || 0
   })()
 
-  const form = new FormDataModule()
-  form.append('image_file', imageBuffer as unknown as Blob, {
-    filename: 'image.png',
-    contentType: 'image/png',
-  })
-  // super-resolution requires 'upscale' parameter (how many times to upscale)
-  // 2 = 2x, 4 = 4x
-  form.append('upscale', scaleNum.toString())
+  // 使用兼容的 multipart 辅助函数
+  const { body, headers } = createMultipartBody(
+    imageBuffer, 
+    { upscale: scaleNum.toString() },
+    isUsingNativeFormData,
+    FormDataModule
+  )
 
   // Vercel Hobby plan has 10s timeout, Pro has 60s
   // For China network, give more time for DNS/connection
@@ -438,9 +500,9 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
       method: 'POST',
       headers: {
         'x-api-key': AI_API.clipdrop.apiKey,
-        ...form.getHeaders(),
+        ...headers,
       },
-      body: form.getBuffer() as unknown as BodyInit,
+      body: body,
       signal: controller.signal,
     })
 
@@ -488,7 +550,7 @@ async function upscaleImage(imageBuffer: Buffer, AI_API: any, FormDataModule: an
 }
 
 // Automatic mode: clean four corners where watermarks are commonly found
-async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataModule: any, isUsingNativeFormData: boolean = false): Promise<Buffer> {
   // Use Clipdrop Cleanup API to remove watermark
   // Most e-commerce product image watermarks are at one of the four corners
   // Strategy: keep center product area white (don't touch), black out four corners for cleaning
@@ -579,23 +641,35 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
   const maxRetries = 3
   let lastError: any = null
 
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
+  // 为多部分表单准备数据（兼容 Cloudflare）
+  const getMultipartBody = () => {
+    if (isUsingNativeFormData) {
+      const formData = new FormData()
+      const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: 'image/png' })
+      const maskBlob = new Blob([new Uint8Array(maskBuffer)], { type: 'image/png' })
+      formData.append('image_file', imageBlob, 'image.png')
+      formData.append('mask_file', maskBlob, 'mask.png')
+      return { body: formData as unknown as BodyInit, headers: {} }
+    } else {
       const form = new FormDataModule()
-      
       form.append('image_file', imageBuffer as unknown as Blob, {
         filename: 'image.png',
         contentType: 'image/png',
       })
-      
       form.append('mask_file', maskBuffer as unknown as Blob, {
         filename: 'mask.png',
         contentType: 'image/png',
       })
+      return { body: form.getBuffer() as unknown as BodyInit, headers: form.getHeaders() }
+    }
+  }
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const { body, headers } = getMultipartBody()
       
-      // Vercel Hobby plan has 10s timeout, Pro has 60s
-      // Use 8s timeout to be safe for Hobby plan
-      const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
+      // Use 8s timeout to be safe
+      const timeoutMs = 8000
       const controller = new AbortController()
       const timeoutId = setTimeout(() => {
         console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
@@ -609,9 +683,9 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
         method: 'POST',
         headers: {
           'x-api-key': AI_API.clipdrop.apiKey,
-          ...form.getHeaders(),
+          ...headers,
         },
-        body: form.getBuffer() as unknown as BodyInit,
+        body: body,
         signal: controller.signal,
       })
 
@@ -645,7 +719,7 @@ async function removeWatermarkAuto(imageBuffer: Buffer, AI_API: any, FormDataMod
 }
 
 // User mode: use the mask that user drew on the canvas
-async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<Buffer> {
+async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, AI_API: any, FormDataModule: any, isUsingNativeFormData: boolean = false): Promise<Buffer> {
   // User already drew the mask correctly on canvas - black = clean, white = keep
   // Just send directly to Clipdrop Cleanup API
   // Add auto-retry for unstable network connections (common when accessing from China)
@@ -653,23 +727,35 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
   const maxRetries = 3
   let lastError: any = null
 
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
+  // 为多部分表单准备数据（兼容 Cloudflare）
+  const getMultipartBody = () => {
+    if (isUsingNativeFormData) {
+      const formData = new FormData()
+      const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: 'image/png' })
+      const maskBlob = new Blob([new Uint8Array(maskBuffer)], { type: 'image/png' })
+      formData.append('image_file', imageBlob, 'image.png')
+      formData.append('mask_file', maskBlob, 'mask.png')
+      return { body: formData as unknown as BodyInit, headers: {} }
+    } else {
       const form = new FormDataModule()
-      
       form.append('image_file', imageBuffer as unknown as Blob, {
         filename: 'image.png',
         contentType: 'image/png',
       })
-      
       form.append('mask_file', maskBuffer as unknown as Blob, {
         filename: 'mask.png',
         contentType: 'image/png',
       })
+      return { body: form.getBuffer() as unknown as BodyInit, headers: form.getHeaders() }
+    }
+  }
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const { body, headers } = getMultipartBody()
       
-      // Vercel Hobby plan has 10s timeout, Pro has 60s
-      // Use 8s timeout to be safe for Hobby plan
-      const timeoutMs = process.env.VERCEL && !process.env.VERCEL_PROJECT_PRODUCTION_URL ? 8000 : 45000
+      // Use 8s timeout to be safe
+      const timeoutMs = 8000
       const controller = new AbortController()
       const timeoutId = setTimeout(() => {
         console.error(`⏱️ Request timeout after ${timeoutMs}ms`)
@@ -683,9 +769,9 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
         method: 'POST',
         headers: {
           'x-api-key': AI_API.clipdrop.apiKey,
-          ...form.getHeaders(),
+          ...headers,
         },
-        body: form.getBuffer() as unknown as BodyInit,
+        body: body,
         signal: controller.signal,
       })
 
@@ -718,7 +804,7 @@ async function removeWatermarkUserMask(imageBuffer: Buffer, maskBuffer: Buffer, 
   throw lastError
 }
 
-async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule: any): Promise<{ compliant: boolean; issues: string[] }> {
+async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule: any, isUsingNativeFormData: boolean = false): Promise<{ compliant: boolean; issues: string[] }> {
   const issues: string[] = []
   let sharp
   try {
@@ -846,11 +932,13 @@ async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule:
   // ========== 7. Check for text using Cloudmersive OCR ==========
   if (AI_API.cloudmersive.apiKey) {
     try {
-      const form = new FormDataModule()
-      form.append('image', imageBuffer as unknown as Blob, {
-        filename: 'image.png',
-        contentType: 'image/png',
-      })
+      // 使用兼容的 multipart 辅助函数
+      const { body, headers } = createMultipartBody(
+        imageBuffer, 
+        {},
+        isUsingNativeFormData,
+        FormDataModule
+      )
 
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 60000)
@@ -861,9 +949,9 @@ async function checkCompliance(imageBuffer: Buffer, AI_API: any, FormDataModule:
         method: 'POST',
         headers: {
           'Apikey': AI_API.cloudmersive.apiKey,
-          ...form.getHeaders(),
+          ...headers,
         },
-        body: form.getBuffer() as unknown as BodyInit,
+        body: body,
         signal: controller.signal,
       })
 
