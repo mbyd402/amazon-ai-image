@@ -1,12 +1,9 @@
-# Cloudflare Workers 配置
+# Cloudflare Pages 配置
 name = "amazon-ai-image"
 compatibility_date = "2024-09-23"
 
-# 启用 Node.js 兼容模式
-compatibility_flags = ["nodejs_compat"]
-
-# Worker 入口脚本
-main = ".open-next/worker.js"
+# Pages 构建输出目录
+pages_build_output_dir = ".open-next/assets"
 
 [vars]
-NEXT_PUBLIC_APP_URL = "https://amazon-ai-image.your-account.workers.dev"
+NEXT_PUBLIC_APP_URL = "https://amazon-ai-image.pages.dev"
