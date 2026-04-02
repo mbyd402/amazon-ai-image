@@ -5,5 +5,8 @@ compatibility_date = "2024-01-01"
 # 启用 Node.js 兼容模式
 compatibility_flags = ["nodejs_compat"]
 
+# Worker 入口脚本
+main = "output/worker.js"
+
 [vars]
 NEXT_PUBLIC_APP_URL = "https://amazon-ai-image.your-account.workers.dev"
