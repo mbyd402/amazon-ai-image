@@ -185,4 +185,4 @@ export default function NewLogin() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'

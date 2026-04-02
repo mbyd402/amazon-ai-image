@@ -99,4 +99,4 @@ export default function EnvFixedTestPage() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'

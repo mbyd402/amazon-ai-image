@@ -291,4 +291,4 @@ export default function DebugPage() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'

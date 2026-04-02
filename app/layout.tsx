@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+export const runtime = 'edge'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Script from 'next/script'

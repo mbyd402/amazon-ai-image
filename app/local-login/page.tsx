@@ -153,4 +153,4 @@ export default function LocalLogin() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'

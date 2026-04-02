@@ -93,3 +93,4 @@ export default function TermsOfService() {
     </div>
   )
 }
+export const runtime = 'edge'

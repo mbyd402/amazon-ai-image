@@ -355,4 +355,4 @@ export default function NewDashboard() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'

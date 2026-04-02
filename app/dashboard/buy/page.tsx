@@ -164,3 +164,4 @@ export default function BuyPoints() {
     </div>
   )
 }
+export const runtime = 'edge'

@@ -223,3 +223,4 @@ export default function Register() {
     </div>
   )
 }
+export const runtime = 'edge'

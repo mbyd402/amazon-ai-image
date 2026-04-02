@@ -43,4 +43,4 @@ export default function EmergencyLogin() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'

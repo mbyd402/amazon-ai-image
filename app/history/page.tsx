@@ -134,3 +134,4 @@ export default function History() {
     </div>
   )
 }
+export const runtime = 'edge'

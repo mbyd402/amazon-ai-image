@@ -1049,3 +1049,4 @@ function saveToCache(data: any) {
     // ignore
   }
 }
+export const runtime = 'edge'

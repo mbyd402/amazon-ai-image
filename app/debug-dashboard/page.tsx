@@ -297,4 +297,4 @@ export default function DebugDashboard() {
       </div>
     </div>
   )
-}
+}export const runtime = 'edge'
