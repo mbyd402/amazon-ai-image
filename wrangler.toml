@@ -5,8 +5,8 @@ compatibility_date = "2024-01-01"
 # 启用 Node.js 兼容模式
 compatibility_flags = ["nodejs_compat"]
 
-# Workers 模式（不需要 pages_build_output_dir）
-# 使用 @opennextjs/cloudflare 构建后部署 output 目录
+# 静态资源目录（构建后的 output 目录）
+assets = { binding = "assets", directory = "output" }
 
 [vars]
 NEXT_PUBLIC_APP_URL = "https://amazon-ai-image.your-account.workers.dev"
