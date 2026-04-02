@@ -1,12 +1,12 @@
 # Cloudflare Workers 配置
 name = "amazon-ai-image"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
 
 # 启用 Node.js 兼容模式
 compatibility_flags = ["nodejs_compat"]
 
 # Worker 入口脚本
-main = "output/worker.js"
+main = ".open-next/worker.js"
 
 [vars]
 NEXT_PUBLIC_APP_URL = "https://amazon-ai-image.your-account.workers.dev"
