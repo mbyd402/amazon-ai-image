@@ -4,12 +4,15 @@ const nextConfig = {
   swcMinify: false,
   compiler: { removeConsole: false, emotion: false },
   experimental: {},
-  output: undefined,
+  output: 'standalone',
   images: { unoptimized: true, domains: [] },
   headers: async () => [],
   rewrites: async () => [],
   redirects: async () => [],
   trailingSlash: false,
+  
+  // 禁用静态预渲染，避免产生多余的 HTML 文件导致路由冲突
+  staticPageGenerationTimeout: 0,
   
   webpack: (config, { isServer }) => {
     if (isServer) {
@@ -34,6 +37,9 @@ if (process.env.CF_PAGES || process.env.VERCEL) {
   }
   
   nextConfig.pageExtensions = ['tsx', 'ts', 'jsx', 'js']
+  
+  // 禁用 Cloudflare Pages 的预渲染功能
+  nextConfig.output = undefined
 }
 
 module.exports = nextConfig
