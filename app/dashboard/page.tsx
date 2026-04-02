@@ -29,6 +29,41 @@ export default function OptimizedDashboard() {
   const [files, setFiles] = useState<File[]>([])
   const [processing, setProcessing] = useState(false)
   const [results, setResults] = useState<string[]>([])
+
+  // 添加白底处理函数（用于去除背景后的图片）
+  const addWhiteBackground = useCallback(async (imgSrc: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(imgSrc);
+          return;
+        }
+        // 先填充白色背景
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 然后绘制透明图片
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve(imgSrc);
+      img.src = imgSrc;
+    });
+  }, []);
+
+  // 下载白底图片
+  const downloadWithWhiteBg = useCallback(async (url: string) => {
+    const whiteBgUrl = await addWhiteBackground(url);
+    const link = document.createElement('a');
+    link.href = whiteBgUrl;
+    link.download = 'processed-image.png';
+    link.click();
+  }, [addWhiteBackground]);
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [upscaleScale, setUpscaleScale] = useState<'1x' | '2x' | '4x'>('2x')
   
@@ -938,14 +973,15 @@ export default function OptimizedDashboard() {
                       className="w-full h-40 object-cover hover:opacity-80 transition"
                     />
                     <div className="p-2 bg-white">
-                      <a
-                        href={result}
-                        download
+                      <button
                         className="text-xs text-blue-600 hover:underline block text-center"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          downloadWithWhiteBg(result);
+                        }}
                       >
                         Download Image
-                      </a>
+                      </button>
                     </div>
                   </div>
                 )
