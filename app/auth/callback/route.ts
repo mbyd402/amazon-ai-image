@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 // 🎯 Node.js Runtime for Cloudflare Workers
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 
 // For implicit flow, the access_token is in the hash fragment
 // We need to redirect back to login with the same hash so login can process it
